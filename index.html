@@ -1,0 +1,3864 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMS – ระบบบริหารจัดการใบอนุญาตใช้น้ำ</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROOT / TOKENS
+============================================================ */
+:root {
+  --navy:    #0d2137;
+  --navy2:   #132d4a;
+  --teal:    #0e7c86;
+  --teal2:   #12a3b0;
+  --cyan:    #1ecbd9;
+  --lime:    #39d98a;
+  --amber:   #f5a623;
+  --red:     #e8445a;
+  --sky:     #e8f5f7;
+  --bg:      #f2f6f8;
+  --surface: #ffffff;
+  --border:  #dce8eb;
+  --txt:     #1a2d3b;
+  --txt2:    #5a7585;
+  --txt3:    #97b4bf;
+  --shadow:  0 2px 16px rgba(13,33,55,.08);
+  --shadow2: 0 8px 32px rgba(13,33,55,.14);
+}
+
+/* ============================================================
+   RESET / BASE
+============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:15px}
+body{
+  font-family:'IBM Plex Sans Thai','Sarabun',sans-serif;
+  background:var(--bg); color:var(--txt);
+  min-height:100vh; overflow-x:hidden;
+}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit;font-size:14px}
+
+/* ============================================================
+   ANIMATION
+============================================================ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideIn{from{transform:translateX(-20px);opacity:0}to{transform:none;opacity:1}}
+.fade-up{animation:fadeUp .4s ease both}
+.delay-1{animation-delay:.08s}
+.delay-2{animation-delay:.16s}
+.delay-3{animation-delay:.24s}
+.delay-4{animation-delay:.32s}
+
+/* ============================================================
+   LOGIN SCREEN
+============================================================ */
+#login-screen{
+  display:flex; min-height:100vh;
+  background: linear-gradient(135deg, var(--navy) 0%, #0a3d52 60%, #0b6471 100%);
+  position:relative; overflow:hidden;
+}
+#login-screen::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231ecbd9' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.login-left{
+  flex:1; display:flex; flex-direction:column;
+  justify-content:center; align-items:flex-start;
+  padding:60px; position:relative; z-index:1;
+}
+.login-logo{
+  width:56px;height:56px;
+  background:var(--cyan); border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px; margin-bottom:32px;
+  box-shadow:0 0 0 8px rgba(30,203,217,.12);
+}
+.login-headline{
+  font-family:'IBM Plex Sans Thai',sans-serif;
+  font-size:38px; font-weight:700; color:#fff;
+  line-height:1.2; margin-bottom:12px;
+}
+.login-sub{ color:rgba(255,255,255,.55); font-size:16px; max-width:380px; line-height:1.6; }
+.login-badges{display:flex;gap:10px;margin-top:32px;flex-wrap:wrap}
+.login-badge{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px; padding:6px 14px;
+  color:rgba(255,255,255,.7); font-size:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.login-right{
+  width:440px; min-height:100vh;
+  background:var(--surface);
+  display:flex; flex-direction:column;
+  justify-content:center; padding:48px 40px;
+  position:relative;z-index:1;
+  box-shadow:-20px 0 60px rgba(0,0,0,.15);
+}
+.login-form-title{
+  font-family:'IBM Plex Sans Thai',sans-serif;
+  font-size:22px;font-weight:700;
+  color:var(--navy); margin-bottom:4px;
+}
+.login-form-sub{ color:var(--txt2); font-size:13px; margin-bottom:32px; }
+.role-select-grid{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; margin-bottom:28px;
+}
+.role-card{
+  border:2px solid var(--border);
+  border-radius:12px; padding:14px 12px;
+  text-align:center; cursor:pointer;
+  transition:all .2s;
+  background:var(--bg);
+}
+.role-card:hover{ border-color:var(--teal2); background:var(--sky); }
+.role-card.selected{ border-color:var(--teal); background:var(--sky); }
+.role-card .role-icon{font-size:22px;margin-bottom:6px;}
+.role-card .role-name{font-size:12px;font-weight:600;color:var(--txt);}
+.role-card .role-name-en{font-size:10px;color:var(--txt2);}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.form-input{
+  width:100%; padding:11px 14px;
+  border:1.5px solid var(--border);
+  border-radius:10px; outline:none;
+  color:var(--txt); background:var(--bg);
+  transition:border .2s;
+}
+.form-input:focus{border-color:var(--teal2);background:#fff;}
+.btn-login{
+  width:100%; padding:13px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#fff; border:none; border-radius:10px;
+  font-size:15px; font-weight:600;
+  transition:all .2s; margin-top:8px;
+  box-shadow:0 4px 16px rgba(14,124,134,.3);
+}
+.btn-login:hover{ transform:translateY(-1px); box-shadow:0 6px 20px rgba(14,124,134,.4); }
+.login-demo{
+  margin-top:24px; padding-top:20px;
+  border-top:1px solid var(--border);
+}
+.demo-title{font-size:11px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.demo-btns{display:flex;flex-direction:column;gap:6px;}
+.demo-btn{
+  padding:9px 14px; border:1.5px solid var(--border);
+  border-radius:8px; background:#fff;
+  font-size:12px; color:var(--txt2); text-align:left;
+  transition:all .15s; display:flex; align-items:center; gap:8px;
+}
+.demo-btn:hover{ border-color:var(--teal2); color:var(--teal); }
+.demo-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.lang-toggle-login{
+  position:absolute; top:20px; right:20px;
+  display:flex; gap:6px;
+}
+.lang-btn{
+  padding:5px 12px; border-radius:20px;
+  border:1.5px solid var(--border); background:#fff;
+  font-size:12px; font-weight:600; color:var(--txt2);
+  transition:all .15s;
+}
+.lang-btn.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* ============================================================
+   APP LAYOUT
+============================================================ */
+#app{ display:none; min-height:100vh; }
+.app-layout{ display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar{
+  width:248px; background:var(--navy);
+  display:flex; flex-direction:column;
+  position:fixed; height:100vh; z-index:100;
+  overflow-y:auto; transition:width .25s;
+}
+.sidebar.collapsed{ width:64px; }
+.sidebar-top{
+  padding:20px 16px; border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex; align-items:center; gap:12px;
+}
+.sidebar-brand-icon{
+  width:38px;height:38px;flex-shrink:0;
+  background:var(--cyan); border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.sidebar-brand-text{ overflow:hidden; }
+.sidebar-brand-name{
+  font-family:'IBM Plex Sans Thai',sans-serif;
+  color:#fff;font-size:13px;font-weight:700;white-space:nowrap;
+}
+.sidebar-brand-sub{ color:var(--cyan);font-size:10px;white-space:nowrap;opacity:.8; }
+.sidebar-toggle{
+  margin-left:auto; width:28px;height:28px;
+  background:rgba(255,255,255,.07); border:none;
+  border-radius:6px; color:rgba(255,255,255,.5);
+  flex-shrink:0; font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.sidebar-toggle:hover{background:rgba(255,255,255,.12);color:#fff;}
+.sidebar-role-badge{
+  margin:12px 14px;padding:8px 12px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px; display:flex; align-items:center; gap:10px;
+  overflow:hidden;
+}
+.role-avatar{
+  width:32px;height:32px;flex-shrink:0;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.role-badge-info{ overflow:hidden; }
+.role-badge-name{color:#fff;font-size:12px;font-weight:600;white-space:nowrap;}
+.role-badge-type{font-size:10px;opacity:.5;white-space:nowrap;}
+.nav-section{ padding:10px 10px 0; }
+.nav-label{
+  font-size:9px;color:rgba(255,255,255,.25);
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:0 6px;margin-bottom:4px;white-space:nowrap;overflow:hidden;
+}
+.sidebar.collapsed .nav-label{opacity:0;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px; border-radius:9px;
+  color:rgba(255,255,255,.55); cursor:pointer;
+  transition:all .15s; margin-bottom:1px;
+  font-size:13.5px; white-space:nowrap; overflow:hidden;
+}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.nav-item.active{background:var(--teal);color:#fff;}
+.nav-icon{font-size:17px;width:20px;text-align:center;flex-shrink:0;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:10px;}
+.sidebar.collapsed .nav-item span:not(.nav-icon){display:none;}
+.sidebar-footer{
+  margin-top:auto;padding:12px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.user-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px;border-radius:8px;cursor:pointer;
+  transition:background .15s; overflow:hidden;
+}
+.user-row:hover{background:rgba(255,255,255,.06);}
+.user-avatar{
+  width:32px;height:32px;flex-shrink:0;
+  background:var(--teal2);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.user-name{color:#fff;font-size:12px;font-weight:500;white-space:nowrap;}
+.user-role-lbl{color:rgba(255,255,255,.35);font-size:10px;white-space:nowrap;}
+.logout-btn{
+  width:100%; margin-top:8px;padding:8px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:8px; background:transparent;
+  color:rgba(255,255,255,.4); font-size:12px;
+  transition:all .15s;
+}
+.logout-btn:hover{background:rgba(232,68,90,.15);border-color:rgba(232,68,90,.3);color:var(--red);}
+
+/* MAIN */
+.main{ margin-left:248px; flex:1; display:flex; flex-direction:column; transition:margin .25s; }
+.main.expanded{ margin-left:64px; }
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:13px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-left{ display:flex;align-items:center;gap:14px; }
+.breadcrumb{font-size:12px;color:var(--txt2);}
+.breadcrumb strong{color:var(--txt);}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.lang-pill{
+  display:flex;border:1.5px solid var(--border);
+  border-radius:20px;overflow:hidden;background:var(--bg);
+}
+.lang-pill button{
+  padding:4px 12px;border:none;background:transparent;
+  font-size:11px;font-weight:600;color:var(--txt2);transition:all .15s;
+}
+.lang-pill button.active{background:var(--navy);color:#fff;}
+.notif-btn{
+  width:34px;height:34px;border:1.5px solid var(--border);
+  border-radius:8px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;position:relative;
+}
+.notif-dot{
+  position:absolute;top:4px;right:4px;
+  width:8px;height:8px;background:var(--red);
+  border-radius:50%;border:2px solid #fff;
+}
+
+/* CONTENT */
+.content{padding:24px 28px;flex:1;}
+.page{display:none;}
+.page.active{display:block;animation:fadeUp .35s ease;}
+
+/* ============================================================
+   COMPONENTS
+============================================================ */
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{
+  background:var(--surface);border-radius:14px;
+  padding:18px 20px;border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2);}
+.stat-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;}
+.stat-label{font-size:11px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.stat-value{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--navy);line-height:1;}
+.stat-sub{font-size:11px;color:var(--txt3);margin-top:6px;}
+.stat-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.08;}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.card-hd{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:14px;font-weight:700;color:var(--navy);font-family:'IBM Plex Sans Thai',sans-serif;}
+.card-title-en{font-size:11px;color:var(--txt2);margin-left:6px;font-weight:400;}
+.card-body{padding:18px;}
+
+/* BTNS */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:8px;
+  font-size:13px;font-weight:600;border:none;
+  transition:all .15s;white-space:nowrap;
+}
+.btn-primary{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(14,124,134,.25);}
+.btn-primary:hover{background:var(--teal2);transform:translateY(-1px);}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--txt);}
+.btn-outline:hover{border-color:var(--teal2);color:var(--teal);}
+.btn-ghost{background:transparent;color:var(--txt2);}
+.btn-ghost:hover{background:var(--bg);color:var(--txt);}
+.btn-danger{background:rgba(232,68,90,.1);color:var(--red);border:1px solid rgba(232,68,90,.2);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-xs{padding:4px 9px;font-size:11px;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.bg-green{background:#d1fae5;color:#065f46;}
+.bg-teal{background:#d0f4f7;color:#0e6670;}
+.bg-amber{background:#fef3c7;color:#92400e;}
+.bg-red{background:#fee2e2;color:#b91c1c;}
+.bg-gray{background:#f3f4f6;color:#374151;}
+.bg-blue{background:#dbeafe;color:#1e40af;}
+.bg-navy{background:#1a2d3b;color:#fff;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{
+  background:#f5fafc;padding:10px 14px;text-align:left;
+  font-size:11px;font-weight:700;color:var(--txt2);
+  text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);
+}
+td{padding:12px 14px;border-bottom:1px solid #f0f5f7;color:var(--txt);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fcfd;}
+.td-id{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.search-box{
+  flex:1;min-width:220px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:9px;padding:0 12px;
+  transition:border .2s;
+}
+.search-box:focus-within{border-color:var(--teal2);}
+.search-box input{
+  flex:1;border:none;outline:none;
+  padding:9px 4px;background:transparent;
+  font-size:13.5px;color:var(--txt);
+}
+.filter-select{
+  padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:9px;background:var(--surface);
+  color:var(--txt);outline:none;transition:border .2s;
+  font-size:13px;
+}
+.filter-select:focus{border-color:var(--teal2);}
+
+/* MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(13,33,55,.45);backdrop-filter:blur(4px);
+  z-index:300;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border-radius:18px;
+  width:700px;max-width:95vw;max-height:90vh;
+  overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);
+  animation:fadeUp .25s ease;
+}
+.modal-hd{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.modal-title{font-family:'IBM Plex Sans Thai',sans-serif;font-size:17px;font-weight:700;color:var(--navy);}
+.modal-close{
+  width:32px;height:32px;border:none;background:var(--bg);
+  border-radius:8px;font-size:18px;color:var(--txt2);
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{background:var(--border);}
+.modal-body{padding:24px;}
+.modal-ft{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:10px;
+  position:sticky;bottom:0;background:var(--surface);
+}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:12px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;}
+.fg .finput{
+  width:100%;padding:10px 12px;
+  border:1.5px solid var(--border);border-radius:9px;
+  background:var(--bg);color:var(--txt);outline:none;
+  transition:border .2s,background .2s;
+}
+.fg .finput:focus{border-color:var(--teal2);background:#fff;}
+.fg textarea.finput{resize:vertical;min-height:80px;}
+.required{color:var(--red);}
+
+/* CALC */
+.calc-hero{
+  background:linear-gradient(135deg,var(--navy) 0%,#0a4d68 60%,var(--teal) 100%);
+  border-radius:16px;padding:28px;margin-bottom:18px;
+  position:relative;overflow:hidden;
+}
+.calc-hero::after{
+  content:'💧';position:absolute;right:-20px;bottom:-20px;
+  font-size:120px;opacity:.05;pointer-events:none;
+}
+.calc-hero-title{
+  font-family:'IBM Plex Sans Thai',sans-serif;
+  font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;
+}
+.calc-hero-sub{color:rgba(255,255,255,.55);font-size:13px;margin-bottom:22px;}
+.calc-modes{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.calc-mode-btn{
+  padding:7px 16px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.6);font-size:13px;font-weight:600;
+  transition:all .15s;
+}
+.calc-mode-btn.active{background:var(--cyan);border-color:var(--cyan);color:var(--navy);}
+.calc-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.calc-ig{display:flex;flex-direction:column;gap:6px;}
+.calc-ig label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.5px;}
+.calc-ig input{
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:9px;padding:10px 12px;color:#fff;font-size:14px;outline:none;
+}
+.calc-ig input:focus{border-color:var(--cyan);background:rgba(255,255,255,.15);}
+.calc-ig input::placeholder{color:rgba(255,255,255,.3);}
+.calc-result-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:18px;
+}
+.calc-res-item{text-align:center;}
+.calc-res-val{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:26px;font-weight:700;color:var(--cyan);
+}
+.calc-res-label{font-size:11px;color:rgba(255,255,255,.45);margin-top:4px;}
+
+/* DASHBOARD EXTRAS */
+.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px;}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:90px;}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-fill{
+  width:100%;border-radius:4px 4px 0 0;
+  background:var(--teal);opacity:.7;
+  min-height:4px;transition:height .5s;
+}
+.bar-fill:hover{opacity:1;}
+.bar-label{font-size:9px;color:var(--txt3);}
+.donut-container{display:flex;align-items:center;gap:18px;}
+.donut{
+  width:100px;height:100px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(var(--lime) 0 45%, var(--cyan) 45% 75%, var(--amber) 75% 90%, var(--red) 90%);
+  position:relative;
+}
+.donut::after{content:'';position:absolute;inset:22px;background:var(--surface);border-radius:50%;}
+.legend-wrap{display:flex;flex-direction:column;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt);}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-k{font-size:13px;color:var(--txt2);}
+.info-v{font-size:13px;font-weight:600;color:var(--txt);}
+.prog-bar{height:5px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:5px;}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* PUBLIC PAGE */
+.public-hero{
+  background:linear-gradient(135deg,var(--teal) 0%,var(--navy) 100%);
+  border-radius:16px;padding:40px;margin-bottom:22px;
+  color:#fff;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.public-hero::before{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,.05);
+}
+.public-hero-title{font-family:'IBM Plex Sans Thai',sans-serif;font-size:26px;font-weight:700;margin-bottom:8px;}
+.public-hero-sub{font-size:14px;opacity:.7;max-width:400px;line-height:1.6;}
+.public-stat-box{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0;}
+.public-stat{background:rgba(255,255,255,.12);border-radius:10px;padding:12px 20px;text-align:center;}
+.public-stat-val{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;}
+.public-stat-lbl{font-size:11px;opacity:.6;}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.feature-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:22px;
+  transition:all .2s;cursor:pointer;
+}
+.feature-card:hover{border-color:var(--teal2);transform:translateY(-2px);box-shadow:var(--shadow2);}
+.feature-icon{font-size:28px;margin-bottom:12px;}
+.feature-title{font-family:'IBM Plex Sans Thai',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.feature-title-en{font-size:11px;color:var(--txt2);margin-bottom:8px;}
+.feature-desc{font-size:12.5px;color:var(--txt2);line-height:1.6;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--navy);color:#fff;
+  padding:13px 18px;border-radius:12px;
+  font-size:13.5px;font-weight:500;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 28px rgba(0,0,0,.2);
+  z-index:999;transform:translateX(calc(100% + 30px));
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  max-width:340px;
+}
+.toast.show{transform:translateX(0);}
+
+/* PAGINATION */
+.pagination{display:flex;gap:4px;justify-content:flex-end;padding:14px 18px;border-top:1px solid var(--border);}
+.pg-btn{
+  width:32px;height:32px;border-radius:7px;border:1.5px solid var(--border);
+  background:var(--surface);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:var(--txt2);transition:all .15s;
+}
+.pg-btn:hover,.pg-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:16px 0;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .sidebar{width:64px;}
+  .sidebar-brand-text,.nav-label,.nav-item span:not(.nav-icon),.role-badge-info,.user-name,.user-role-lbl{display:none;}
+  .nav-item{justify-content:center;}
+  .main{margin-left:64px!important;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .chart-row,.two-col{grid-template-columns:1fr;}
+  .calc-inputs{grid-template-columns:1fr;}
+  .feature-grid{grid-template-columns:1fr 1fr;}
+  .login-left{display:none;}
+  .login-right{width:100%;}
+}
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr;}
+  .feature-grid{grid-template-columns:1fr;}
+  .content{padding:16px;}
+}
+
+/* ============================================================
+   LOOKER STUDIO EMBED
+============================================================ */
+.looker-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-height: 80vh;
+}
+.looker-wrap iframe {
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  border: none;
+  display: block;
+}
+.looker-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.looker-toolbar-title {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 600; font-size: 15px; color: var(--navy);
+}
+.looker-loading {
+  position: absolute; inset: 60px 0 0 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; color: var(--txt2); font-size: 14px;
+  pointer-events: none;
+}
+.looker-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   METER CARDS + API PANEL
+============================================================ */
+.meter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  padding: 4px 0;
+}
+.meter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s, transform .2s;
+  cursor: pointer;
+}
+.meter-card:hover { box-shadow: var(--shadow2); transform: translateY(-2px); }
+.meter-card-img {
+  width: 100%; height: 180px;
+  object-fit: contain;
+  background: #f0f6f8;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.meter-card-img-placeholder {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg,#e8f5f7,#f2f6f8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  border-bottom: 1px solid var(--border);
+}
+.meter-card-body { padding: 14px 16px; }
+.meter-card-id { font-size:10px; color:var(--txt3); font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
+.meter-card-name { font-weight:700; font-size:15px; color:var(--navy); margin-bottom:2px; }
+.meter-card-model { font-size:12px; color:var(--txt2); margin-bottom:10px; }
+.meter-card-chips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+.meter-chip {
+  font-size:11px; padding:3px 9px; border-radius:20px;
+  background:var(--sky); color:var(--teal); font-weight:500;
+}
+.meter-card-reading {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg); border-radius:8px; padding:8px 12px;
+  margin-top:6px;
+}
+.meter-reading-val { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:700; color:var(--navy); }
+.meter-reading-unit { font-size:10px; color:var(--txt2); }
+.meter-reading-time { font-size:10px; color:var(--txt3); text-align:right; }
+
+/* API Modal */
+.api-panel { background:#0d2137; border-radius:10px; padding:16px; margin:10px 0; color:#e0f4f7; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.8; overflow-x:auto; }
+.api-panel .api-key { color:var(--cyan); }
+.api-panel .api-val { color:var(--lime); }
+.api-panel .api-cmt { color:#5a7585; }
+.api-copy-btn { float:right; background:rgba(30,203,217,.15); border:1px solid rgba(30,203,217,.3); color:var(--cyan); padding:2px 10px; border-radius:6px; font-size:11px; cursor:pointer; }
+.api-copy-btn:hover { background:rgba(30,203,217,.25); }
+.meter-modal-img { width:100%; max-height:220px; object-fit:contain; border-radius:10px; background:#f0f6f8; padding:16px; margin-bottom:14px; }
+.meter-view-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:16px; }
+.meter-view-tab { padding:8px 18px; font-size:13px; font-weight:600; color:var(--txt2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:.15s; }
+.meter-view-tab.active { color:var(--teal); border-bottom-color:var(--teal); }
+.meter-view-panel { display:none; }
+.meter-view-panel.active { display:block; }
+
+/* View toggle */
+.view-toggle { display:flex; gap:4px; background:var(--bg); border-radius:8px; padding:3px; }
+.view-toggle-btn { padding:5px 12px; border-radius:6px; border:none; background:transparent; color:var(--txt2); font-size:13px; cursor:pointer; transition:.15s; }
+.view-toggle-btn.active { background:var(--surface); color:var(--navy); box-shadow:0 1px 4px rgba(0,0,0,.08); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div id="login-screen">
+  <div class="login-left">
+    <div class="login-logo">💧</div>
+    <div class="login-headline fade-up">ระบบบริหารจัดการ<br>ใบอนุญาตใช้น้ำ</div>
+    <div class="login-sub fade-up delay-1">Water License Management System — ระบบครบวงจรสำหรับตรวจสอบ ควบคุม และบริหารจัดการทรัพยากรน้ำสาธารณะ</div>
+    <div class="login-badges fade-up delay-2">
+      <div class="login-badge">🛡️ ใบอนุญาตประเภทที่ 2 & 3</div>
+      <div class="login-badge">📊 Dashboard แบบ Real-time</div>
+      <div class="login-badge">🧮 คำนวณปริมาณน้ำออนไลน์</div>
+      <div class="login-badge">🔧 ฐานข้อมูลมาตรวัด</div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="lang-toggle-login">
+      <button class="lang-btn active" onclick="setLang('th')">ไทย</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+
+    <div class="login-form-title" data-th="เข้าสู่ระบบ" data-en="Sign In">เข้าสู่ระบบ</div>
+    <div class="login-form-sub" data-th="เลือกประเภทผู้ใช้งานและกรอกข้อมูล" data-en="Select your role and enter credentials">เลือกประเภทผู้ใช้งานและกรอกข้อมูล</div>
+
+    <div class="role-select-grid">
+      <div class="role-card selected" onclick="selectRole(this,'admin')" id="role-admin">
+        <div class="role-icon">🛡️</div>
+        <div class="role-name" data-th="ผู้ดูแลระบบ" data-en="Administrator">ผู้ดูแลระบบ</div>
+        <div class="role-name-en">Administrator</div>
+      </div>
+      <div class="role-card" onclick="selectRole(this,'officer')" id="role-officer">
+        <div class="role-icon">👮</div>
+        <div class="role-name" data-th="พนักงานเจ้าหน้าที่" data-en="Officer">พนักงานเจ้าหน้าที่</div>
+        <div class="role-name-en">Officer</div>
+      </div>
+      <div class="role-card" onclick="selectRole(this,'applicant')" id="role-applicant">
+        <div class="role-icon">🏭</div>
+        <div class="role-name" data-th="ผู้ขออนุญาต" data-en="Applicant">ผู้ขออนุญาต</div>
+        <div class="role-name-en">Applicant</div>
+      </div>
+      <div class="role-card" onclick="selectRole(this,'public')" id="role-public">
+        <div class="role-icon">🌍</div>
+        <div class="role-name" data-th="ประชาชนทั่วไป" data-en="Public">ประชาชนทั่วไป</div>
+        <div class="role-name-en">Public</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-th="ชื่อผู้ใช้" data-en="Username">ชื่อผู้ใช้</label>
+      <input class="form-input" id="login-user" type="text" placeholder="username" value="admin">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-th="รหัสผ่าน" data-en="Password">รหัสผ่าน</label>
+      <input class="form-input" id="login-pass" type="password" placeholder="••••••••" value="1234">
+    </div>
+    <button class="btn-login" onclick="doLogin()">
+      <span data-th="เข้าสู่ระบบ" data-en="Sign In">เข้าสู่ระบบ</span>
+    </button>
+
+    <div class="login-demo">
+      <div class="demo-title" data-th="ทดลองใช้งาน (Demo)" data-en="Quick Demo Access">ทดลองใช้งาน (Demo)</div>
+      <div class="demo-btns">
+        <button class="demo-btn" onclick="quickLogin('admin')">
+          <div class="dot" style="background:#ef4444"></div>
+          <span data-th="🛡️ Admin — เข้าถึงทุกฟีเจอร์" data-en="🛡️ Admin — Full Access">🛡️ Admin — เข้าถึงทุกฟีเจอร์</span>
+        </button>
+        <button class="demo-btn" onclick="quickLogin('officer')">
+          <div class="dot" style="background:#f59e0b"></div>
+          <span data-th="👮 เจ้าหน้าที่ — ตรวจสอบและอนุมัติ" data-en="👮 Officer — Review & Approve">👮 เจ้าหน้าที่ — ตรวจสอบและอนุมัติ</span>
+        </button>
+        <button class="demo-btn" onclick="quickLogin('applicant')">
+          <div class="dot" style="background:#10b981"></div>
+          <span data-th="🏭 ผู้ขออนุญาต — ยื่นคำขอ" data-en="🏭 Applicant — Submit Application">🏭 ผู้ขออนุญาต — ยื่นคำขอ</span>
+        </button>
+        <button class="demo-btn" onclick="quickLogin('public')">
+          <div class="dot" style="background:#3b82f6"></div>
+          <span data-th="🌍 ประชาชน — ดูข้อมูลสาธารณะ" data-en="🌍 Public — View Public Info">🌍 ประชาชน — ดูข้อมูลสาธารณะ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP
+============================================================ -->
+<div id="app">
+<div class="app-layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-brand-icon">💧</div>
+    <div class="sidebar-brand-text">
+      <div class="sidebar-brand-name">WMS</div>
+      <div class="sidebar-brand-sub">Water Mgmt System</div>
+    </div>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  </div>
+
+  <div class="sidebar-role-badge">
+    <div class="role-avatar" id="sb-role-icon" style="background:var(--teal)">🛡️</div>
+    <div class="role-badge-info">
+      <div class="role-badge-name" id="sb-user-name">สมชาย วิทยากร</div>
+      <div class="role-badge-type" id="sb-role-name">ผู้ดูแลระบบ</div>
+    </div>
+  </div>
+
+  <div id="nav-menu"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar" id="sb-avatar">👤</div>
+      <div>
+        <div class="user-name" id="sb-user-name2">สมชาย วิทยากร</div>
+        <div class="user-role-lbl" id="sb-role-lbl">Administrator</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">⏻ <span data-th="ออกจากระบบ" data-en="Sign Out">ออกจากระบบ</span></button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main-area">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="breadcrumb"><span data-th="หน้าหลัก" data-en="Home">หน้าหลัก</span> / <strong id="page-title">Dashboard</strong></div>
+    </div>
+    <div class="topbar-right">
+      <div class="lang-pill">
+        <button onclick="setLang('th')" id="lang-th" class="active">ไทย</button>
+        <button onclick="setLang('en')" id="lang-en">EN</button>
+      </div>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-primary btn-sm" id="topbar-add-btn" onclick="handleTopbarAdd()">+ <span id="topbar-add-label" data-th="เพิ่มข้อมูล" data-en="Add New">เพิ่มข้อมูล</span></button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD (Admin/Officer) -->
+    <div id="page-dashboard" class="page">
+      <div class="stats-grid">
+        <div class="stat-card fade-up">
+          <div class="stat-stripe" style="background:var(--navy)"></div>
+          <div class="stat-label" data-th="ผู้ขออนุญาตทั้งหมด" data-en="Total Applicants">ผู้ขออนุญาตทั้งหมด</div>
+          <div class="stat-value" id="s-total">248</div>
+          <div class="stat-sub" data-th="▲ 12 รายใหม่เดือนนี้" data-en="▲ 12 new this month">▲ 12 รายใหม่เดือนนี้</div>
+          <div class="stat-ico">📋</div>
+        </div>
+        <div class="stat-card fade-up delay-1">
+          <div class="stat-stripe" style="background:var(--teal)"></div>
+          <div class="stat-label" data-th="มาตรวัดที่ลงทะเบียน" data-en="Registered Meters">มาตรวัดที่ลงทะเบียน</div>
+          <div class="stat-value" id="s-meters">312</div>
+          <div class="stat-sub" data-th="▲ 8 เครื่องใหม่" data-en="▲ 8 new units">▲ 8 เครื่องใหม่</div>
+          <div class="stat-ico">🔧</div>
+        </div>
+        <div class="stat-card fade-up delay-2">
+          <div class="stat-stripe" style="background:var(--lime)"></div>
+          <div class="stat-label" data-th="ได้รับอนุญาตแล้ว" data-en="Approved">ได้รับอนุญาตแล้ว</div>
+          <div class="stat-value" id="s-approved">186</div>
+          <div class="stat-sub" data-th="75% ของทั้งหมด" data-en="75% of total">75% ของทั้งหมด</div>
+          <div class="stat-ico">✅</div>
+        </div>
+        <div class="stat-card fade-up delay-3">
+          <div class="stat-stripe" style="background:var(--amber)"></div>
+          <div class="stat-label" data-th="รอการตรวจสอบ" data-en="Pending Review">รอการตรวจสอบ</div>
+          <div class="stat-value" id="s-pending">34</div>
+          <div class="stat-sub" data-th="⚠ ต้องดำเนินการ" data-en="⚠ Action required">⚠ ต้องดำเนินการ</div>
+          <div class="stat-ico">⏳</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="card fade-up">
+          <div class="card-hd">
+            <div class="card-title">
+              <span data-th="ปริมาณการใช้น้ำรายเดือน" data-en="Monthly Water Usage">ปริมาณการใช้น้ำรายเดือน</span>
+              <span class="card-title-en">(ล้าน ลบ.ม. / M m³)</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart" id="bar-chart"></div>
+          </div>
+        </div>
+        <div class="card fade-up delay-1">
+          <div class="card-hd"><div class="card-title" data-th="สัดส่วนประเภทกิจการ" data-en="Business Type Distribution">สัดส่วนประเภทกิจการ</div></div>
+          <div class="card-body">
+            <div class="donut-container">
+              <div class="donut"></div>
+              <div class="legend-wrap">
+                <div class="legend-item"><div class="dot" style="background:var(--lime)"></div><span data-th="อุตสาหกรรม 45%" data-en="Industry 45%">อุตสาหกรรม 45%</span></div>
+                <div class="legend-item"><div class="dot" style="background:var(--cyan)"></div><span data-th="เกษตรกรรม 30%" data-en="Agriculture 30%">เกษตรกรรม 30%</span></div>
+                <div class="legend-item"><div class="dot" style="background:var(--amber)"></div><span data-th="พาณิชย์ 15%" data-en="Commerce 15%">พาณิชย์ 15%</span></div>
+                <div class="legend-item"><div class="dot" style="background:var(--red)"></div><span data-th="อื่นๆ 10%" data-en="Other 10%">อื่นๆ 10%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card fade-up">
+          <div class="card-hd">
+            <div class="card-title" data-th="รายการล่าสุด" data-en="Recent Applications">รายการล่าสุด</div>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('looker')" style="display:flex;align-items:center;gap:6px;">📊 <span data-th="เปิด Analytics Dashboard" data-en="Analytics Dashboard">เปิด Analytics Dashboard</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('licenses')">
+              <span data-th="ดูทั้งหมด →" data-en="View all →">ดูทั้งหมด →</span>
+            </button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th data-th="บริษัท" data-en="Company">บริษัท</th><th data-th="ประเภท" data-en="Type">ประเภท</th><th data-th="สถานะ" data-en="Status">สถานะ</th></tr></thead>
+              <tbody id="recent-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card fade-up delay-1">
+          <div class="card-hd"><div class="card-title" data-th="สถานะระบบ" data-en="System Status">สถานะระบบ</div></div>
+          <div class="card-body">
+            <div class="info-row"><span class="info-k" data-th="ฐานข้อมูลมาตรวัด" data-en="Meter Database">ฐานข้อมูลมาตรวัด</span><span class="badge bg-green" data-th="ปกติ" data-en="Normal">ปกติ</span></div>
+            <div class="info-row"><span class="info-k" data-th="ระบบนำเข้าข้อมูล" data-en="Data Import">ระบบนำเข้าข้อมูล</span><span class="badge bg-green" data-th="ปกติ" data-en="Normal">ปกติ</span></div>
+            <div class="info-row"><span class="info-k" data-th="รายงานอัตโนมัติ" data-en="Auto Reports">รายงานอัตโนมัติ</span><span class="badge bg-teal" data-th="ประมวลผล" data-en="Processing">ประมวลผล</span></div>
+            <div class="info-row"><span class="info-k" data-th="สำรองข้อมูล" data-en="Backup">สำรองข้อมูล</span><span class="badge bg-green" data-th="วันนี้" data-en="Today">วันนี้</span></div>
+            <div style="margin-top:14px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span data-th="ความจุฐานข้อมูล" data-en="Database Capacity">ความจุฐานข้อมูล</span><span style="font-weight:700">42%</span>
+              </div>
+              <div class="prog-bar"><div class="prog-fill" style="width:42%;background:var(--lime)"></div></div>
+            </div>
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span data-th="ใบอนุญาตใกล้หมดอายุ" data-en="Expiring Licenses">ใบอนุญาตใกล้หมดอายุ</span><span style="font-weight:700;color:var(--amber)">15 <span data-th="ราย" data-en="items">ราย</span></span>
+              </div>
+              <div class="prog-bar"><div class="prog-fill" style="width:60%;background:var(--amber)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LICENSES PAGE -->
+    <div id="page-licenses" class="page">
+      <div class="filter-bar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-lic" placeholder="ค้นหา / Search..." onkeyup="renderLicenses()">
+        </div>
+        <select class="filter-select" id="filt-type" onchange="renderLicenses()">
+          <option value="" data-th="ประเภทใบอนุญาตทั้งหมด" data-en="All License Types">ประเภทใบอนุญาตทั้งหมด</option>
+          <option data-th="ประเภทที่ 2" data-en="Type 2">ประเภทที่ 2</option>
+          <option data-th="ประเภทที่ 3" data-en="Type 3">ประเภทที่ 3</option>
+        </select>
+        <select class="filter-select" id="filt-status" onchange="renderLicenses()">
+          <option value="" data-th="สถานะทั้งหมด" data-en="All Statuses">สถานะทั้งหมด</option>
+          <option>อนุมัติแล้ว</option>
+          <option>รอตรวจสอบ</option>
+          <option>ไม่อนุมัติ</option>
+          <option>หมดอายุ</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-add-lic')" id="btn-add-lic">
+          + <span data-th="เพิ่มผู้ขออนุญาต" data-en="Add Applicant">เพิ่มผู้ขออนุญาต</span>
+        </button>
+        <button class="btn btn-outline" onclick="exportCSV()">
+          📥 <span data-th="ส่งออก CSV" data-en="Export CSV">ส่งออก CSV</span>
+        </button>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">
+            <span data-th="รายการผู้ขออนุญาตใช้น้ำ" data-en="Water License Applicants">รายการผู้ขออนุญาตใช้น้ำ</span>
+            (<span id="lic-count">0</span> <span data-th="ราย" data-en="records">ราย</span>)
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th data-th="รหัส" data-en="ID">รหัส</th>
+              <th data-th="บริษัท / ผู้ประกอบการ" data-en="Company / Operator">บริษัท / ผู้ประกอบการ</th>
+              <th data-th="ประเภท" data-en="Type">ประเภท</th>
+              <th data-th="กิจการ" data-en="Business">กิจการ</th>
+              <th data-th="ปริมาณ (ลบ.ม./วัน)" data-en="Volume (m³/day)">ปริมาณ (ลบ.ม./วัน)</th>
+              <th data-th="สถานะ" data-en="Status">สถานะ</th>
+              <th data-th="แหล่งน้ำ" data-en="Water Source">แหล่งน้ำ</th>
+              <th data-th="จัดการ" data-en="Action">จัดการ</th>
+            </tr></thead>
+            <tbody id="lic-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="lic-pg"></div>
+      </div>
+    </div>
+
+    <!-- METERS PAGE -->
+    <div id="page-meters" class="page">
+      <div class="filter-bar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-mtr" placeholder="ค้นหา / Search..." onkeyup="renderMeters()">
+        </div>
+        <select class="filter-select" id="filt-mtype" onchange="renderMeters()">
+          <option value="">All / ทุกประเภท</option>
+          <option>Electromagnetic</option>
+          <option>Ultrasonic</option>
+          <option>Mechanical</option>
+          <option>Vortex</option>
+        </select>
+        <div class="view-toggle" id="mtr-view-toggle">
+          <button class="view-toggle-btn active" onclick="setMtrView('card')" id="vbtn-card">⊞ Cards</button>
+          <button class="view-toggle-btn" onclick="setMtrView('table')" id="vbtn-table">☰ Table</button>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-add-mtr')" id="btn-add-mtr">
+          + <span data-th="เพิ่มมาตรวัด" data-en="Add Meter">เพิ่มมาตรวัด</span>
+        </button>
+      </div>
+      <div style="margin-bottom:10px;font-size:13px;color:var(--txt2)">
+        พบ <strong id="mtr-count" style="color:var(--navy)">0</strong> เครื่อง
+      </div>
+      <!-- Card View -->
+      <div id="mtr-card-view">
+        <div class="meter-grid" id="mtr-grid"></div>
+      </div>
+      <!-- Table View -->
+      <div id="mtr-table-view" style="display:none">
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>S/N</th><th>ประเภท</th><th>ยี่ห้อ / รุ่น</th>
+                <th>ขนาดท่อ</th><th>ช่วงวัด</th><th>ความแม่นยำ</th>
+                <th>ค่าล่าสุด</th><th>สถานะ</th><th>จัดการ</th>
+              </tr></thead>
+              <tbody id="mtr-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSPECTORS PAGE -->
+    <div id="page-inspectors" class="page">
+      <div class="filter-bar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-ins" placeholder="ค้นหา / Search..." onkeyup="renderInspectors()">
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-add-ins')" id="btn-add-ins">
+          + <span data-th="เพิ่มหน่วยงาน" data-en="Add Agency">เพิ่มหน่วยงาน</span>
+        </button>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">
+            <span data-th="หน่วยงานตรวจสอบเครื่องมือวัดน้ำ" data-en="Water Meter Inspection Agencies">หน่วยงานตรวจสอบ</span>
+            (<span id="ins-count">0</span>)
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th data-th="ชื่อหน่วยงาน" data-en="Agency Name">ชื่อหน่วยงาน</th>
+              <th data-th="จังหวัด" data-en="Province">จังหวัด</th>
+              <th data-th="บริการ" data-en="Services">บริการ</th>
+              <th data-th="โทร" data-en="Tel">โทร</th>
+              <th data-th="การรับรอง" data-en="Certification">การรับรอง</th>
+              <th data-th="สถานะ" data-en="Status">สถานะ</th>
+              <th data-th="จัดการ" data-en="Action">จัดการ</th>
+            </tr></thead>
+            <tbody id="ins-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR PAGE -->
+    <div id="page-calculator" class="page">
+      <div class="calc-hero">
+        <div class="calc-hero-title" data-th="🧮 โปรแกรมคำนวณปริมาณน้ำ" data-en="🧮 Water Volume Calculator">🧮 โปรแกรมคำนวณปริมาณน้ำ</div>
+        <div class="calc-hero-sub" data-th="คำนวณได้ 3 รูปแบบ สำหรับผู้ใช้น้ำและพนักงานเจ้าหน้าที่" data-en="3 calculation modes for operators and officers">คำนวณได้ 3 รูปแบบ สำหรับผู้ใช้น้ำและพนักงานเจ้าหน้าที่</div>
+        <div class="calc-modes">
+          <button class="calc-mode-btn active" onclick="setCalcMode('flow',this)" data-th="📊 อัตราการไหล" data-en="📊 Flow Rate">📊 อัตราการไหล</button>
+          <button class="calc-mode-btn" onclick="setCalcMode('meter',this)" data-th="🔢 หน้าปัดมาตรวัด" data-en="🔢 Meter Reading">🔢 หน้าปัดมาตรวัด</button>
+          <button class="calc-mode-btn" onclick="setCalcMode('area',this)" data-th="🌾 พื้นที่เกษตร" data-en="🌾 Agricultural Area">🌾 พื้นที่เกษตร</button>
+        </div>
+        <div id="calc-inputs-flow" class="calc-inputs">
+          <div class="calc-ig"><label data-th="อัตราไหล (ลิตร/วินาที)" data-en="Flow Rate (L/s)">อัตราไหล (ลิตร/วินาที)</label><input type="number" id="fl-rate" placeholder="เช่น 50" oninput="calcFlow()"></div>
+          <div class="calc-ig"><label data-th="ชั่วโมง/วัน" data-en="Hours/day">ชั่วโมง/วัน</label><input type="number" id="fl-h" placeholder="เช่น 8" oninput="calcFlow()"></div>
+          <div class="calc-ig"><label data-th="จำนวนวัน" data-en="Number of Days">จำนวนวัน</label><input type="number" id="fl-d" placeholder="เช่น 30" oninput="calcFlow()"></div>
+        </div>
+        <div id="calc-inputs-meter" class="calc-inputs" style="display:none">
+          <div class="calc-ig"><label data-th="ค่าต้นงวด (ลบ.ม.)" data-en="Start Reading (m³)">ค่าต้นงวด (ลบ.ม.)</label><input type="number" id="mt-s" placeholder="เช่น 1000" oninput="calcMeter()"></div>
+          <div class="calc-ig"><label data-th="ค่าปลายงวด (ลบ.ม.)" data-en="End Reading (m³)">ค่าปลายงวด (ลบ.ม.)</label><input type="number" id="mt-e" placeholder="เช่น 1250" oninput="calcMeter()"></div>
+          <div class="calc-ig"><label data-th="Multiplier" data-en="Multiplier">Multiplier</label><input type="number" id="mt-mul" value="1" oninput="calcMeter()"></div>
+        </div>
+        <div id="calc-inputs-area" class="calc-inputs" style="display:none">
+          <div class="calc-ig"><label data-th="พื้นที่ (ไร่)" data-en="Area (Rai)">พื้นที่ (ไร่)</label><input type="number" id="ar-rai" placeholder="เช่น 100" oninput="calcArea()"></div>
+          <div class="calc-ig"><label data-th="ความลึกน้ำ (เมตร)" data-en="Water Depth (m)">ความลึกน้ำ (เมตร)</label><input type="number" id="ar-dep" placeholder="เช่น 0.5" oninput="calcArea()"></div>
+          <div class="calc-ig"><label data-th="รอบการให้น้ำ/ปี" data-en="Cycles/Year">รอบการให้น้ำ/ปี</label><input type="number" id="ar-cyc" placeholder="เช่น 2" oninput="calcArea()"></div>
+        </div>
+        <div class="calc-result-row">
+          <div class="calc-res-item">
+            <div class="calc-res-val" id="res-m3">0</div>
+            <div class="calc-res-label" data-th="ลูกบาศก์เมตร (ลบ.ม.)" data-en="Cubic Meters (m³)">ลูกบาศก์เมตร (ลบ.ม.)</div>
+          </div>
+          <div class="calc-res-item">
+            <div class="calc-res-val" id="res-ml">0</div>
+            <div class="calc-res-label" data-th="ล้านลิตร (Mℓ)" data-en="Million Litres (Mℓ)">ล้านลิตร (Mℓ)</div>
+          </div>
+          <div class="calc-res-item">
+            <div class="calc-res-val" id="res-day">0</div>
+            <div class="calc-res-label" data-th="ลบ.ม./วัน (เฉลี่ย)" data-en="m³/day (average)">ลบ.ม./วัน (เฉลี่ย)</div>
+          </div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-hd"><div class="card-title" data-th="ประวัติการคำนวณ" data-en="Calculation History">ประวัติการคำนวณ</div></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-th="เวลา" data-en="Time">เวลา</th>
+                <th data-th="โหมด" data-en="Mode">โหมด</th>
+                <th data-th="ผลลัพธ์ (ลบ.ม.)" data-en="Result (m³)">ผลลัพธ์ (ลบ.ม.)</th>
+              </tr></thead>
+              <tbody id="calc-hist-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title" data-th="ค่าอ้างอิงมาตรฐาน" data-en="Standard Reference Values">ค่าอ้างอิงมาตรฐาน</div></div>
+          <div class="card-body">
+            <div class="info-row"><span class="info-k" data-th="อุตสาหกรรมขนาดใหญ่" data-en="Large Industry">อุตสาหกรรมขนาดใหญ่</span><span class="info-v">500–5,000 m³/วัน</span></div>
+            <div class="info-row"><span class="info-k" data-th="อุตสาหกรรมขนาดกลาง" data-en="Medium Industry">อุตสาหกรรมขนาดกลาง</span><span class="info-v">100–500 m³/วัน</span></div>
+            <div class="info-row"><span class="info-k" data-th="เกษตร (ข้าว)" data-en="Agriculture (Rice)">เกษตร (ข้าว)</span><span class="info-v">1,200 m³/ไร่/ปี</span></div>
+            <div class="info-row"><span class="info-k" data-th="เกษตร (ผัก)" data-en="Agriculture (Veg.)">เกษตร (ผัก)</span><span class="info-v">800 m³/ไร่/ปี</span></div>
+            <div class="info-row"><span class="info-k" data-th="พาณิชยกรรม" data-en="Commerce">พาณิชยกรรม</span><span class="info-v">50–200 m³/วัน</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY APPLICATION (Applicant) -->
+    <div id="page-myapp" class="page">
+      <div class="card fade-up">
+        <div class="card-hd">
+          <div class="card-title" data-th="คำขออนุญาตของฉัน" data-en="My Applications">คำขออนุญาตของฉัน</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-lic')">
+            + <span data-th="ยื่นคำขอใหม่" data-en="New Application">ยื่นคำขอใหม่</span>
+          </button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>รหัส / ID</th>
+              <th data-th="ชื่อกิจการ" data-en="Business Name">ชื่อกิจการ</th>
+              <th data-th="ประเภท" data-en="Type">ประเภท</th>
+              <th data-th="ปริมาณน้ำขอ" data-en="Requested Volume">ปริมาณน้ำขอ</th>
+              <th data-th="สถานะ" data-en="Status">สถานะ</th>
+              <th data-th="ยื่นเมื่อ" data-en="Submitted">ยื่นเมื่อ</th>
+            </tr></thead>
+            <tbody id="myapp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card fade-up delay-1">
+        <div class="card-hd"><div class="card-title" data-th="คำนวณปริมาณน้ำ" data-en="Water Volume Calculator">คำนวณปริมาณน้ำ</div></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--txt2);margin-bottom:12px" data-th="ใช้เครื่องมือด้านล่างเพื่อประมาณปริมาณน้ำที่ต้องการก่อนยื่นคำขอ" data-en="Use the tool below to estimate your water needs before applying.">ใช้เครื่องมือด้านล่างเพื่อประมาณปริมาณน้ำที่ต้องการก่อนยื่นคำขอ</p>
+          <button class="btn btn-primary" onclick="showPage('calculator')">
+            🧮 <span data-th="ไปที่เครื่องคำนวณ" data-en="Go to Calculator">ไปที่เครื่องคำนวณ</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PUBLIC PAGE -->
+    <div id="page-public" class="page">
+      <div class="public-hero fade-up">
+        <div>
+          <div class="public-hero-title" data-th="ระบบข้อมูลสาธารณะ" data-en="Public Information Portal">ระบบข้อมูลสาธารณะ</div>
+          <div class="public-hero-sub" data-th="สืบค้นข้อมูลการอนุญาตใช้น้ำ หน่วยงานตรวจสอบ และคำนวณปริมาณน้ำได้ฟรีโดยไม่ต้องลงทะเบียน" data-en="Search water license data, inspection agencies and calculate water volume — no registration required.">สืบค้นข้อมูลการอนุญาตใช้น้ำ หน่วยงานตรวจสอบ และคำนวณปริมาณน้ำได้ฟรีโดยไม่ต้องลงทะเบียน</div>
+        </div>
+        <div class="public-stat-box">
+          <div class="public-stat">
+            <div class="public-stat-val" id="pub-total">93</div>
+            <div class="public-stat-lbl" data-th="ใบอนุญาต" data-en="Licenses">ใบอนุญาต</div>
+          </div>
+          <div class="public-stat">
+            <div class="public-stat-val">3</div>
+            <div class="public-stat-lbl" data-th="หน่วยงานตรวจสอบ" data-en="Inspection Agencies">หน่วยงานตรวจสอบ</div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card fade-up" onclick="showPage('licenses')">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title" data-th="ค้นหาใบอนุญาต" data-en="Search Licenses">ค้นหาใบอนุญาต</div>
+          <div class="feature-title-en">Search Licenses</div>
+          <div class="feature-desc" data-th="ค้นหาข้อมูลผู้ได้รับอนุญาตใช้น้ำสาธารณะ ประเภทที่ 2 และ 3" data-en="Find public water license holders, Type 2 and 3">ค้นหาข้อมูลผู้ได้รับอนุญาตใช้น้ำสาธารณะ ประเภทที่ 2 และ 3</div>
+        </div>
+        <div class="feature-card fade-up delay-1" onclick="showPage('inspectors')">
+          <div class="feature-icon">🏢</div>
+          <div class="feature-title" data-th="หน่วยงานตรวจสอบ" data-en="Inspection Agencies">หน่วยงานตรวจสอบ</div>
+          <div class="feature-title-en">Inspection Agencies</div>
+          <div class="feature-desc" data-th="รายชื่อหน่วยงานและบริษัทที่ให้บริการตรวจสอบเครื่องมือวัดน้ำ" data-en="Agencies and companies providing water meter inspection services">รายชื่อหน่วยงานและบริษัทที่ให้บริการตรวจสอบเครื่องมือวัดน้ำ</div>
+        </div>
+        <div class="feature-card fade-up delay-2" onclick="showPage('calculator')">
+          <div class="feature-icon">🧮</div>
+          <div class="feature-title" data-th="คำนวณปริมาณน้ำ" data-en="Water Calculator">คำนวณปริมาณน้ำ</div>
+          <div class="feature-title-en">Water Calculator</div>
+          <div class="feature-desc" data-th="เครื่องมือคำนวณปริมาณน้ำ 3 รูปแบบ ใช้งานได้ฟรีออนไลน์" data-en="3-mode online water volume calculator, free to use">เครื่องมือคำนวณปริมาณน้ำ 3 รูปแบบ ใช้งานได้ฟรีออนไลน์</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS PAGE -->
+    <div id="page-reports" class="page">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-hd"><div class="card-title" data-th="สรุปสถิติรายปี" data-en="Annual Summary">สรุปสถิติรายปี</div></div>
+          <div class="card-body">
+            <div class="info-row"><span class="info-k" data-th="คำขอทั้งหมด" data-en="Total Applications">คำขอทั้งหมด</span><span class="info-v">248</span></div>
+            <div class="info-row"><span class="info-k" data-th="อนุมัติ" data-en="Approved">อนุมัติ</span><span class="info-v" style="color:var(--lime)">186 (75%)</span></div>
+            <div class="info-row"><span class="info-k" data-th="รอดำเนินการ" data-en="Pending">รอดำเนินการ</span><span class="info-v" style="color:var(--amber)">34 (14%)</span></div>
+            <div class="info-row"><span class="info-k" data-th="ไม่อนุมัติ" data-en="Rejected">ไม่อนุมัติ</span><span class="info-v" style="color:var(--red)">28 (11%)</span></div>
+            <div class="info-row"><span class="info-k" data-th="ปริมาณน้ำรวม" data-en="Total Volume">ปริมาณน้ำรวม</span><span class="info-v">1.24 <span data-th="ล้าน ลบ.ม./วัน" data-en="M m³/day">ล้าน ลบ.ม./วัน</span></span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title" data-th="ดาวน์โหลดรายงาน" data-en="Download Reports">ดาวน์โหลดรายงาน</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+            <a href="#" onclick="showPage('looker');return false;" class="btn btn-primary" style="text-decoration:none;text-align:center;">📊 <span data-th="เปิด Analytics Dashboard (Looker Studio)" data-en="Open Analytics Dashboard (Looker Studio)">เปิด Analytics Dashboard</span></a>
+            <a href="https://lookerstudio.google.com/u/0/reporting/316fc672-78b0-4d17-b038-52fa6a56274a/page/Wt4sF" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">↗ <span data-th="เปิด Looker Studio ในแท็บใหม่" data-en="Open Looker Studio in new tab">เปิด Looker Studio ในแท็บใหม่</span></a>
+            <button class="btn btn-outline" onclick="showToast('กำลังสร้างรายงาน...')">📄 <span data-th="รายงานประจำเดือน (PDF)" data-en="Monthly Report (PDF)">รายงานประจำเดือน (PDF)</span></button>
+            <button class="btn btn-outline" onclick="showToast('กำลังส่งออก Excel...')">📊 <span data-th="รายงานผู้ขออนุญาต (Excel)" data-en="Applicants Report (Excel)">รายงานผู้ขออนุญาต (Excel)</span></button>
+            <button class="btn btn-outline" onclick="showToast('กำลังส่งออก...')">🔧 <span data-th="รายงานสถานะมาตรวัด (Excel)" data-en="Meter Status Report (Excel)">รายงานสถานะมาตรวัด (Excel)</span></button>
+            <button class="btn btn-primary" onclick="showToast('ส่งรายงานทางอีเมลแล้ว!')">📧 <span data-th="ส่งรายงานทางอีเมล" data-en="Email Report">ส่งรายงานทางอีเมล</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-title" data-th="บันทึกกิจกรรมระบบ" data-en="System Activity Log">บันทึกกิจกรรมระบบ</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th data-th="วันที่-เวลา" data-en="Timestamp">วันที่-เวลา</th>
+              <th data-th="ผู้ดำเนินการ" data-en="User">ผู้ดำเนินการ</th>
+              <th data-th="การดำเนินการ" data-en="Action">การดำเนินการ</th>
+              <th data-th="รายละเอียด" data-en="Details">รายละเอียด</th>
+            </tr></thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- LOOKER STUDIO PAGE -->
+    <div id="page-looker" class="page">
+      <div class="looker-wrap fade-up">
+        <div class="looker-toolbar">
+          <div class="looker-toolbar-title">
+            <span style="font-size:20px">📊</span>
+            <span data-th="Dashboard วิเคราะห์ข้อมูล (Looker Studio)" data-en="Analytics Dashboard (Looker Studio)">Dashboard วิเคราะห์ข้อมูล (Looker Studio)</span>
+          </div>
+          <a href="https://lookerstudio.google.com/u/0/reporting/316fc672-78b0-4d17-b038-52fa6a56274a/page/Wt4sF" target="_blank"
+             class="btn btn-outline btn-sm" style="font-size:12px;gap:6px;display:flex;align-items:center;">
+            <span>↗</span>
+            <span data-th="เปิดในแท็บใหม่" data-en="Open in new tab">เปิดในแท็บใหม่</span>
+          </a>
+        </div>
+        <div style="position:relative">
+          <div class="looker-loading" id="looker-loading">
+            <div class="looker-spinner"></div>
+            <span data-th="กำลังโหลด Dashboard..." data-en="Loading Dashboard...">กำลังโหลด Dashboard...</span>
+          </div>
+          <iframe
+            src="https://lookerstudio.google.com/u/0/reporting/316fc672-78b0-4d17-b038-52fa6a56274a/page/Wt4sF"
+            allowfullscreen
+            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-downloads"
+            onload="document.getElementById('looker-loading').style.display='none'">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div><!-- /content -->
+</main>
+</div>
+</div><!-- /app -->
+
+<!-- MODALS -->
+
+<div class="modal-overlay" id="modal-meter-detail">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-hd">
+      <div class="modal-title" id="mtr-detail-title">รายละเอียดมาตรวัด</div>
+      <button class="modal-close" onclick="closeModal('modal-meter-detail')">×</button>
+    </div>
+    <div class="modal-body" style="padding-top:8px">
+      <img id="mtr-detail-img" class="meter-modal-img" src="" alt="" onerror="this.style.display='none'">
+      <div class="meter-view-tabs">
+        <div class="meter-view-tab active" onclick="switchMtrTab('info')">📋 ข้อมูล</div>
+        <div class="meter-view-tab" onclick="switchMtrTab('api')">⚡ API / Connection</div>
+        <div class="meter-view-tab" onclick="switchMtrTab('live')">📡 Live Data</div>
+      </div>
+      <!-- INFO TAB -->
+      <div class="meter-view-panel active" id="mtr-tab-info">
+        <div id="mtr-detail-info"></div>
+      </div>
+      <!-- API TAB -->
+      <div class="meter-view-panel" id="mtr-tab-api">
+        <div id="mtr-detail-api"></div>
+      </div>
+      <!-- LIVE TAB -->
+      <div class="meter-view-panel" id="mtr-tab-live">
+        <div id="mtr-detail-live" style="text-align:center;padding:24px 0">
+          <div style="font-size:48px;font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--navy)" id="mtr-live-val">—</div>
+          <div style="color:var(--txt2);font-size:13px;margin-top:4px">m³/h (ค่าล่าสุด)</div>
+          <div style="color:var(--txt3);font-size:11px;margin-top:2px" id="mtr-live-time"></div>
+          <div style="margin-top:20px">
+            <div style="height:60px;background:var(--bg);border-radius:8px;display:flex;align-items:flex-end;gap:3px;padding:8px;overflow:hidden" id="mtr-sparkline"></div>
+            <div style="font-size:10px;color:var(--txt3);margin-top:4px">อ่านค่า 24 ชั่วโมงล่าสุด (จำลอง)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <a id="mtr-datasheet-btn" href="#" target="_blank" class="btn btn-outline">📄 Datasheet</a>
+      <button class="btn btn-outline" onclick="closeModal('modal-meter-detail')">ปิด</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-add-lic">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" data-th="เพิ่มผู้ขออนุญาตใช้น้ำ" data-en="Add Water License Applicant">เพิ่มผู้ขออนุญาตใช้น้ำ</div>
+      <button class="modal-close" onclick="closeModal('modal-add-lic')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label data-th="ชื่อบริษัท / ผู้ประกอบการ" data-en="Company Name"><span class="required">*</span> <span data-th="ชื่อบริษัท" data-en="Company Name">ชื่อบริษัท</span></label><input class="finput" id="lc-name" type="text" placeholder="บริษัท..."></div>
+        <div class="fg"><label data-th="ประเภทใบอนุญาต" data-en="License Type">ประเภทใบอนุญาต</label><select class="finput" id="lc-type"><option>ประเภทที่ 2</option><option>ประเภทที่ 3</option></select></div>
+        <div class="fg"><label data-th="ลักษณะกิจการ" data-en="Business Type">ลักษณะกิจการ</label><select class="finput" id="lc-biz"><option>อุตสาหกรรม</option><option>เกษตรกรรม</option><option>พาณิชยกรรม</option><option>อื่นๆ</option></select></div>
+        <div class="fg"><label data-th="จำนวนโรงงาน / สาขา" data-en="Branches">จำนวนโรงงาน / สาขา</label><input class="finput" id="lc-branches" type="number" value="1"></div>
+        <div class="fg"><label><span class="required">*</span> <span data-th="ปริมาณน้ำขอ (ลบ.ม./วัน)" data-en="Volume Requested (m³/day)">ปริมาณน้ำขอ (ลบ.ม./วัน)</span></label><input class="finput" id="lc-vol" type="number" placeholder="500"></div>
+        <div class="fg"><label data-th="แหล่งน้ำ" data-en="Water Source">แหล่งน้ำ</label><select class="finput" id="lc-source"><option>แม่น้ำ</option><option>คลองชลประทาน</option><option>อ่างเก็บน้ำ</option><option>น้ำบาดาล</option></select></div>
+        <div class="fg"><label data-th="วันหมดอายุ" data-en="Expiry Date">วันหมดอายุ</label><input class="finput" id="lc-expire" type="date"></div>
+        <div class="fg"><label data-th="สถานะ" data-en="Status">สถานะ</label><select class="finput" id="lc-status"><option>รอตรวจสอบ</option><option>อนุมัติแล้ว</option><option>ไม่อนุมัติ</option></select></div>
+        <div class="fg full"><label data-th="หมายเหตุ" data-en="Remarks">หมายเหตุ</label><textarea class="finput" id="lc-note" placeholder="ข้อมูลเพิ่มเติม..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-lic')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveLicense()">💾 <span data-th="บันทึก" data-en="Save">บันทึก</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-mtr">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" data-th="เพิ่มข้อมูลมาตรวัดน้ำ" data-en="Add Water Meter">เพิ่มข้อมูลมาตรวัดน้ำ</div>
+      <button class="modal-close" onclick="closeModal('modal-add-mtr')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label>ประเภท / Type</label><select class="finput" id="mt-type"><option>Electromagnetic</option><option>Ultrasonic</option><option>Mechanical</option><option>Vortex</option></select></div>
+        <div class="fg"><label><span class="required">*</span> ยี่ห้อ / Brand</label><input class="finput" id="mt-brand" type="text" placeholder="e.g. Siemens, ABB"></div>
+        <div class="fg"><label><span class="required">*</span> รุ่น / Model</label><input class="finput" id="mt-model" type="text" placeholder="e.g. MAG 5100W"></div>
+        <div class="fg"><label>หมายเลขประจำเครื่อง / S/N</label><input class="finput" id="mt-serial" type="text" placeholder="SN-2024-001"></div>
+        <div class="fg"><label>ขนาดท่อ / Pipe Size</label><select class="finput" id="mt-size"><option>1"</option><option>2"</option><option>3"</option><option>4"</option><option>6"</option><option>8"</option><option>10"</option><option>12"</option></select></div>
+        <div class="fg"><label>ช่วงวัด / Range (m³/h)</label><input class="finput" id="mt-range" type="text" placeholder="0–500"></div>
+        <div class="fg"><label>ความแม่นยำ / Accuracy</label><input class="finput" id="mt-acc" type="text" placeholder="±0.5%"></div>
+        <div class="fg"><label>สถานะ / Status</label><select class="finput" id="mt-status"><option>ใช้งานได้</option><option>รอตรวจสอบ</option><option>ซ่อมแซม</option></select></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-mtr')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveMeter()">💾 <span data-th="บันทึก" data-en="Save">บันทึก</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-ins">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" data-th="เพิ่มหน่วยงานตรวจสอบ" data-en="Add Inspection Agency">เพิ่มหน่วยงานตรวจสอบ</div>
+      <button class="modal-close" onclick="closeModal('modal-add-ins')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg full"><label><span class="required">*</span> ชื่อหน่วยงาน / Agency Name</label><input class="finput" id="ins-name" type="text"></div>
+        <div class="fg"><label>จังหวัด / Province</label><input class="finput" id="ins-loc" type="text"></div>
+        <div class="fg"><label>บริการ / Services</label><input class="finput" id="ins-svc" type="text" placeholder="สอบเทียบ, ซ่อมแซม"></div>
+        <div class="fg"><label>โทรศัพท์ / Tel</label><input class="finput" id="ins-tel" type="text"></div>
+        <div class="fg"><label>การรับรอง / Certification</label><input class="finput" id="ins-cert" type="text" placeholder="ISO/IEC 17025"></div>
+        <div class="fg"><label>สถานะ / Status</label><select class="finput" id="ins-status"><option>ใช้งานได้</option><option>ระงับชั่วคราว</option></select></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-ins')" data-th="ยกเลิก" data-en="Cancel">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveInspector()">💾 <span data-th="บันทึก" data-en="Save">บันทึก</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ <span id="toast-msg">บันทึกข้อมูลเรียบร้อย</span></div>
+
+<script>
+/* ================================================================
+   STATE
+================================================================ */
+let LANG = 'th';
+let ROLE = 'admin';
+let SIDEBAR_COLLAPSED = false;
+let calcMode = 'flow';
+let calcHistory = [];
+
+const USERS = {
+  admin:     { name:'สมชาย วิทยากร', nameEn:'Somchai Wittayakorn', role:'ผู้ดูแลระบบ', roleEn:'Administrator', icon:'🛡️', color:'#ef4444' },
+  officer:   { name:'วิภา รักไทย',   nameEn:'Wipa Rakthai',          role:'พนักงานเจ้าหน้าที่', roleEn:'Officer', icon:'👮', color:'#f59e0b' },
+  applicant: { name:'นิพนธ์ อุตสาหกรรม', nameEn:'Nipon Industry',   role:'ผู้ขออนุญาต', roleEn:'Applicant', icon:'🏭', color:'#10b981' },
+  public:    { name:'ประชาชน',       nameEn:'Public User',           role:'ประชาชนทั่วไป', roleEn:'Public', icon:'🌍', color:'#3b82f6' }
+};
+
+const NAV_CONFIG = {
+  admin: [
+    { label:'แดชบอร์ด', labelEn:'Dashboard', icon:'📊', page:'dashboard' },
+    { section:'ข้อมูลหลัก', sectionEn:'Core Data' },
+    { label:'ฐานข้อมูลมาตรวัด', labelEn:'Meter DB', icon:'🔧', page:'meters' },
+    { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
+    { section:'เครื่องมือ', sectionEn:'Tools' },
+    { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
+    { label:'รายงาน', labelEn:'Reports', icon:'📈', page:'reports' },
+    { label:'Analytics Dashboard', labelEn:'Analytics Dashboard', icon:'📊', page:'looker' },
+  ],
+  officer: [
+    { label:'แดชบอร์ด', labelEn:'Dashboard', icon:'📊', page:'dashboard' },
+    { section:'งานของฉัน', sectionEn:'My Tasks' },
+    { label:'มาตรวัด', labelEn:'Meters', icon:'🔧', page:'meters' },
+    { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
+    { section:'เครื่องมือ', sectionEn:'Tools' },
+    { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
+  ],
+  applicant: [
+    { label:'คำขอของฉัน', labelEn:'My Applications', icon:'📋', page:'myapp' },
+    { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
+    { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
+  ],
+  public: [
+    { label:'ข้อมูลสาธารณะ', labelEn:'Public Info', icon:'🌍', page:'public' },
+    { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
+    { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
+  ]
+};
+
+/* ================================================================
+   DATABASE
+================================================================ */
+const DB = {
+  licenses: [
+    {
+        "id": "WL-2026-001",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล (โรงไฟฟ้าพลังน้ำบ้านยาง)",
+        "type": "ประเภทที่ 1",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 822,
+        "source": "คลองแม่งอน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ฝาง",
+        "province": "เชียงใหม่",
+        "subdistrict": "แม่งอน",
+        "lat": 19.803335,
+        "lon": 99.088557,
+        "docLink": "",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-002",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล (โรงไฟฟ้าพลังงานความร้อนใต้พิภพฝาง)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 5040,
+        "source": "คลองแม่ใจ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ฝาง",
+        "province": "เชียงใหม่",
+        "subdistrict": "โป่งน้ำร้อน",
+        "lat": 19.968508,
+        "lon": 99.156252,
+        "docLink": "https://drive.google.com/open?id=1Qplz5RK7l4wcti-nixyLLkUr7ghPw15X",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-003",
+        "name": "บริษัท เพชรเจริญ สตาร์ช จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 6000,
+        "source": "ลำห้วยสาธารณะ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "คลองขลุง",
+        "province": "กำแพงเพชร",
+        "subdistrict": "คองสมบูรณ์",
+        "lat": 16.256087,
+        "lon": 99.591741,
+        "docLink": "https://drive.google.com/open?id=1N0F82-Rhn1LPK6MVkqOzr1U6oDev5gbD, https://drive.google.com/open?id=1g0oMtBZ3Gf7LU8x_tNS9VNP5_tMnVlov, https://drive.google.com/open?id=1eFya7mJANDKGJIrL-2OtbO7VEJha68M2, https://drive.google.com/open?id=17rZMH9uN4eKgyiiFtfYFZdpoZ5BHfw4Y, https://drive.google.com/open?id=1J6nasxvRYlyB2dfJdTuW_DP29u66kgFS",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-005",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล  (โรงไฟฟ้าพลังน้ำบ้านยาง)",
+        "type": "ประเภทที่ 1",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 822,
+        "source": "คลองแม่งอน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ฝาง",
+        "province": "เชียงใหม่",
+        "subdistrict": "แม่งอน",
+        "lat": 19.803335,
+        "lon": 99.088557,
+        "docLink": "https://drive.google.com/open?id=1q84tGxWdKBGhtrCTXZAUurkzU2mxSsaq",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-006",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล  (โรงไฟฟ้าพลังงานความร้อนใต้พิภพฝาง)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 5040,
+        "source": "คลองแม่ใจ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ฝาง",
+        "province": "เชียงใหม่",
+        "subdistrict": "โป่งน้ำร้อน",
+        "lat": 19.968508,
+        "lon": 99.156252,
+        "docLink": "https://drive.google.com/open?id=1kGkiOc7raHczf-GC93a9Jzfz-ytcQurx",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-007",
+        "name": "บริษัท เพชรเจริญ สตาร์ช จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 6000,
+        "source": "ลำห้วยสาธารณะ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "คลองขลุง",
+        "province": "กำแพงเพชร",
+        "subdistrict": "คองสมบูรณ์",
+        "lat": 16.256087,
+        "lon": 99.591741,
+        "docLink": "https://drive.google.com/open?id=14JlFn3WlCbFnZ58KgarxlQQXCngJaear",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-008",
+        "name": "การประปาส่วนภูมิภาคสาขาแม่สอด (หน่วยบริการพบพระ)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 1200,
+        "source": "ลำน้ำล่องบอน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พบพระ",
+        "province": "ตาก",
+        "subdistrict": "พบพระ",
+        "lat": 16.414019,
+        "lon": 98.702479,
+        "docLink": "https://drive.google.com/open?id=1G9v6gHXtCS8CtMCLMcWXAzj9vWskTjjO",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-009",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล (โรงไฟฟ้าพลังน้ำเขื่อนภูมิพล)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 60000000,
+        "source": "แม่น้ำปิง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "สามเงา",
+        "province": "ตาก",
+        "subdistrict": "บ้านนา",
+        "lat": 17.24296,
+        "lon": 98.972344,
+        "docLink": "https://drive.google.com/open?id=1ncLSJg6rUVQw5Y_jMWl15tO3bw8yfkQJ",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-010",
+        "name": "การประปาส่วนภูมิภาคสาขาแม่ขะจาน (จุดสูบแม่น้ำเฮียว)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 2400,
+        "source": "ลำน้ำเฮียว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วังเหนือ",
+        "province": "ลำปาง",
+        "subdistrict": "วังเหนือ",
+        "lat": 19.161413,
+        "lon": 99.621762,
+        "docLink": "https://drive.google.com/open?id=15KRSh16Rjidd2IENLB8W45lW8DogTd3o",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-011",
+        "name": "บริษัท สยามไฟเบอร์ซีเมนต์กรุ๊ป จำกัด",
+        "type": "ประเภทที่ 1",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 100,
+        "source": "ลำห้วยสาธารณะ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมือง",
+        "province": "ลำปาง",
+        "subdistrict": "ชมพู",
+        "lat": 18.200396,
+        "lon": 99.449343,
+        "docLink": "https://drive.google.com/open?id=1km9cJcQZ0yL3ccCcWSGzF-MUiTLSdzmY",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-012",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย (โรงไฟฟ้าเขื่อนน้ำพุง)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 390000,
+        "source": "อ่างเก็บน้ำเขื่อนน้ำพุง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ภูพาน",
+        "province": "สกลนคร",
+        "subdistrict": "โคกภู",
+        "lat": 16.97514,
+        "lon": 103.98549,
+        "docLink": "https://drive.google.com/open?id=1BD1_QbYvpIFMn8ufuNJ3KXPRJh_ZyP3E",
+        "stn": 3
+    },
+    {
+        "id": "WL-2026-013",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย (โรงไฟฟ้าเขื่อนอุบลรัตน์)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 16130000,
+        "source": "อ่างเก็บน้ำเขื่อนอุบลรัตน์",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "อุบลรัตน์",
+        "province": "ขอนแก่น",
+        "subdistrict": "เขื่อนอุบลรัตน์",
+        "lat": 16.775293,
+        "lon": 96.617857,
+        "docLink": "https://drive.google.com/open?id=1aBGuYpf7v_DX6CVuFw1cIKXoM3Nc2OjX",
+        "stn": 4
+    },
+    {
+        "id": "WL-2026-014",
+        "name": "บ.ทอสกานาวัลเล่คันทรีคลับ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "ท่องเที่ยว",
+        "vol": 1400,
+        "source": "-",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปากช่อง",
+        "province": "นครราชสีมา",
+        "subdistrict": "โป่งตาลอง",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 5
+    },
+    {
+        "id": "WL-2026-015",
+        "name": "บ.ยู เอเลเม้นท์ จำกัด (น้อย)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การใช้น้ำของนิคมอุตสาหกรรม",
+        "vol": 29000,
+        "source": "คลองหนองหว้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "มาบข่า",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1wIDQHKdN4qX3TINpTTIOHXncesaZb5jU",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-016",
+        "name": "บ.อีสเทิร์น โปร วอเตอร์ซัพพลาย จำกัด (น้อย)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 28000,
+        "source": "คลองหนองหว้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "มาบข่า",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1DwRTY-XNw4UeVSy_ICBKqVWC6LBFD4Wx",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-017",
+        "name": "บ.ไออาร์พีซี จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 24000,
+        "source": "คลองคา/โคกตะเคียน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "ตะพง",
+        "lat": 12.66696614,
+        "lon": 101.3351303,
+        "docLink": "https://drive.google.com/open?id=1zWjoOQoxRbZ1Jg8jJHwdNurFsyV_QEvm",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-018",
+        "name": "บริษัท สยามเอ็นไวรอนเมนทอลเทคโนโลยี่ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "ผลิตน้ำประปาเพื่ออุตสาหกรรม",
+        "vol": 26400,
+        "source": "อ่างเก็บน้ำสาธารณะ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 13.00360875,
+        "lon": 101.1416681,
+        "docLink": "https://drive.google.com/open?id=1Eg8257UR_GxnYlmGFN3XoPipcOThqrOf",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-019",
+        "name": "บริษัท สยามเอ็นไวรอนเมนทอลเทคโนโลยี่ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 3200,
+        "source": "อ่างเก็บน้ำสาธารณะ+บ่อD",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 13.00311113,
+        "lon": 101.1428343,
+        "docLink": "https://drive.google.com/open?id=1sWr0NI6y0Jq-HDZWY92_pUxVGW45Igys",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-020",
+        "name": "บริษัท ท๊อป วอเตอร์ ซัพพลาย จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 8000,
+        "source": "คลอลภูไทร",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 12.96526715,
+        "lon": 101.1325674,
+        "docLink": "https://drive.google.com/open?id=1lNB7BR-DzGixHUvMKaXa5gFXId5kibFz",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-021",
+        "name": "บริษัท พร็อม วอเตอร์ ซัพพลาย จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 8000,
+        "source": "คลองอ้อมแก้ว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พนัสนิคม",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองขยาด",
+        "lat": 13.42649248,
+        "lon": 101.1455276,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-022",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองใหญ่",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 200000,
+        "source": "คลองใหญ่",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านค่าย",
+        "province": "ระยอง",
+        "subdistrict": "ตาขัน",
+        "lat": 12.71571752,
+        "lon": 101.2966868,
+        "docLink": "https://drive.google.com/open?id=18OeXpOIOQIVu5yQJzC4r89OGzByslCz6",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-023",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองไฟม้า",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองไฟม้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านค่าย",
+        "province": "ระยอง",
+        "subdistrict": "ตาขัน",
+        "lat": 12.71571752,
+        "lon": 101.2966868,
+        "docLink": "https://drive.google.com/open?id=1Lbd1X8dhFnU_vdlvJ3HZhm7m1LGrhf9r",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-024",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองน้ำชา",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองน้ำชา",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.69108299,
+        "lon": 101.1712182,
+        "docLink": "https://drive.google.com/open?id=1Vm6kwTDvonhlYRvlDVM0Izuhta6_fal3",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-025",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองหลอด",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองหลอด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.69108299,
+        "lon": 101.1712182,
+        "docLink": "https://drive.google.com/open?id=1kVm4ZCMjIhGma04pNnmseB6tRLDc4FR3",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-026",
+        "name": "บริษัท น้ำตาลนิวกว้างสุ้นหลี จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 13538,
+        "source": "ห้วยพะใย/ห้วยพรมโหด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วัฒนานคร",
+        "province": "สระแก้ว",
+        "subdistrict": "ผักขะ",
+        "lat": 13.75200497,
+        "lon": 102.4171884,
+        "docLink": "https://drive.google.com/open?id=13xBIIN9s6piLCnNUzO8Se9imkvX2iQx3",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-027",
+        "name": "บริษัท น้ำตาลและอ้อยตะวันออก จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 1600,
+        "source": "คลองตาหลัง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วังสมบูรณ์",
+        "province": "สระแก้ว",
+        "subdistrict": "วังใหม่",
+        "lat": 13.42647222,
+        "lon": 102.1811944,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-028",
+        "name": "บริษัท ชลกิจสากล จำกัด_ห้วยยางฯ บ่อ 3-5",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 9500,
+        "source": "ห้วยยางน้อยห้วยยางหลัก",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พานทอง",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองตำลึง",
+        "lat": 13.38701604,
+        "lon": 101.083857,
+        "docLink": "https://drive.google.com/open?id=1wwKYp2mTCixx9t5a5R90SfoNyqZO7Vw1",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-029",
+        "name": "บริษัท ชลกิจสากล จำกัด_มาบไผ่ บ่อ 1-2",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 4110,
+        "source": "มาบไผ่",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พานทอง",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองตำลึง",
+        "lat": 13.02583308,
+        "lon": 101.097778,
+        "docLink": "https://drive.google.com/open?id=1-sFT2MnnZB1RanKYpy5ZxyKZikVRZ-OB",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-030",
+        "name": "บริษัท อมตะ ยู จำกัด (1)",
+        "type": "ประเภทที่ 3",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 400000,
+        "source": "คลองท้ายเชิด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองชลบุรี",
+        "province": "ชลบุรี",
+        "subdistrict": "คลองตำหรุ",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1BJixC6LrfbRwwvpxY1l2Ejr7sJvh5vRd",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-031",
+        "name": "บริษัท จรูญรัตน์ โปรดักส์ จำกัด",
+        "type": "ประเภทที่ 1",
+        "biz": "อื่นๆ",
+        "bizDetail": "การอุตสาหกรรม/อุปโภคบริโภคภายในโรงงาน",
+        "vol": 300,
+        "source": "ห้วยชุมพรหรือคลองหนองปรือ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านบึง",
+        "province": "ชลบุรี",
+        "subdistrict": "คลองกิ่ว",
+        "lat": 13.20722222,
+        "lon": 101.1618056,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-032",
+        "name": "บริษัท เขตอุตสาหกรรมบ่อทอง จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 29000,
+        "source": "แควพระปรง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "กบินทร์บุรี",
+        "province": "ปราจีนบุรี",
+        "subdistrict": "บ่อทอง",
+        "lat": 13.943169,
+        "lon": 101.80043,
+        "docLink": "https://drive.google.com/open?id=1rGJI0pBP6MJGeb624Wq83xWznHX9XP92",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-033",
+        "name": "บ.ดับบลิวเอชเอ ยูทิลิตี้ส์ แอนด์ พาวเวอร์ จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 15000,
+        "source": "คลองชากเจ้าเดียว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "พนานิคม",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1g7HPBGnPcQDCkYiqs0IFV276AsfBdDDx",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-034",
+        "name": "บริษัท ดับบลิวเอชเอ อินดัสเตรียล ดีเวลลอปเมนท์ จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 3200,
+        "source": "ห้วยปราบ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีราชา",
+        "province": "ชลบุรี",
+        "subdistrict": "บ่อวิน",
+        "lat": 13.0764,
+        "lon": 101.075828,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-035",
+        "name": "บริษัท บางจาก ศรีราชา จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 4800,
+        "source": "ทะเล (น่านน้ำภายใน)",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีราชา",
+        "province": "ชลบุรี",
+        "subdistrict": "ทุ่งสุชลา",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-036",
+        "name": "บริษัท สหธนชล จำกัด (สาขาที่ 2)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 4200,
+        "source": "ห้วยช่องมะเฟือง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองชลบุรี",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองรี",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-037",
+        "name": "บริษัท พีอี แอลเอ็นจี จำกัด สถานีแอลเอ็นจี มาบตาพุด 2",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 792000,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1nYjO3QDYX1QT2UPiUI-p9-0dTih4upiU",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-038",
+        "name": "บริษัท พีทีที แอลเอ็นจี จำกัด สถานีแอลเอ็นจี มาบตาพุด 1",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 969600,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1QijfeWp6jIU9ThkipmXfBIRG3kh1U7GC",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-039",
+        "name": "บริษัท บีแอลซีพี เพาเวอร์ จำกัด",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "กระบวนการผลิตไฟฟ้า",
+        "vol": 5462400,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.64599661,
+        "lon": 101.1568299,
+        "docLink": "https://drive.google.com/open?id=1LdVmdqcWt3ThpwYaxcSFKl9KksFkb7y9",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-040",
+        "name": "บริษัท ไออาร์พีซี จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 69600,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "เชิงเนิน",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1ciij-8Isj344-0yUbLZguC5sf7tlVFQV",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-041",
+        "name": "บริษัท โกลว์พลังงาน จำกัด (มหาชน)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 1051200,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "https://drive.google.com/open?id=1Mjt2XeFXKhrUdUn5CxgEzbcY3Jo5UcHz",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-042",
+        "name": "การประปาส่วนภูมิภาคสาขาแม่สอด (หน่วยบริการพบพระ)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 1200,
+        "source": "ลำน้ำล่องบอน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พบพระ",
+        "province": "ตาก",
+        "subdistrict": "พบพระ",
+        "lat": 16.414019,
+        "lon": 98.702479,
+        "docLink": "",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-043",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล (โรงไฟฟ้าพลังน้ำเขื่อนภูมิพล)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 60000000,
+        "source": "แม่น้ำปิง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "สามเงา",
+        "province": "ตาก",
+        "subdistrict": "บ้านนา",
+        "lat": 17.24296,
+        "lon": 98.972344,
+        "docLink": "",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-044",
+        "name": "การประปาส่วนภูมิภาคสาขาแม่ขะจาน (จุดสูบแม่น้ำเฮียว)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 2400,
+        "source": "ลำน้ำเฮียว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วังเหนือ",
+        "province": "ลำปาง",
+        "subdistrict": "วังเหนือ",
+        "lat": 19.161413,
+        "lon": 99.621762,
+        "docLink": "",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-045",
+        "name": "บริษัท สยามไฟเบอร์ซีเมนต์กรุ๊ป จำกัด",
+        "type": "ประเภทที่ 1",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 100,
+        "source": "ลำห้วยสาธารณะ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมือง",
+        "province": "ลำปาง",
+        "subdistrict": "ชมพู",
+        "lat": 18.200396,
+        "lon": 99.449343,
+        "docLink": "",
+        "stn": 1
+    },
+    {
+        "id": "WL-2026-046",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย (โรงไฟฟ้าเขื่อนน้ำพุง)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 390000,
+        "source": "อ่างเก็บน้ำเขื่อนน้ำพุง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ภูพาน",
+        "province": "สกลนคร",
+        "subdistrict": "โคกภู",
+        "lat": 16.97514,
+        "lon": 103.98549,
+        "docLink": "",
+        "stn": 3
+    },
+    {
+        "id": "WL-2026-047",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย (โรงไฟฟ้าเขื่อนอุบลรัตน์)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 16130000,
+        "source": "อ่างเก็บน้ำเขื่อนอุบลรัตน์",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "อุบลรัตน์",
+        "province": "ขอนแก่น",
+        "subdistrict": "เขื่อนอุบลรัตน์",
+        "lat": 16.775293,
+        "lon": 96.617857,
+        "docLink": "",
+        "stn": 4
+    },
+    {
+        "id": "WL-2026-048",
+        "name": "บ.ทอสกานาวัลเล่คันทรีคลับ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "ท่องเที่ยว",
+        "vol": 1400,
+        "source": "",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปากช่อง",
+        "province": "นครราชสีมา",
+        "subdistrict": "โป่งตาลอง",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 5
+    },
+    {
+        "id": "WL-2026-049",
+        "name": "บ.ยู เอเลเม้นท์ จำกัด (น้อย)",
+        "type": "ประเภทที่ 2",
+        "biz": "อื่นๆ",
+        "bizDetail": "การใช้น้ำของนิคมอุตสาหกรรม(5)",
+        "vol": 29000,
+        "source": "คลองหนองหว้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "มาบข่า",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-050",
+        "name": "บ.อีสเทิร์น โปร วอเตอร์ซัพพลาย จำกัด (น้อย)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 28000,
+        "source": "คลองหนองหว้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "มาบข่า",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-051",
+        "name": "บ.ไออาร์พีซี จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 24000,
+        "source": "คลองคา/โคกตะเคียน",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "ตะพง",
+        "lat": 12.66696614,
+        "lon": 101.3351303,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-052",
+        "name": "บริษัท สยามเอ็นไวรอนเมนทอลเทคโนโลยี่ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อื่นๆ",
+        "bizDetail": "ผลิตน้ำประปาเพื่ออุตสหกรรม",
+        "vol": 26400,
+        "source": "อ่างเก็บน้ำสาธารณะ+บ่อB",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 13.00360875,
+        "lon": 101.1416681,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-053",
+        "name": "บริษัท สยามเอ็นไวรอนเมนทอลเทคโนโลยี่ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 3200,
+        "source": "อ่างเก็บน้ำสาธารณะ+บ่อD",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 13.00311113,
+        "lon": 101.1428343,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-054",
+        "name": "บริษัท ท๊อป วอเตอร์ ซัพพลาย จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 8000,
+        "source": "คลอลภูไทร",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ปลวกแดง",
+        "province": "ระยอง",
+        "subdistrict": "มาบยางพร",
+        "lat": 12.96526715,
+        "lon": 101.1325674,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-055",
+        "name": "บริษัท พร็อม วอเตอร์ ซัพพลาย จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 8000,
+        "source": "คลองอ้อมแก้ว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พนัสนิคม",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองขยาด",
+        "lat": 13.42649248,
+        "lon": 101.1455276,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-056",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองใหญ่",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 200000,
+        "source": "คลองใหญ่",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านค่าย",
+        "province": "ระยอง",
+        "subdistrict": "ตาขัน",
+        "lat": 12.71571752,
+        "lon": 101.2966868,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-057",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองไฟม้า",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองไฟม้า",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านค่าย",
+        "province": "ระยอง",
+        "subdistrict": "ตาขัน",
+        "lat": 12.71571752,
+        "lon": 101.2966868,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-058",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองน้ำชา",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองน้ำชา",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.69108299,
+        "lon": 101.1712182,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-059",
+        "name": "บริษัท วาย.เอส.เอส.พี เอกกริเกต จำกัด_คลองหลอด",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 100000,
+        "source": "คลองหลอด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.69108299,
+        "lon": 101.1712182,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-060",
+        "name": "บริษัท น้ำตาลนิวกว้างสุ้นหลี จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 13538,
+        "source": "ห้วยพะใย/ห้วยพรมโหด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วัฒนานคร",
+        "province": "สระแก้ว",
+        "subdistrict": "ผักขะ",
+        "lat": 13.75200497,
+        "lon": 102.4171884,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-061",
+        "name": "บริษัท น้ำตาลและอ้อยตะวันออก จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 1600,
+        "source": "คลองตาหลัง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "วังสมบูรณ์",
+        "province": "สระแก้ว",
+        "subdistrict": "วังใหม่",
+        "lat": 13.42647222,
+        "lon": 102.1811944,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-062",
+        "name": "บริษัท ชลกิจสากล จำกัด_ห้วยยางฯ บ่อ 3-5",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 9500,
+        "source": "ห้วยยางน้อยห้วยยางหลัก",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พานทอง",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองตำลึง",
+        "lat": 13.38701604,
+        "lon": 101.083857,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-063",
+        "name": "บริษัท ชลกิจสากล จำกัด_มาบไผ่ บ่อ 1-2",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 4110,
+        "source": "มาบไผ่",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "พานทอง",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองตำลึง",
+        "lat": 13.02583308,
+        "lon": 101.097778,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-064",
+        "name": "บริษัท อมตะ ยู จำกัด (1)",
+        "type": "ประเภทที่ 3",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 400000,
+        "source": "คลองท้ายเชิด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองชลบุรี",
+        "province": "ชลบุรี",
+        "subdistrict": "คลองตำหรุ",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-065",
+        "name": "บริษัท จรูญรัตน์ โปรดักส์ จำกัด",
+        "type": "ประเภทที่ 1",
+        "biz": "อื่นๆ",
+        "bizDetail": "การอุตสาหกรรม/อุปโภคบริโภคภายในโรงงาน",
+        "vol": 300,
+        "source": "ห้วยชุมพรหรือคลองหนองปรือ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บ้านบึง",
+        "province": "ชลบุรี",
+        "subdistrict": "คลองกิ่ว",
+        "lat": 13.20722222,
+        "lon": 101.1618056,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-066",
+        "name": "บริษัท เขตอุตสาหกรรมบ่อทอง จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 29000,
+        "source": "แควพระปรง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "กบินทร์บุรี",
+        "province": "ปราจีนบุรี",
+        "subdistrict": "บ่อทอง",
+        "lat": 13.943169,
+        "lon": 101.80043,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-067",
+        "name": "บ.ดับบลิวเอชเอ ยูทิลิตี้ส์ แอนด์ พาวเวอร์ จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 15000,
+        "source": "คลองชากเจ้าเดียว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "พนานิคม",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-068",
+        "name": "บริษัท ดับบลิวเอชเอ อินดัสเตรียล ดีเวลลอปเมนท์ จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "พาณิชยกรรม",
+        "bizDetail": "พาณิชยกรรม",
+        "vol": 3200,
+        "source": "ห้วยปราบ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีราชา",
+        "province": "ชลบุรี",
+        "subdistrict": "บ่อวิน",
+        "lat": 13.0764,
+        "lon": 101.075828,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-069",
+        "name": "บริษัท บางจาก ศรีราชา จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 48000,
+        "source": "ทะเล (น่านน้ำภายใน)",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีราชา",
+        "province": "ชลบุรี",
+        "subdistrict": "ทุ่งสุชลา",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-070",
+        "name": "บริษัท สหธนชล จำกัด (สาขาที่ 2)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 4200,
+        "source": "ห้วยช่องมะเฟือง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองชลบุรี",
+        "province": "ชลบุรี",
+        "subdistrict": "หนองรี",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-071",
+        "name": "บริษัท พีอี แอลเอ็นจี จำกัด สถานีแอลเอ็นจี มาบตาพุด 2",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 792000,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-072",
+        "name": "บริษัท พีทีที แอลเอ็นจี จำกัด สถานีแอลเอ็นจี มาบตาพุด 1",
+        "type": "ประเภทที่ 3",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 969600,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-073",
+        "name": "บริษัท บีแอลซีพี เพาเวอร์ จำกัด",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "กระบวนการผลิตไฟฟ้า",
+        "vol": 5462400,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": 12.64599661,
+        "lon": 101.1568299,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-074",
+        "name": "บริษัท ไออาร์พีซี จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 69600,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "เชิงเนิน",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-075",
+        "name": "บริษัท โกลว์พลังงาน จำกัด (มหาชน)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 1051200,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-076",
+        "name": "บริษัท โกลว์ เอสพีพี 3 จำกัด",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 1525532,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-077",
+        "name": "บริษัท เก็คโค่-วัน จำกัด",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 3360000,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-078",
+        "name": "บริษัท ไทยออยล์ จำกัด (มหาชน)",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 69600,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บางละมุง",
+        "province": "ชลบุรี",
+        "subdistrict": "บางละมุง",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-079",
+        "name": "บริษัท พีทีที แทงค์ เทอร์มินัล จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "อุตสาหกรรม",
+        "bizDetail": "การอุตสาหกรรม",
+        "vol": 20400,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองระยอง",
+        "province": "ระยอง",
+        "subdistrict": "มาบตาพุด",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-080",
+        "name": "บริษัท ปตท.จำกัด (มหาชน)",
+        "type": "ประเภทที่ 3",
+        "biz": "อื่นๆ",
+        "bizDetail": "calibrate ถังเก็บผลิตภัณฑ์ทุก15ปี",
+        "vol": 390000,
+        "source": "น้ำทะเล",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีราชา",
+        "province": "ชลบุรี",
+        "subdistrict": "ทุ่งสุขลา",
+        "lat": null,
+        "lon": null,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-081",
+        "name": "บริษัท เอส เอ็น ซี เซเรนิตี้ จำกัด",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 1000,
+        "source": "คลองซากเจ้าเดียว",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "นิคมพัฒนา",
+        "province": "ระยอง",
+        "subdistrict": "มะขามคู่",
+        "lat": 12.865967,
+        "lon": 101.09695,
+        "docLink": "",
+        "stn": 6
+    },
+    {
+        "id": "WL-2026-082",
+        "name": "การไฟฟ้าผ่ายผลิตแห่งประเทศไทย โรงไฟฟ้าเขื่อนวชิราลงกรณ",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 42000000,
+        "source": "อ่างเก็บน้ำเขื่อนวชิราลงกรณ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ทองผาภูมิ",
+        "province": "กาญจนบุรี",
+        "subdistrict": "ท่าขนุน",
+        "lat": 14.801389,
+        "lon": 98.600556,
+        "docLink": "",
+        "stn": 7
+    },
+    {
+        "id": "WL-2026-083",
+        "name": "การไฟฟ้าผ่ายผลิตแห่งประเทศไทย โรงไฟฟ้าเขื่อนศรีนครินทร์",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 27700000,
+        "source": "อ่างเก็บน้ำเขื่อนศรีนครินทร์",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ศรีสวัสดิ์",
+        "province": "กาญจนบุรี",
+        "subdistrict": "ท่ากระดาน",
+        "lat": 14.40686,
+        "lon": 99.129949,
+        "docLink": "",
+        "stn": 7
+    },
+    {
+        "id": "WL-2026-084",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนรัชชประภา (โรงไฟฟ้าเขื่อนบางลาง)",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 12000000,
+        "source": "อ่างเก็บน้ำเขื่อนบางลาง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บันนังสตา",
+        "province": "ยะลา",
+        "subdistrict": "เขื่อนบางลาง",
+        "lat": 6.153524,
+        "lon": 101.273021,
+        "docLink": "",
+        "stn": 8
+    },
+    {
+        "id": "WL-2026-085",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนรัชชประภา (โรงไฟฟ้าเขื่อนบ้านสันติ)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 65000,
+        "source": "ฝายละแอ",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บันนังสตา",
+        "province": "ยะลา",
+        "subdistrict": "บาเจาะ",
+        "lat": 6.143156,
+        "lon": 101.30918,
+        "docLink": "",
+        "stn": 8
+    },
+    {
+        "id": "WL-2026-086",
+        "name": "บริษัท ผลิตไฟฟ้าขนอม จำกัด (โรงสูบ)",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 10000,
+        "source": "คลองบ้านกลาง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ขนอม",
+        "province": "นครศรีธรรมราช",
+        "subdistrict": "ท้องเนียน",
+        "lat": 9.18819,
+        "lon": 99.807985,
+        "docLink": "",
+        "stn": 8
+    },
+    {
+        "id": "WL-2026-087",
+        "name": "บริษัท ผลิตไฟฟ้าขนอม จำกัด",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตพลังงานไฟฟ้า",
+        "vol": 1926192,
+        "source": "คลองขนอม",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ขนอม",
+        "province": "นครศรีธรรมราช",
+        "subdistrict": "ท้องเนียน",
+        "lat": 9.234994,
+        "lon": 99.861986,
+        "docLink": "",
+        "stn": 8
+    },
+    {
+        "id": "WL-2026-088",
+        "name": "การประปาส่วนภูมิภาคสาขาตะพานหิน (หน่วยบริการทับคล้อ)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 1200,
+        "source": "สระพักน้ำดิบทับคล้อ และคลองวังแดง",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ทับคล้อ",
+        "province": "พิจิตร",
+        "subdistrict": "ทับคล้อ",
+        "lat": 16.17715,
+        "lon": 100.581298,
+        "docLink": "",
+        "stn": 9
+    },
+    {
+        "id": "WL-2026-089",
+        "name": "การประปาส่วนภูมิภาคสาขาท้ายเหมือง (ขุมเหมืองห้วยกร้าง)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 4800,
+        "source": "ลำรางสาธารณะประโยชน์",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "ท้ายเหมือง",
+        "province": "พังงา",
+        "subdistrict": "ห้วยกร้าง",
+        "lat": 8.387705,
+        "lon": 98.27918,
+        "docLink": "",
+        "stn": 10
+    },
+    {
+        "id": "WL-2026-090",
+        "name": "การประปาส่วนภูมิภาคสาขาเกาะสมุย (น้ำตกหินลาด)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 10800,
+        "source": "น้ำตกหินลาด",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เกาะสมุย",
+        "province": "สุราษฎร์ธานี",
+        "subdistrict": "อ่างทอง",
+        "lat": 9.520871,
+        "lon": 99.961836,
+        "docLink": "",
+        "stn": 10
+    },
+    {
+        "id": "WL-2026-091",
+        "name": "การประปาส่วนภูมิภาคสาขาเกาะพะงัน (ลำรางขุมเหมืองเหรียญชัย)",
+        "type": "ประเภทที่ 2",
+        "biz": "ประปา",
+        "bizDetail": "การประปา",
+        "vol": 2400,
+        "source": "ลำรางสาธารณะประโยชน์",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เกาะพะงัน",
+        "province": "สุราษฎร์ธานี",
+        "subdistrict": "เกาะพะงัน",
+        "lat": 9.7491,
+        "lon": 99.986263,
+        "docLink": "",
+        "stn": 10
+    },
+    {
+        "id": "WL-2026-092",
+        "name": "การไฟฟ้าผ่ายผลิตแห่งประเทศไทย โรงไฟฟ้าเขื่อนสิรินธร",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 12200000,
+        "source": "อ่างเก็บน้ำเขื่อนสิรินธร",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "สิรินธร",
+        "province": "อุบลราชธานี",
+        "subdistrict": "นิคมลำโดมน้อย",
+        "lat": 15.206295,
+        "lon": 105.429239,
+        "docLink": "",
+        "stn": 11
+    },
+    {
+        "id": "WL-2026-093",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย โรงไฟฟ้าพระนครเหนือ",
+        "type": "ประเภทที่ 3",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 103200,
+        "source": "เจ้าพระยา",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "บางกรวย",
+        "province": "นนทบุรี",
+        "subdistrict": "บางกรวย",
+        "lat": 13.814248,
+        "lon": 100.509187,
+        "docLink": "",
+        "stn": "กจน."
+    },
+    {
+        "id": "WL-2026-094",
+        "name": "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย โรงไฟฟ้าพระนครใต้",
+        "type": "ประเภทที่ 2",
+        "biz": "พลังงาน",
+        "bizDetail": "การผลิตไฟฟ้า",
+        "vol": 67460,
+        "source": "เจ้าพระยา",
+        "status": "รอตรวจสอบ",
+        "expire": "2027-03-31",
+        "note": "",
+        "district": "เมืองสมุทรปราการ",
+        "province": "สมุทรปราการ",
+        "subdistrict": "บางโปรง",
+        "lat": 13.617444,
+        "lon": 100.5565,
+        "docLink": "",
+        "stn": "กจน."
+    }
+],
+  meters: [
+    {
+      id:'MT-001',type:'Electromagnetic',brand:'Siemens',model:'MAG 5100W',
+      serial:'SN-2025-001',size:'6"',range:'0–500',acc:'±0.3%',status:'ใช้งานได้',
+      image:'https://assets.new.siemens.com/siemens/assets/api/uuid:d7a0af66-7862-4a85-878c-d1892fc31df9/width:1125/quality:high/MAG5100W.jpg',
+      api:'https://api.example.com/meters/SN-2025-001',
+      apiKey:'sk-mt001-xxxx',
+      location:'สถานีสูบน้ำ สทน.1 – เชียงใหม่',
+      lastReading:285.4, lastReadingTime:'2026-04-08 08:00',
+      protocol:'Modbus TCP',endpoint:'192.168.1.101:502',
+      datasheet:'https://mall.industry.siemens.com/mall/en/WW/Catalog/Product/7ME6110-1CA13-1AA1'
+    },
+    {
+      id:'MT-002',type:'Ultrasonic',brand:'ABB',model:'AquaMaster 4',
+      serial:'SN-2025-002',size:'4"',range:'0–200',acc:'±0.5%',status:'ใช้งานได้',
+      image:'https://new.abb.com/products/measurement-products/flow/electromagnetic/aquamaster-4/~/media/ABB/Products/Measurement Products/Flow/Electromagnetic/AquaMaster 4/AquaMaster4_webimage.jpg',
+      api:'https://api.example.com/meters/SN-2025-002',
+      apiKey:'sk-mt002-xxxx',
+      location:'สถานีสูบน้ำ สทน.1 – ตาก',
+      lastReading:112.7, lastReadingTime:'2026-04-08 08:00',
+      protocol:'MQTT',endpoint:'mqtt://broker.example.com:1883/meters/MT-002',
+      datasheet:'https://new.abb.com/products/2KCT001015A0000/aquamaster-4'
+    },
+    {
+      id:'MT-003',type:'Mechanical',brand:'Sensus',model:'iPERL',
+      serial:'SN-2025-003',size:'2"',range:'0–50',acc:'±2.0%',status:'รอตรวจสอบ',
+      image:'https://sensus.com/wp-content/uploads/2021/01/iPERL_Residential_Meter.jpg',
+      api:'https://api.example.com/meters/SN-2025-003',
+      apiKey:'sk-mt003-xxxx',
+      location:'สถานีสูบน้ำ สทน.6 – ระยอง',
+      lastReading:null, lastReadingTime:null,
+      protocol:'REST/JSON',endpoint:'https://api.example.com/meters/SN-2025-003/live',
+      datasheet:'https://sensus.com/products/water-meters/iperl/'
+    },
+    {
+      id:'MT-004',type:'Vortex',brand:'Yokogawa',model:'YEWFLO DY',
+      serial:'SN-2025-004',size:'8"',range:'0–1000',acc:'±1.0%',status:'ใช้งานได้',
+      image:'https://www.yokogawa.com/media/products/flow/vortex-flowmeters/yewflo/thumbnail-yewflo-dy-300x300.jpg',
+      api:'https://api.example.com/meters/SN-2025-004',
+      apiKey:'sk-mt004-xxxx',
+      location:'สถานีสูบน้ำ สทน.3 – สกลนคร',
+      lastReading:647.2, lastReadingTime:'2026-04-08 08:00',
+      protocol:'OPC-UA',endpoint:'opc.tcp://192.168.2.10:4840',
+      datasheet:'https://www.yokogawa.com/solutions/products-and-services/measurement/flow/vortex-flowmeters/yewflo-dy/'
+    },
+    {
+      id:'MT-005',type:'Electromagnetic',brand:'Endress+Hauser',model:'Promag W 400',
+      serial:'SN-2025-005',size:'10"',range:'0–2000',acc:'±0.2%',status:'ซ่อมแซม',
+      image:'https://www.endress.com/images/ProductBig/Promag-W-400_001.jpg',
+      api:'https://api.example.com/meters/SN-2025-005',
+      apiKey:'sk-mt005-xxxx',
+      location:'สถานีสูบน้ำ สทน.6 – ชลบุรี',
+      lastReading:null, lastReadingTime:null,
+      protocol:'HART 7',endpoint:'192.168.3.50',
+      datasheet:'https://www.endress.com/en/field-instruments-overview/flow-measurement/Electromagnetic-flowmeter-Promag-W-400'
+    },
+    {
+      id:'MT-006',type:'Ultrasonic',brand:'Krohne',model:'OPTISONIC 6300',
+      serial:'SN-2025-006',size:'6"',range:'0–600',acc:'±0.2%',status:'ใช้งานได้',
+      image:'https://krohne.com/fileadmin/_processed_/0/d/csm_OPTISONIC6300_01_7b57ac7edd.jpg',
+      api:'https://api.example.com/meters/SN-2025-006',
+      apiKey:'sk-mt006-xxxx',
+      location:'สถานีสูบน้ำ สทน.8 – ยะลา',
+      lastReading:389.1, lastReadingTime:'2026-04-08 08:00',
+      protocol:'Modbus RTU',endpoint:'192.168.4.20:502',
+      datasheet:'https://krohne.com/products/flow-measurement/flowmeters/ultrasonic-flowmeters/optisonic-6300/'
+    },
+    {
+      id:'MT-007',type:'Electromagnetic',brand:'Siemens',model:'MAG 8000',
+      serial:'SN-2025-007',size:'12"',range:'0–3000',acc:'±0.3%',status:'ใช้งานได้',
+      image:'https://assets.new.siemens.com/siemens/assets/api/uuid:b67fc0f9-bb3d-4f33-8f63-4fa8e3fde4e2/width:1125/quality:high/MAG8000.jpg',
+      api:'https://api.example.com/meters/SN-2025-007',
+      apiKey:'sk-mt007-xxxx',
+      location:'สถานีสูบน้ำ สทน.7 – กาญจนบุรี',
+      lastReading:1840.6, lastReadingTime:'2026-04-08 08:00',
+      protocol:'Modbus TCP',endpoint:'192.168.5.11:502',
+      datasheet:'https://new.siemens.com/global/en/products/automation/process-instrumentation/flow-measurement/magnetic/sitrans-f-m-mag-8000.html'
+    },
+    {
+      id:'MT-008',type:'Ultrasonic',brand:'Endress+Hauser',model:'Proline Prosonic Flow W 400',
+      serial:'SN-2025-008',size:'8"',range:'0–800',acc:'±0.3%',status:'ใช้งานได้',
+      image:'https://www.endress.com/images/ProductBig/Prosonic-Flow-W-400_001.jpg',
+      api:'https://api.example.com/meters/SN-2025-008',
+      apiKey:'sk-mt008-xxxx',
+      location:'สถานีสูบน้ำ สทน.10 – พังงา',
+      lastReading:512.3, lastReadingTime:'2026-04-08 08:00',
+      protocol:'REST/JSON',endpoint:'https://api.example.com/meters/SN-2025-008/live',
+      datasheet:'https://www.endress.com/en/field-instruments-overview/flow-measurement/ultrasonic-flowmeter-prosonic-flow-w-400'
+    },
+  ],
+  inspectors: [
+    {id:'INS-001',name:'สถาบันมาตรวิทยาแห่งชาติ (NIMT)',loc:'ปทุมธานี',svc:'สอบเทียบ, ทดสอบ',tel:'02-577-5100',cert:'ISO/IEC 17025',status:'ใช้งานได้'},
+    {id:'INS-002',name:'บริษัท เมเชอร์เทค จำกัด',loc:'กรุงเทพมหานคร',svc:'สอบเทียบ, ซ่อมแซม, ติดตั้ง',tel:'02-xxx-xxxx',cert:'ISO 9001:2015',status:'ใช้งานได้'},
+    {id:'INS-003',name:'ศูนย์บริการ ABB ประเทศไทย',loc:'สมุทรปราการ',svc:'บำรุงรักษา, สอบเทียบ',tel:'02-xxx-xxxx',cert:'ISO/IEC 17025',status:'ใช้งานได้'},
+  ],
+  logs: [
+    {date:'2026-04-08 10:00',user:'ระบบ (นำเข้าข้อมูล)',action:'นำเข้าข้อมูล',detail:'นำเข้าคำขออนุญาต 93 รายการจากแบบฟอร์ม'},
+    {date:'2026-03-26 15:01',user:'dpo@amata.com',action:'ยื่นคำขอ',detail:'บริษัท อมตะ ยู จำกัด – WL-2026-030 (ประเภทที่ 3)'},
+    {date:'2026-03-26 10:08',user:'sarabun@erc.or.th',action:'ยื่นคำขอ',detail:'กฟผ. โรงไฟฟ้าเขื่อนน้ำพุง – WL-2026-012'},
+    {date:'2026-03-25 14:29',user:'pr.bhumibol@egat.co.th',action:'ยื่นคำขอ',detail:'กฟผ. เขื่อนภูมิพล โรงไฟฟ้าพลังน้ำ – WL-2026-009'},
+  ]
+};
+
+/* ================================================================
+   LANGUAGE
+================================================================ */
+function setLang(l) {
+  LANG = l;
+  document.querySelectorAll('[data-th],[data-en]').forEach(el => {
+    const t = el.getAttribute('data-'+l);
+    if(t) el.textContent = t;
+  });
+  document.querySelectorAll('.lang-btn, #lang-th, #lang-en').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang===l || (l==='th'&&b.id==='lang-th') || (l==='en'&&b.id==='lang-en') || (l==='th'&&b.textContent==='ไทย') || (l==='en'&&b.textContent==='EN'));
+  });
+  // mark login lang btns
+  document.querySelectorAll('.lang-toggle-login .lang-btn').forEach(b => {
+    b.classList.toggle('active', (l==='th'&&b.textContent==='ไทย')||(l==='en'&&b.textContent==='EN'));
+  });
+}
+
+/* ================================================================
+   LOGIN
+================================================================ */
+let selectedRole = 'admin';
+function selectRole(el,role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function quickLogin(role) { selectedRole=role; doLogin(); }
+function doLogin() {
+  ROLE = selectedRole;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initApp();
+}
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+/* ================================================================
+   INIT APP
+================================================================ */
+function initApp() {
+  const u = USERS[ROLE];
+  // sidebar
+  document.getElementById('sb-role-icon').textContent = u.icon;
+  document.getElementById('sb-role-icon').style.background = u.color;
+  document.getElementById('sb-user-name').textContent = LANG==='th'?u.name:u.nameEn;
+  document.getElementById('sb-role-name').textContent = LANG==='th'?u.role:u.roleEn;
+  document.getElementById('sb-avatar').textContent = u.icon;
+  document.getElementById('sb-user-name2').textContent = LANG==='th'?u.name:u.nameEn;
+  document.getElementById('sb-role-lbl').textContent = u.roleEn;
+
+  // build nav
+  const nm = document.getElementById('nav-menu');
+  nm.innerHTML = '';
+  let sectionEl = null;
+  NAV_CONFIG[ROLE].forEach(item => {
+    if(item.section) {
+      sectionEl = document.createElement('div');
+      sectionEl.className = 'nav-section';
+      const lbl = document.createElement('div');
+      lbl.className = 'nav-label';
+      lbl.setAttribute('data-th',item.section);
+      lbl.setAttribute('data-en',item.sectionEn||item.section);
+      lbl.textContent = LANG==='th'?item.section:item.sectionEn;
+      sectionEl.appendChild(lbl);
+      nm.appendChild(sectionEl);
+    } else {
+      if(!sectionEl) { sectionEl=document.createElement('div'); sectionEl.className='nav-section'; nm.appendChild(sectionEl); }
+      const div = document.createElement('div');
+      div.className = 'nav-item';
+      div.setAttribute('data-page',item.page);
+      div.setAttribute('data-th',item.label);
+      div.setAttribute('data-en',item.labelEn||item.label);
+      div.innerHTML = `<span class="nav-icon">${item.icon}</span><span>${LANG==='th'?item.label:item.labelEn}</span>`;
+      div.onclick = () => showPage(item.page);
+      sectionEl.appendChild(div);
+    }
+  });
+
+  // hide add btn for public/applicant on some pages
+  const defaultPage = ROLE==='applicant'?'myapp': ROLE==='public'?'public':'dashboard';
+  showPage(defaultPage);
+  buildBarChart();
+  renderRecent();
+  updateDashboardStats();
+  setLang(LANG);
+}
+
+function updateDashboardStats() {
+  const total = DB.licenses.length;
+  const pending = DB.licenses.filter(r=>r.status==='รอตรวจสอบ').length;
+  const approved = DB.licenses.filter(r=>r.status==='อนุมัติแล้ว').length;
+  const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('s-total', total);
+  set('s-pending', pending);
+  set('s-approved', approved);
+  set('pub-total', total);
+}
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.getAttribute('data-page')===id);
+  });
+
+  const titles = {dashboard:'Dashboard',looker:'📊 Analytics Dashboard',licenses:'ผู้ขออนุญาต / Applicants',meters:'ฐานข้อมูลมาตรวัด / Meter DB',inspectors:'หน่วยงานตรวจสอบ / Inspectors',calculator:'คำนวณปริมาณน้ำ / Calculator',reports:'รายงาน / Reports',myapp:'คำขอของฉัน / My Applications',public:'ข้อมูลสาธารณะ / Public'};
+  document.getElementById('page-title').textContent = titles[id]||id;
+
+  // role-based: hide edit buttons for public
+  const canEdit = ROLE==='admin'||ROLE==='officer';
+  const canAdd = ROLE!=='public';
+  document.getElementById('topbar-add-btn').style.display = canAdd?'':'none';
+  ['btn-add-lic','btn-add-mtr','btn-add-ins'].forEach(bid=>{
+    const el=document.getElementById(bid);
+    if(el) el.style.display = canEdit?'':'none';
+  });
+
+  if(id==='licenses') renderLicenses();
+  if(id==='meters') renderMeters();
+  if(id==='inspectors') renderInspectors();
+  if(id==='reports') renderLogs();
+  if(id==='myapp') renderMyApps();
+}
+
+function toggleSidebar() {
+  SIDEBAR_COLLAPSED = !SIDEBAR_COLLAPSED;
+  document.getElementById('sidebar').classList.toggle('collapsed',SIDEBAR_COLLAPSED);
+  document.getElementById('main-area').classList.toggle('expanded',SIDEBAR_COLLAPSED);
+}
+
+function handleTopbarAdd() {
+  const active = document.querySelector('.page.active');
+  if(!active) return;
+  const id = active.id.replace('page-','');
+  if(id==='licenses'||id==='myapp') openModal('modal-add-lic');
+  else if(id==='meters') openModal('modal-add-mtr');
+  else if(id==='inspectors') openModal('modal-add-ins');
+  else openModal('modal-add-lic');
+}
+
+/* ================================================================
+   STATUS BADGE
+================================================================ */
+function badge(s) {
+  const m={'อนุมัติแล้ว':'bg-green','รอตรวจสอบ':'bg-amber','ไม่อนุมัติ':'bg-red','หมดอายุ':'bg-gray','ใช้งานได้':'bg-green','ซ่อมแซม':'bg-red','รอตรวจสอบ':'bg-amber','ระงับชั่วคราว':'bg-red'};
+  return `<span class="badge ${m[s]||'bg-gray'}">${s}</span>`;
+}
+
+/* ================================================================
+   LICENSES
+================================================================ */
+function renderLicenses(data) {
+  data = data || filterData(DB.licenses);
+  document.getElementById('lic-count').textContent = data.length;
+  const canEdit = ROLE==='admin'||ROLE==='officer';
+  document.getElementById('lic-tbody').innerHTML = data.map(r=>`<tr>
+    <td class="td-id">${r.id}</td>
+    <td><strong>${r.name}</strong>${r.province?`<br><span style="font-size:11px;color:var(--txt2)">${[r.subdistrict,r.district,r.province].filter(Boolean).join(' · ')}</span>`:''}</td>
+    <td><span class="badge ${r.type.includes('3')?'bg-blue':'bg-teal'}">${r.type}</span></td>
+    <td>${r.biz}${r.bizDetail&&r.bizDetail!==r.biz?`<br><span style="font-size:11px;color:var(--txt2)">${r.bizDetail}</span>`:''}</td>
+    <td style="font-family:'IBM Plex Mono',monospace">${(r.vol||0).toLocaleString()}</td>
+    <td style="font-size:12px">${r.source||'-'}</td>
+    <td>${badge(r.status)}</td>
+    <td>
+      <div style="display:flex;gap:5px">
+        ${r.docLink?`<a href="${r.docLink.split(',')[0].trim()}" target="_blank" class="btn btn-outline btn-xs" title="เอกสาร">📎</a>`:''}
+        <button class="btn btn-outline btn-xs" onclick="showToast('ดูรายละเอียด: '+r.id)">👁</button>
+        ${canEdit?`<button class="btn btn-danger btn-xs" onclick="delLic('${r.id}')">✕</button>`:''}
+      </div>
+    </td>
+  </tr>`).join('');
+}
+function filterData(arr) {
+  const q = (document.getElementById('search-lic')?.value||'').toLowerCase();
+  const t = document.getElementById('filt-type')?.value||'';
+  const s = document.getElementById('filt-status')?.value||'';
+  return arr.filter(r=>(!q||r.name.toLowerCase().includes(q)||r.id.toLowerCase().includes(q))&&(!t||r.type===t)&&(!s||r.status===s));
+}
+function delLic(id) {
+  if(!confirm('ยืนยันการลบ?')) return;
+  DB.licenses = DB.licenses.filter(r=>r.id!==id);
+  renderLicenses(); showToast('ลบข้อมูลเรียบร้อย');
+}
+function saveLicense() {
+  const name = document.getElementById('lc-name').value.trim();
+  if(!name){ showToast('⚠ กรุณากรอกชื่อบริษัท'); return; }
+  const id = 'WL-'+new Date().getFullYear()+'-'+String(DB.licenses.length+1).padStart(3,'0');
+  DB.licenses.unshift({
+    id,name,
+    type: document.getElementById('lc-type').value,
+    biz:  document.getElementById('lc-biz').value,
+    vol:  parseInt(document.getElementById('lc-vol').value)||0,
+    source: document.getElementById('lc-source').value,
+    status: document.getElementById('lc-status').value,
+    expire: document.getElementById('lc-expire').value||'-',
+    note:   document.getElementById('lc-note').value
+  });
+  closeModal('modal-add-lic');
+  renderLicenses(); renderRecent();
+  showToast(`✅ เพิ่ม ${name} เรียบร้อยแล้ว`);
+  DB.logs.unshift({date:now(),user:USERS[ROLE].name,action:'เพิ่มข้อมูล',detail:`เพิ่มผู้ขออนุญาต ${id}`});
+}
+
+/* ================================================================
+   METERS
+================================================================ */
+let MTR_VIEW = 'card';
+function setMtrView(v) {
+  MTR_VIEW = v;
+  document.getElementById('mtr-card-view').style.display = v==='card'?'block':'none';
+  document.getElementById('mtr-table-view').style.display = v==='table'?'block':'none';
+  document.getElementById('vbtn-card').classList.toggle('active', v==='card');
+  document.getElementById('vbtn-table').classList.toggle('active', v==='table');
+  renderMeters();
+}
+function renderMeters() {
+  const q = (document.getElementById('search-mtr')?.value||'').toLowerCase();
+  const t = document.getElementById('filt-mtype')?.value||'';
+  const data = DB.meters.filter(r=>(!q||(r.brand+r.model+r.serial+r.location+'').toLowerCase().includes(q))&&(!t||r.type===t));
+  document.getElementById('mtr-count').textContent = data.length;
+  const canEdit = ROLE==='admin'||ROLE==='officer';
+  // Card view
+  document.getElementById('mtr-grid').innerHTML = data.map(r=>`
+    <div class="meter-card" onclick="openMeterDetail('${r.id}')">
+      ${r.image
+        ? `<img class="meter-card-img" src="${r.image}" alt="${r.brand} ${r.model}" onerror="this.outerHTML='<div class=meter-card-img-placeholder>🔧</div>'">`
+        : `<div class="meter-card-img-placeholder">🔧</div>`}
+      <div class="meter-card-body">
+        <div class="meter-card-id">${r.serial||r.id} · ${r.location||''}</div>
+        <div class="meter-card-name">${r.brand}</div>
+        <div class="meter-card-model">${r.model} · ${r.type}</div>
+        <div class="meter-card-chips">
+          <span class="meter-chip">⌀ ${r.size}</span>
+          <span class="meter-chip">${r.range} m³/h</span>
+          <span class="meter-chip">${r.acc}</span>
+          <span class="badge ${r.status==='ใช้งานได้'?'bg-green':r.status==='ซ่อมแซม'?'bg-red':'bg-amber'}" style="font-size:10px">${r.status}</span>
+        </div>
+        <div class="meter-card-reading">
+          <div>
+            <div class="meter-reading-val">${r.lastReading!=null?r.lastReading.toFixed(1):'—'}</div>
+            <div class="meter-reading-unit">m³/h</div>
+          </div>
+          <div class="meter-reading-time">${r.lastReadingTime||'ไม่มีข้อมูล'}<br>${r.protocol||''}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  // Table view
+  document.getElementById('mtr-tbody').innerHTML = data.map(r=>`<tr>
+    <td class="td-id" style="cursor:pointer" onclick="openMeterDetail('${r.id}')">${r.serial||r.id}</td>
+    <td>${r.type}</td>
+    <td><strong>${r.brand}</strong><br><span style="font-size:11px;color:var(--txt2)">${r.model}</span></td>
+    <td>${r.size}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.range}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.acc}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">${r.lastReading!=null?r.lastReading.toFixed(1)+' m³/h':'—'}</td>
+    <td>${badge(r.status)}</td>
+    <td>
+      <div style="display:flex;gap:5px">
+        <button class="btn btn-outline btn-xs" onclick="openMeterDetail('${r.id}')">👁</button>
+        ${canEdit?`<button class="btn btn-danger btn-xs" onclick="delMtr('${r.id}')">✕</button>`:''}
+      </div>
+    </td>
+  </tr>`).join('');
+}
+function openMeterDetail(id) {
+  const r = DB.meters.find(m=>m.id===id);
+  if(!r) return;
+  // Header
+  document.getElementById('mtr-detail-title').textContent = r.brand+' '+r.model;
+  // Image
+  const img = document.getElementById('mtr-detail-img');
+  if(r.image){ img.src=r.image; img.style.display='block'; } else { img.style.display='none'; }
+  // Info tab
+  document.getElementById('mtr-detail-info').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:13px">
+      ${[
+        ['ID','id'],['S/N','serial'],['ประเภท','type'],['ยี่ห้อ','brand'],
+        ['รุ่น','model'],['ขนาดท่อ','size'],['ช่วงวัด','range'],['ความแม่นยำ','acc'],
+        ['ที่ตั้ง','location'],['สถานะ','status']
+      ].map(([label,key])=>`
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">${label}</div>
+          <div style="font-weight:600;color:var(--navy);margin-top:2px">${r[key]||'—'}</div>
+        </div>`).join('')}
+    </div>`;
+  // API tab
+  document.getElementById('mtr-detail-api').innerHTML = `
+    <div class="api-panel">
+      <span class="api-cmt">// Endpoint</span><br>
+      <span class="api-key">URL</span>: <span class="api-val">"${r.api||'N/A'}"</span><br>
+      <span class="api-key">Protocol</span>: <span class="api-val">"${r.protocol||'N/A'}"</span><br>
+      <span class="api-key">Endpoint</span>: <span class="api-val">"${r.endpoint||'N/A'}"</span><br><br>
+      <span class="api-cmt">// Authentication</span><br>
+      <span class="api-key">API Key</span>: <span class="api-val">"${r.apiKey||'N/A'}"</span>
+      <button class="api-copy-btn" onclick="navigator.clipboard.writeText('${r.apiKey||''}').then(()=>showToast('Copied!'))">Copy</button><br><br>
+      <span class="api-cmt">// ตัวอย่าง cURL request</span><br>
+      <span style="color:#aaa">curl -H "X-API-Key: ${r.apiKey||'YOUR_KEY'}" \<br>&nbsp;&nbsp;"${r.api||'ENDPOINT'}/live"</span>
+    </div>
+    <div style="font-size:12px;color:var(--txt2);margin-top:8px">
+      <strong>JSON Response ตัวอย่าง:</strong>
+    </div>
+    <div class="api-panel" style="margin-top:6px">
+      <span style="color:#5a7585">{</span><br>
+      &nbsp;&nbsp;<span class="api-key">"meter_id"</span>: <span class="api-val">"${r.id}"</span>,<br>
+      &nbsp;&nbsp;<span class="api-key">"serial"</span>: <span class="api-val">"${r.serial||r.id}"</span>,<br>
+      &nbsp;&nbsp;<span class="api-key">"flow_rate"</span>: <span class="api-val">${r.lastReading!=null?r.lastReading:'null'}</span>,<br>
+      &nbsp;&nbsp;<span class="api-key">"unit"</span>: <span class="api-val">"m3/h"</span>,<br>
+      &nbsp;&nbsp;<span class="api-key">"timestamp"</span>: <span class="api-val">"${r.lastReadingTime||'null'}"</span>,<br>
+      &nbsp;&nbsp;<span class="api-key">"status"</span>: <span class="api-val">"${r.status==='ใช้งานได้'?'online':'offline'}"</span><br>
+      <span style="color:#5a7585">}</span>
+    </div>`;
+  // Live tab
+  document.getElementById('mtr-live-val').textContent = r.lastReading!=null?r.lastReading.toFixed(1):'—';
+  document.getElementById('mtr-live-time').textContent = r.lastReadingTime?'อัปเดต: '+r.lastReadingTime:'ไม่มีข้อมูล';
+  // Sparkline (simulated)
+  const spark = document.getElementById('mtr-sparkline');
+  const base = r.lastReading||100;
+  const pts = Array.from({length:24},(_,i)=>Math.max(0,base*(0.7+Math.random()*0.6)).toFixed(1));
+  const mx = Math.max(...pts);
+  spark.innerHTML = pts.map(v=>`<div style="flex:1;background:var(--teal);opacity:.7;border-radius:2px 2px 0 0;height:${Math.round((v/mx)*100)}%;min-height:2px" title="${v} m³/h"></div>`).join('');
+  // Datasheet button
+  const ds = document.getElementById('mtr-datasheet-btn');
+  if(r.datasheet){ ds.href=r.datasheet; ds.style.display=''; } else { ds.style.display='none'; }
+  // Reset to info tab
+  switchMtrTab('info');
+  openModal('modal-meter-detail');
+}
+function switchMtrTab(tab) {
+  document.querySelectorAll('.meter-view-tab').forEach((el,i)=>{
+    const tabs=['info','api','live'];
+    el.classList.toggle('active', tabs[i]===tab);
+  });
+  document.querySelectorAll('.meter-view-panel').forEach((el,i)=>{
+    const tabs=['info','api','live'];
+    el.classList.toggle('active', tabs[i]===tab);
+  });
+}
+function delMtr(id){ if(!confirm('ยืนยันการลบ?')) return; DB.meters=DB.meters.filter(r=>r.id!==id); renderMeters(); showToast('ลบข้อมูลเรียบร้อย'); }
+function saveMeter() {
+  const brand = document.getElementById('mt-brand').value.trim();
+  if(!brand){ showToast('⚠ กรุณากรอกยี่ห้อ'); return; }
+  const id = 'MT-'+String(DB.meters.length+1).padStart(3,'0');
+  DB.meters.unshift({id,type:document.getElementById('mt-type').value,brand,model:document.getElementById('mt-model').value,serial:document.getElementById('mt-serial').value||id,size:document.getElementById('mt-size').value,range:document.getElementById('mt-range').value,acc:document.getElementById('mt-acc').value,status:document.getElementById('mt-status').value});
+  closeModal('modal-add-mtr'); renderMeters();
+  showToast(`✅ เพิ่มมาตรวัด ${brand} ${document.getElementById('mt-model').value} เรียบร้อย`);
+}
+
+/* ================================================================
+   INSPECTORS
+================================================================ */
+function renderInspectors() {
+  const q = (document.getElementById('search-ins')?.value||'').toLowerCase();
+  const data = DB.inspectors.filter(r=>!q||r.name.toLowerCase().includes(q)||r.loc.toLowerCase().includes(q));
+  document.getElementById('ins-count').textContent = data.length;
+  const canEdit = ROLE==='admin';
+  document.getElementById('ins-tbody').innerHTML = data.map(r=>`<tr>
+    <td><strong>${r.name}</strong></td>
+    <td>${r.loc}</td>
+    <td style="font-size:12px">${r.svc}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.tel}</td>
+    <td><span class="badge bg-navy" style="font-size:10px">${r.cert}</span></td>
+    <td>${badge(r.status)}</td>
+    <td>
+      <div style="display:flex;gap:5px">
+        <button class="btn btn-outline btn-xs" onclick="showToast('ดูรายละเอียด: ${r.name}')">👁</button>
+        ${canEdit?`<button class="btn btn-danger btn-xs" onclick="delIns('${r.id}')">✕</button>`:''}
+      </div>
+    </td>
+  </tr>`).join('');
+}
+function delIns(id){ if(!confirm('ยืนยันการลบ?')) return; DB.inspectors=DB.inspectors.filter(r=>r.id!==id); renderInspectors(); showToast('ลบข้อมูลเรียบร้อย'); }
+function saveInspector() {
+  const name = document.getElementById('ins-name').value.trim();
+  if(!name){ showToast('⚠ กรุณากรอกชื่อหน่วยงาน'); return; }
+  const id = 'INS-'+String(DB.inspectors.length+1).padStart(3,'0');
+  DB.inspectors.unshift({id,name,loc:document.getElementById('ins-loc').value,svc:document.getElementById('ins-svc').value,tel:document.getElementById('ins-tel').value,cert:document.getElementById('ins-cert').value,status:document.getElementById('ins-status').value});
+  closeModal('modal-add-ins'); renderInspectors();
+  showToast(`✅ เพิ่มหน่วยงาน ${name} เรียบร้อย`);
+}
+
+/* ================================================================
+   MY APPS (Applicant)
+================================================================ */
+function renderMyApps() {
+  const mine = DB.licenses.slice(0,2);
+  document.getElementById('myapp-tbody').innerHTML = mine.map(r=>`<tr>
+    <td class="td-id">${r.id}</td>
+    <td><strong>${r.name}</strong></td>
+    <td><span class="badge bg-teal">${r.type}</span></td>
+    <td>${r.vol.toLocaleString()} ลบ.ม./วัน</td>
+    <td>${badge(r.status)}</td>
+    <td style="font-size:12px">2025-01-10</td>
+  </tr>`).join('');
+}
+
+/* ================================================================
+   CALCULATOR
+================================================================ */
+function setCalcMode(m, btn) {
+  calcMode = m;
+  ['flow','meter','area'].forEach(k => {
+    document.getElementById('calc-inputs-'+k).style.display = k===m?'grid':'none';
+  });
+  document.querySelectorAll('.calc-mode-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  setResult(0,0);
+}
+function setResult(m3, days) {
+  document.getElementById('res-m3').textContent = fmt(m3);
+  document.getElementById('res-ml').textContent = fmt(m3/1000,4);
+  document.getElementById('res-day').textContent = days>0 ? fmt(m3/days) : fmt(m3);
+}
+function fmt(n,d=2){ return isNaN(n)?'0':n.toLocaleString(undefined,{maximumFractionDigits:d}); }
+function saveHistory(mode,m3) {
+  if(m3<=0) return;
+  calcHistory.unshift({date:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),mode,val:m3});
+  if(calcHistory.length>8) calcHistory.pop();
+  const tb = document.getElementById('calc-hist-tbody');
+  if(tb) tb.innerHTML = calcHistory.map(r=>`<tr><td style="font-size:12px">${r.date}</td><td>${r.mode}</td><td style="font-family:'IBM Plex Mono',monospace;font-weight:700">${fmt(r.val)}</td></tr>`).join('');
+}
+function calcFlow() {
+  const r=parseFloat(document.getElementById('fl-rate').value)||0;
+  const h=parseFloat(document.getElementById('fl-h').value)||0;
+  const d=parseFloat(document.getElementById('fl-d').value)||1;
+  const m3 = r*3.6*h*d;
+  setResult(m3,d); saveHistory('อัตราไหล',m3);
+}
+function calcMeter() {
+  const s=parseFloat(document.getElementById('mt-s').value)||0;
+  const e=parseFloat(document.getElementById('mt-e').value)||0;
+  const mul=parseFloat(document.getElementById('mt-mul').value)||1;
+  const m3=(e-s)*mul;
+  setResult(m3>0?m3:0,30); saveHistory('มาตรวัด',m3);
+}
+function calcArea() {
+  const a=parseFloat(document.getElementById('ar-rai').value)||0;
+  const d=parseFloat(document.getElementById('ar-dep').value)||0;
+  const c=parseFloat(document.getElementById('ar-cyc').value)||1;
+  const m3=a*1600*d*c;
+  setResult(m3,365); saveHistory('พื้นที่',m3);
+}
+
+/* ================================================================
+   DASHBOARD
+================================================================ */
+function buildBarChart() {
+  const heights = [60,45,72,88,93,78,68,82,57,52,42,0];
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const chart = document.getElementById('bar-chart');
+  if(!chart) return;
+  chart.innerHTML = heights.map((h,i)=>`
+    <div class="bar-item">
+      <div class="bar-fill" style="height:${h}%;${h===Math.max(...heights)?'background:var(--navy);opacity:1;':''}" title="${months[i]}: ${Math.round(h*12/100)} ล้าน ลบ.ม."></div>
+      <div class="bar-label">${months[i]}</div>
+    </div>`).join('');
+}
+function renderRecent() {
+  const tb = document.getElementById('recent-tbody');
+  if(!tb) return;
+  tb.innerHTML = DB.licenses.slice(0,5).map(r=>`<tr>
+    <td><strong style="font-size:13px">${r.name.length>20?r.name.slice(0,20)+'…':r.name}</strong></td>
+    <td><span class="badge ${r.type.includes('3')?'bg-blue':'bg-teal'}" style="font-size:10px">${r.type}</span></td>
+    <td>${badge(r.status)}</td>
+  </tr>`).join('');
+}
+function renderLogs() {
+  const tb = document.getElementById('log-tbody');
+  if(!tb) return;
+  tb.innerHTML = DB.logs.map(r=>`<tr>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.date}</td>
+    <td>${r.user}</td>
+    <td><span class="badge bg-teal">${r.action}</span></td>
+    <td style="font-size:13px">${r.detail}</td>
+  </tr>`).join('');
+}
+
+/* ================================================================
+   MODAL / TOAST / UTILS
+================================================================ */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+function exportCSV() {
+  const csv = ['ID,Company,Type,Business,Volume,Status,Expires',
+    ...DB.licenses.map(r=>`${r.id},"${r.name}",${r.type},${r.biz},${r.vol},${r.status},${r.expire}`)
+  ].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='water_licenses.csv'; a.click();
+  showToast('✅ ส่งออก CSV เรียบร้อย');
+}
+function now() { return new Date().toLocaleString('th-TH'); }
+</script>
+</body>
+</html>
