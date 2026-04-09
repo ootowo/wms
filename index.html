@@ -716,6 +716,160 @@ tr:hover td{background:#f8fcfd;}
 .view-toggle { display:flex; gap:4px; background:var(--bg); border-radius:8px; padding:3px; }
 .view-toggle-btn { padding:5px 12px; border-radius:6px; border:none; background:transparent; color:var(--txt2); font-size:13px; cursor:pointer; transition:.15s; }
 .view-toggle-btn.active { background:var(--surface); color:var(--navy); box-shadow:0 1px 4px rgba(0,0,0,.08); }
+
+/* ============================================================
+   FIELD REPORT PAGE
+============================================================ */
+.field-toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px; margin-bottom:18px;
+}
+.field-search-wrap { display:flex; gap:8px; align-items:center; flex:1; max-width:340px; }
+.field-btn-group { display:flex; gap:8px; }
+
+/* Report cards list */
+.report-list { display:flex; flex-direction:column; gap:12px; }
+.report-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  box-shadow:var(--shadow); transition:box-shadow .2s;
+}
+.report-card:hover { box-shadow:var(--shadow2); }
+.report-card-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; border-bottom:1px solid var(--border);
+  cursor:pointer;
+}
+.report-card-hd-left { display:flex; align-items:center; gap:14px; }
+.report-round-badge {
+  background:var(--navy); color:var(--cyan);
+  font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+  padding:4px 10px; border-radius:20px; white-space:nowrap;
+}
+.report-card-title { font-weight:600; font-size:14px; color:var(--navy); }
+.report-card-sub { font-size:12px; color:var(--txt2); margin-top:2px; }
+.report-card-body { padding:18px 20px; }
+.report-info-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px 20px; margin-bottom:16px; font-size:13px;
+}
+.ri-label { color:var(--txt2); font-size:11px; text-transform:uppercase; letter-spacing:.4px; margin-bottom:2px; }
+.ri-val { font-weight:500; color:var(--txt); }
+
+/* Photo grid */
+.photo-grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px; margin-bottom:16px;
+}
+.photo-slot {
+  aspect-ratio:1; border-radius:10px; overflow:hidden;
+  border:1.5px solid var(--border); background:var(--bg);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; cursor:pointer; transition:border-color .2s;
+  position:relative;
+}
+.photo-slot:hover { border-color:var(--teal2); }
+.photo-slot.filled { border-color:var(--teal); }
+.photo-slot img {
+  width:100%; height:100%; object-fit:cover;
+  position:absolute; top:0; left:0;
+}
+.photo-slot-num {
+  font-size:10px; font-weight:600; color:var(--txt3);
+  margin-bottom:4px;
+}
+.photo-slot-icon { font-size:22px; }
+.photo-slot-lbl { font-size:10px; color:var(--txt3); margin-top:4px; text-align:center; }
+.photo-overlay {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(13,33,55,.7); padding:3px 6px;
+  font-size:10px; color:#fff; text-align:center;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.85);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9999; padding:20px;
+}
+.lightbox-overlay.hidden { display:none; }
+.lightbox-inner {
+  background:var(--navy); border-radius:16px;
+  max-width:600px; width:100%; overflow:hidden;
+}
+.lightbox-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; border-bottom:1px solid rgba(255,255,255,.1);
+}
+.lightbox-title { color:#fff; font-size:13px; font-weight:600; }
+.lightbox-close {
+  color:rgba(255,255,255,.5); font-size:22px; cursor:pointer;
+  background:none; border:none; line-height:1;
+}
+.lightbox-close:hover { color:#fff; }
+.lightbox-img-wrap {
+  padding:16px; display:flex; align-items:center; justify-content:center;
+  min-height:280px; background:#060f1a;
+}
+.lightbox-img-wrap img { max-width:100%; max-height:380px; border-radius:8px; }
+.lightbox-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px;
+}
+.lb-nav-btn {
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  color:#fff; padding:6px 14px; border-radius:8px; cursor:pointer;
+  font-size:13px; transition:.15s;
+}
+.lb-nav-btn:hover { background:rgba(255,255,255,.15); }
+.lb-dots { display:flex; gap:6px; }
+.lb-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.2); }
+.lb-dot.active { background:var(--cyan); }
+
+/* Form modal */
+.field-form-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.field-form-grid .fg.full { grid-column:1/-1; }
+.photo-upload-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:8px;
+}
+.photo-upload-slot {
+  aspect-ratio:1; border-radius:10px;
+  border:2px dashed var(--border); background:var(--bg);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; cursor:pointer; transition:.2s;
+  overflow:hidden; position:relative;
+}
+.photo-upload-slot:hover { border-color:var(--teal2); background:var(--sky); }
+.photo-upload-slot.has-img { border-style:solid; border-color:var(--teal); }
+.photo-upload-slot img {
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.photo-upload-slot input[type=file] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0;
+}
+.photo-upload-slot .upload-icon { font-size:20px; color:var(--txt3); pointer-events:none; }
+.photo-upload-slot .upload-num { font-size:10px; color:var(--txt3); margin-top:4px; pointer-events:none; }
+.photo-remove-btn {
+  position:absolute; top:4px; right:4px;
+  background:rgba(232,68,90,.85); color:#fff;
+  border:none; border-radius:50%; width:20px; height:20px;
+  font-size:11px; cursor:pointer; display:none;
+  align-items:center; justify-content:center; font-weight:600;
+}
+.photo-upload-slot.has-img .photo-remove-btn { display:flex; }
+
+/* Table in report list (compact view) */
+.field-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.field-tbl th { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--txt2); padding:8px 12px; border-bottom:2px solid var(--border); text-align:left; }
+.field-tbl td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.field-tbl tr:last-child td { border:none; }
+.field-tbl tr:hover td { background:var(--sky); }
+.thumb-strip { display:flex; gap:4px; }
+.thumb-strip img { width:32px; height:32px; object-fit:cover; border-radius:5px; border:1px solid var(--border); cursor:pointer; }
+.thumb-more { width:32px; height:32px; border-radius:5px; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:var(--txt2); }
 </style>
 </head>
 <body>
@@ -1276,6 +1430,57 @@ tr:hover td{background:#f8fcfd;}
     </div>
 
 
+    <!-- FIELD REPORT PAGE -->
+    <div id="page-fieldreport" class="page">
+      <!-- toolbar -->
+      <div class="field-toolbar">
+        <div class="field-search-wrap">
+          <div class="search-box" style="flex:1">
+            <span>🔍</span>
+            <input type="text" id="fr-search" placeholder="ค้นหาบริษัท / S/N..." onkeyup="renderFieldReports()">
+          </div>
+          <select class="filter-select" id="fr-filter-status" onchange="renderFieldReports()">
+            <option value="">ทุกสถานะ</option>
+            <option value="สมบูรณ์">สมบูรณ์</option>
+            <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+            <option value="มีปัญหา">มีปัญหา</option>
+          </select>
+        </div>
+        <div class="field-btn-group">
+          <button class="btn btn-outline btn-sm" onclick="toggleFrView()" id="fr-view-btn">☰ รายการ</button>
+          <button class="btn btn-primary" onclick="openModal('modal-field-report')" id="btn-add-fr">
+            + รายงานใหม่
+          </button>
+        </div>
+      </div>
+
+      <!-- count -->
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:12px">
+        พบ <strong id="fr-count" style="color:var(--navy)">0</strong> รายงาน
+      </div>
+
+      <!-- list/table toggle -->
+      <div id="fr-card-view"><div class="report-list" id="fr-list"></div></div>
+      <div id="fr-table-view" style="display:none">
+        <div class="card">
+          <div class="tbl-wrap">
+            <table class="field-tbl">
+              <thead><tr>
+                <th>ครั้งที่ / วันที่</th>
+                <th>บริษัท</th>
+                <th>มาตรวัด (S/N)</th>
+                <th>ค่าอ่าน (m³/h)</th>
+                <th>ภาพถ่าย</th>
+                <th>สถานะ</th>
+                <th>จัดการ</th>
+              </tr></thead>
+              <tbody id="fr-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- LOOKER STUDIO PAGE -->
     <div id="page-looker" class="page">
       <div class="looker-wrap fade-up">
@@ -1351,6 +1556,117 @@ tr:hover td{background:#f8fcfd;}
     </div>
   </div>
 </div>
+
+<!-- FIELD REPORT MODAL -->
+<div class="modal-overlay" id="modal-field-report">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-hd">
+      <div class="modal-title">📷 บันทึกรายงานมิเตอร์วัดน้ำ ภาคสนาม</div>
+      <button class="modal-close" onclick="closeModal('modal-field-report')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-form-grid">
+        <div class="fg full">
+          <label class="form-label">ชื่อบริษัท / ผู้ขออนุญาต <span class="required">*</span></label>
+          <input class="finput" id="fr-company" type="text" placeholder="ค้นหาหรือพิมพ์ชื่อบริษัท..." list="fr-company-list" oninput="filterCompanyList(this.value)">
+          <datalist id="fr-company-list"></datalist>
+        </div>
+        <div class="fg">
+          <label class="form-label">หมายเลขมาตรวัด (S/N)</label>
+          <select class="finput" id="fr-meter-sn">
+            <option value="">-- เลือกมาตรวัด --</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="form-label">ครั้งที่ตรวจสอบ</label>
+          <input class="finput" id="fr-round" type="number" min="1" value="1" placeholder="1">
+        </div>
+        <div class="fg">
+          <label class="form-label">วันที่ตรวจสอบ <span class="required">*</span></label>
+          <input class="finput" id="fr-date" type="date">
+        </div>
+        <div class="fg">
+          <label class="form-label">ค่าอ่านมาตรวัด (m³/h)</label>
+          <input class="finput" id="fr-reading" type="number" step="0.1" placeholder="0.0">
+        </div>
+        <div class="fg">
+          <label class="form-label">ผู้ตรวจสอบ</label>
+          <input class="finput" id="fr-inspector" type="text" placeholder="ชื่อเจ้าหน้าที่">
+        </div>
+        <div class="fg">
+          <label class="form-label">สถานะมาตรวัด</label>
+          <select class="finput" id="fr-status">
+            <option>สมบูรณ์</option>
+            <option>รอตรวจสอบ</option>
+            <option>มีปัญหา</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label class="form-label">ภาพถ่ายตำแหน่งวัดน้ำ (สูงสุด 5 ภาพ)</label>
+          <div class="photo-upload-grid">
+            <div class="photo-upload-slot" id="pu-0" onclick="triggerUpload(0)">
+              <input type="file" id="pu-file-0" accept="image/*" onchange="handlePhotoUpload(0,this)">
+              <div class="upload-icon">📷</div>
+              <div class="upload-num">ภาพที่ 1</div>
+              <button class="photo-remove-btn" onclick="removePhoto(event,0)">✕</button>
+            </div>
+            <div class="photo-upload-slot" id="pu-1" onclick="triggerUpload(1)">
+              <input type="file" id="pu-file-1" accept="image/*" onchange="handlePhotoUpload(1,this)">
+              <div class="upload-icon">📷</div>
+              <div class="upload-num">ภาพที่ 2</div>
+              <button class="photo-remove-btn" onclick="removePhoto(event,1)">✕</button>
+            </div>
+            <div class="photo-upload-slot" id="pu-2" onclick="triggerUpload(2)">
+              <input type="file" id="pu-file-2" accept="image/*" onchange="handlePhotoUpload(2,this)">
+              <div class="upload-icon">📷</div>
+              <div class="upload-num">ภาพที่ 3</div>
+              <button class="photo-remove-btn" onclick="removePhoto(event,2)">✕</button>
+            </div>
+            <div class="photo-upload-slot" id="pu-3" onclick="triggerUpload(3)">
+              <input type="file" id="pu-file-3" accept="image/*" onchange="handlePhotoUpload(3,this)">
+              <div class="upload-icon">📷</div>
+              <div class="upload-num">ภาพที่ 4</div>
+              <button class="photo-remove-btn" onclick="removePhoto(event,3)">✕</button>
+            </div>
+            <div class="photo-upload-slot" id="pu-4" onclick="triggerUpload(4)">
+              <input type="file" id="pu-file-4" accept="image/*" onchange="handlePhotoUpload(4,this)">
+              <div class="upload-icon">📷</div>
+              <div class="upload-num">ภาพที่ 5</div>
+              <button class="photo-remove-btn" onclick="removePhoto(event,4)">✕</button>
+            </div>
+          </div>
+        </div>
+        <div class="fg full">
+          <label class="form-label">หมายเหตุ / ข้อสังเกต</label>
+          <textarea class="finput" id="fr-note" rows="2" placeholder="ระบุปัญหาหรือข้อสังเกตจากการตรวจสอบ..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-field-report')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveFieldReport()">💾 บันทึกรายงาน</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay hidden" id="lightbox">
+  <div class="lightbox-inner">
+    <div class="lightbox-hd">
+      <span class="lightbox-title" id="lb-title">ภาพถ่ายมาตรวัด</span>
+      <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    </div>
+    <div class="lightbox-img-wrap">
+      <img id="lb-img" src="" alt="">
+    </div>
+    <div class="lightbox-nav">
+      <button class="lb-nav-btn" onclick="lbNav(-1)">← ก่อนหน้า</button>
+      <div class="lb-dots" id="lb-dots"></div>
+      <button class="lb-nav-btn" onclick="lbNav(1)">ถัดไป →</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-add-lic">
   <div class="modal">
     <div class="modal-hd">
@@ -1453,6 +1769,7 @@ const NAV_CONFIG = {
     { section:'เครื่องมือ', sectionEn:'Tools' },
     { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
     { label:'รายงาน', labelEn:'Reports', icon:'📈', page:'reports' },
+    { label:'รายงานภาคสนาม', labelEn:'Field Reports', icon:'📷', page:'fieldreport' },
     { label:'Analytics Dashboard', labelEn:'Analytics Dashboard', icon:'📊', page:'looker' },
   ],
   officer: [
@@ -1462,6 +1779,7 @@ const NAV_CONFIG = {
     { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
     { section:'เครื่องมือ', sectionEn:'Tools' },
     { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
+    { label:'รายงานภาคสนาม', labelEn:'Field Reports', icon:'📷', page:'fieldreport' },
   ],
   applicant: [
     { label:'คำขอของฉัน', labelEn:'My Applications', icon:'📋', page:'myapp' },
@@ -3464,7 +3782,7 @@ function showPage(id) {
     n.classList.toggle('active', n.getAttribute('data-page')===id);
   });
 
-  const titles = {dashboard:'Dashboard',looker:'📊 Analytics Dashboard',licenses:'ผู้ขออนุญาต / Applicants',meters:'ฐานข้อมูลมาตรวัด / Meter DB',inspectors:'หน่วยงานตรวจสอบ / Inspectors',calculator:'คำนวณปริมาณน้ำ / Calculator',reports:'รายงาน / Reports',myapp:'คำขอของฉัน / My Applications',public:'ข้อมูลสาธารณะ / Public'};
+  const titles = {dashboard:'Dashboard',looker:'📊 Analytics Dashboard',fieldreport:'📷 รายงานมิเตอร์วัดน้ำ ภาคสนาม',licenses:'ผู้ขออนุญาต / Applicants',meters:'ฐานข้อมูลมาตรวัด / Meter DB',inspectors:'หน่วยงานตรวจสอบ / Inspectors',calculator:'คำนวณปริมาณน้ำ / Calculator',reports:'รายงาน / Reports',myapp:'คำขอของฉัน / My Applications',public:'ข้อมูลสาธารณะ / Public'};
   document.getElementById('page-title').textContent = titles[id]||id;
 
   // role-based: hide edit buttons for public
@@ -3480,6 +3798,7 @@ function showPage(id) {
   if(id==='meters') renderMeters();
   if(id==='inspectors') renderInspectors();
   if(id==='reports') renderLogs();
+  if(id==='fieldreport') renderFieldReports();
   if(id==='myapp') renderMyApps();
 }
 
@@ -3859,6 +4178,296 @@ function exportCSV() {
   showToast('✅ ส่งออก CSV เรียบร้อย');
 }
 function now() { return new Date().toLocaleString('th-TH'); }
+
+/* ================================================================
+   FIELD REPORT
+================================================================ */
+let _uploadedPhotos = [null,null,null,null,null];
+let _lbPhotos = [];
+let _lbIdx = 0;
+let _frView = 'card';
+
+// Seed DB
+if (!DB.fieldReports) {
+  DB.fieldReports = [
+    {
+      id:'FR-2026-001', round:1,
+      date:'2026-04-01', company:'การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย เขื่อนภูมิพล (โรงไฟฟ้าพลังน้ำบ้านยาง)',
+      meterSN:'SN-2025-001', meterBrand:'Siemens MAG 5100W',
+      reading:285.4, inspector:'สมชาย วิทยากร', status:'สมบูรณ์',
+      note:'มาตรวัดทำงานปกติ ไม่พบสิ่งผิดปกติ',
+      photos:[
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70',
+        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',
+        'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=70',
+        'https://images.unsplash.com/photo-1581093196277-9f608bb3b511?w=400&q=70',
+        'https://images.unsplash.com/photo-1581094651181-35942459ef62?w=400&q=70',
+      ]
+    },
+    {
+      id:'FR-2026-002', round:2,
+      date:'2026-04-03', company:'บ.ไออาร์พีซี จำกัด (มหาชน)',
+      meterSN:'SN-2025-004', meterBrand:'Yokogawa YEWFLO DY',
+      reading:612.7, inspector:'วิภา รักไทย', status:'รอตรวจสอบ',
+      note:'พบตะกรันเล็กน้อยบริเวณทางเข้า ต้องทำความสะอาด',
+      photos:[
+        'https://images.unsplash.com/photo-1581093196277-9f608bb3b511?w=400&q=70',
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70',
+        null,null,null
+      ]
+    },
+    {
+      id:'FR-2026-003', round:1,
+      date:'2026-04-05', company:'บริษัท อมตะ ยู จำกัด (1)',
+      meterSN:'SN-2025-007', meterBrand:'Siemens MAG 8000',
+      reading:1782.3, inspector:'สมชาย วิทยากร', status:'มีปัญหา',
+      note:'Display หน้าปัดเริ่มมีปัญหา แสดงค่าไม่ต่อเนื่อง แนะนำให้ส่งซ่อม',
+      photos:[
+        'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=70',
+        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',
+        'https://images.unsplash.com/photo-1581094651181-35942459ef62?w=400&q=70',
+        null,null
+      ]
+    },
+  ];
+}
+
+function toggleFrView() {
+  _frView = _frView==='card'?'table':'card';
+  document.getElementById('fr-card-view').style.display = _frView==='card'?'block':'none';
+  document.getElementById('fr-table-view').style.display = _frView==='table'?'block':'none';
+  document.getElementById('fr-view-btn').textContent = _frView==='card'?'☰ รายการ':'⊞ การ์ด';
+  renderFieldReports();
+}
+
+function renderFieldReports() {
+  const q = (document.getElementById('fr-search')?.value||'').toLowerCase();
+  const st = document.getElementById('fr-filter-status')?.value||'';
+  const data = (DB.fieldReports||[]).filter(r=>
+    (!q || r.company.toLowerCase().includes(q) || (r.meterSN||'').toLowerCase().includes(q)) &&
+    (!st || r.status===st)
+  ).sort((a,b)=>b.date.localeCompare(a.date));
+
+  document.getElementById('fr-count').textContent = data.length;
+  const canEdit = ROLE==='admin'||ROLE==='officer';
+
+  // --- CARD VIEW ---
+  document.getElementById('fr-list').innerHTML = data.map(r => {
+    const photos = (r.photos||[]).filter(Boolean);
+    const statusColor = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
+    return `
+    <div class="report-card fade-up">
+      <div class="report-card-hd" onclick="toggleReportCard('${r.id}')">
+        <div class="report-card-hd-left">
+          <span class="report-round-badge">ครั้งที่ ${r.round}</span>
+          <div>
+            <div class="report-card-title">${r.company}</div>
+            <div class="report-card-sub">${r.meterBrand||r.meterSN||''} · ${r.date} · ผู้ตรวจ: ${r.inspector||'—'}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${statusColor}" style="font-size:11px">${r.status}</span>
+          ${canEdit?`<button class="btn btn-danger btn-xs" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}
+          <span style="color:var(--txt3);font-size:16px" id="fr-chevron-${r.id}">▼</span>
+        </div>
+      </div>
+      <div class="report-card-body" id="fr-body-${r.id}">
+        <div class="report-info-grid">
+          <div><div class="ri-label">บริษัท</div><div class="ri-val">${r.company}</div></div>
+          <div><div class="ri-label">หมายเลขมาตรวัด</div><div class="ri-val" style="font-family:'IBM Plex Mono',monospace">${r.meterSN||'—'}</div></div>
+          <div><div class="ri-label">วันที่ตรวจสอบ</div><div class="ri-val">${r.date}</div></div>
+          <div><div class="ri-label">ครั้งที่</div><div class="ri-val">${r.round}</div></div>
+          <div><div class="ri-label">ค่าอ่าน</div><div class="ri-val" style="font-family:'IBM Plex Mono',monospace;color:var(--teal)">${r.reading!=null?r.reading.toLocaleString()+' m³/h':'—'}</div></div>
+          <div><div class="ri-label">ผู้ตรวจสอบ</div><div class="ri-val">${r.inspector||'—'}</div></div>
+          ${r.note?`<div style="grid-column:1/-1"><div class="ri-label">หมายเหตุ</div><div class="ri-val" style="color:var(--txt2)">${r.note}</div></div>`:''}
+        </div>
+        <div style="font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+          ภาพถ่ายตำแหน่งวัดน้ำ (${photos.length}/5)
+        </div>
+        <div class="photo-grid">
+          ${[0,1,2,3,4].map(i => {
+            const url = (r.photos||[])[i];
+            return url
+              ? `<div class="photo-slot filled" onclick="openLightbox('${r.id}',${i})">
+                   <img src="${url}" alt="ภาพที่ ${i+1}" loading="lazy">
+                   <div class="photo-overlay">ภาพที่ ${i+1}</div>
+                 </div>`
+              : `<div class="photo-slot" style="cursor:default">
+                   <div class="photo-slot-num">ภาพที่ ${i+1}</div>
+                   <div class="photo-slot-icon" style="font-size:18px;opacity:.3">📷</div>
+                 </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="text-align:center;padding:40px;color:var(--txt2)">ยังไม่มีรายงาน — กด "+ รายงานใหม่" เพื่อเพิ่ม</div>';
+
+  // --- TABLE VIEW ---
+  document.getElementById('fr-tbody').innerHTML = data.map(r => {
+    const photos = (r.photos||[]).filter(Boolean);
+    const statusColor = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
+    const thumbs = photos.slice(0,3).map(u=>`<img src="${u}" onclick="openLightbox('${r.id}',0)">`).join('');
+    const more = photos.length>3?`<div class="thumb-more">+${photos.length-3}</div>`:'';
+    return `<tr>
+      <td><strong>ครั้งที่ ${r.round}</strong><br><span style="font-size:11px;color:var(--txt2)">${r.date}</span></td>
+      <td style="max-width:200px">${r.company}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.meterSN||'—'}</td>
+      <td style="font-family:'IBM Plex Mono',monospace">${r.reading!=null?r.reading+' m³/h':'—'}</td>
+      <td><div class="thumb-strip">${thumbs}${more}</div></td>
+      <td><span class="badge ${statusColor}">${r.status}</span></td>
+      <td>${canEdit?`<button class="btn btn-danger btn-xs" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleReportCard(id) {
+  const body = document.getElementById('fr-body-'+id);
+  const chev = document.getElementById('fr-chevron-'+id);
+  const open = body.style.display!=='none';
+  body.style.display = open?'none':'block';
+  if(chev) chev.textContent = open?'▶':'▼';
+}
+
+function delFieldReport(e, id) {
+  e.stopPropagation();
+  if(!confirm('ลบรายงานนี้?')) return;
+  DB.fieldReports = DB.fieldReports.filter(r=>r.id!==id);
+  renderFieldReports();
+  showToast('ลบรายงานเรียบร้อย');
+}
+
+/* --- Photo upload --- */
+function triggerUpload(idx) {
+  document.getElementById('pu-file-'+idx).click();
+}
+function handlePhotoUpload(idx, input) {
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _uploadedPhotos[idx] = e.target.result;
+    const slot = document.getElementById('pu-'+idx);
+    slot.classList.add('has-img');
+    // remove existing img if any
+    const existing = slot.querySelector('img.preview');
+    if(existing) existing.remove();
+    const img = document.createElement('img');
+    img.className='preview';
+    img.src = e.target.result;
+    slot.insertBefore(img, slot.firstChild);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function removePhoto(e, idx) {
+  e.stopPropagation();
+  _uploadedPhotos[idx] = null;
+  const slot = document.getElementById('pu-'+idx);
+  slot.classList.remove('has-img');
+  const img = slot.querySelector('img.preview');
+  if(img) img.remove();
+  document.getElementById('pu-file-'+idx).value='';
+}
+
+/* --- Save --- */
+function saveFieldReport() {
+  const company = document.getElementById('fr-company').value.trim();
+  const date    = document.getElementById('fr-date').value;
+  if(!company || !date) { showToast('⚠ กรุณากรอกชื่อบริษัทและวันที่'); return; }
+
+  const meterSN = document.getElementById('fr-meter-sn').value;
+  const meterObj = DB.meters.find(m=>m.serial===meterSN||m.id===meterSN);
+
+  const id = 'FR-'+new Date().getFullYear()+'-'+String((DB.fieldReports||[]).length+1).padStart(3,'0');
+  const photos = _uploadedPhotos.slice();
+
+  if(!DB.fieldReports) DB.fieldReports=[];
+  DB.fieldReports.unshift({
+    id, round: parseInt(document.getElementById('fr-round').value)||1,
+    date, company,
+    meterSN: meterSN||'',
+    meterBrand: meterObj ? meterObj.brand+' '+meterObj.model : '',
+    reading: parseFloat(document.getElementById('fr-reading').value)||null,
+    inspector: document.getElementById('fr-inspector').value.trim(),
+    status: document.getElementById('fr-status').value,
+    note: document.getElementById('fr-note').value.trim(),
+    photos,
+  });
+
+  closeModal('modal-field-report');
+  resetFieldForm();
+  renderFieldReports();
+  DB.logs.unshift({date:now(),user:USERS[ROLE]?.name||'User',action:'บันทึกรายงาน',detail:`รายงานภาคสนาม ${id} — ${company}`});
+  showToast('✅ บันทึกรายงานภาคสนามเรียบร้อย');
+}
+
+function resetFieldForm() {
+  ['fr-company','fr-round','fr-date','fr-reading','fr-inspector','fr-note'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ el.value=id==='fr-round'?'1':''; }
+  });
+  document.getElementById('fr-status').value='สมบูรณ์';
+  _uploadedPhotos=[null,null,null,null,null];
+  [0,1,2,3,4].forEach(i=>{
+    const slot=document.getElementById('pu-'+i);
+    if(slot){ slot.classList.remove('has-img'); const img=slot.querySelector('img.preview'); if(img)img.remove(); }
+    const fi=document.getElementById('pu-file-'+i); if(fi) fi.value='';
+  });
+}
+
+/* Populate company datalist and meter select when modal opens */
+const _origOpenModal = openModal;
+window.openModal = function(id) {
+  _origOpenModal(id);
+  if(id==='modal-field-report') {
+    // company datalist
+    const dl = document.getElementById('fr-company-list');
+    if(dl) {
+      dl.innerHTML = DB.licenses.slice(0,50).map(l=>`<option value="${l.name}">`).join('');
+    }
+    // meter select
+    const sel = document.getElementById('fr-meter-sn');
+    if(sel) {
+      sel.innerHTML = '<option value="">-- เลือกมาตรวัด --</option>' +
+        DB.meters.map(m=>`<option value="${m.serial||m.id}">${m.serial||m.id} — ${m.brand} ${m.model}</option>`).join('');
+    }
+    // default date = today
+    const di = document.getElementById('fr-date');
+    if(di && !di.value) di.value = new Date().toISOString().slice(0,10);
+    resetFieldForm();
+  }
+};
+
+/* --- Lightbox --- */
+function openLightbox(reportId, startIdx) {
+  const r = DB.fieldReports.find(x=>x.id===reportId);
+  if(!r) return;
+  _lbPhotos = (r.photos||[]).filter(Boolean);
+  if(!_lbPhotos.length) return;
+  _lbIdx = Math.min(startIdx, _lbPhotos.length-1);
+  document.getElementById('lightbox').classList.remove('hidden');
+  updateLightbox();
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.add('hidden');
+}
+function lbNav(dir) {
+  _lbIdx = (_lbIdx+dir+_lbPhotos.length) % _lbPhotos.length;
+  updateLightbox();
+}
+function updateLightbox() {
+  document.getElementById('lb-img').src = _lbPhotos[_lbIdx];
+  document.getElementById('lb-title').textContent = `ภาพที่ ${_lbIdx+1} / ${_lbPhotos.length}`;
+  document.getElementById('lb-dots').innerHTML = _lbPhotos.map((_,i)=>
+    `<div class="lb-dot ${i===_lbIdx?'active':''}"></div>`).join('');
+}
+document.addEventListener('keydown', e=>{
+  const lb=document.getElementById('lightbox');
+  if(lb&&!lb.classList.contains('hidden')){
+    if(e.key==='ArrowLeft') lbNav(-1);
+    if(e.key==='ArrowRight') lbNav(1);
+    if(e.key==='Escape') closeLightbox();
+  }
+});
+
 </script>
 </body>
 </html>
