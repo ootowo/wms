@@ -870,6 +870,200 @@ tr:hover td{background:#f8fcfd;}
 .thumb-strip { display:flex; gap:4px; }
 .thumb-strip img { width:32px; height:32px; object-fit:cover; border-radius:5px; border:1px solid var(--border); cursor:pointer; }
 .thumb-more { width:32px; height:32px; border-radius:5px; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:var(--txt2); }
+
+/* ============================================================
+   FIELD REPORT EDIT MODE
+============================================================ */
+.modal-title-badge {
+  font-size:10px; font-weight:600; padding:2px 8px;
+  border-radius:10px; margin-left:8px; vertical-align:middle;
+}
+.badge-new  { background:#e1f5ee; color:#0f6e56; }
+.badge-edit { background:#e8f5f7; color:var(--teal); }
+
+/* Inline edit panel inside card */
+.report-edit-panel {
+  border-top:1px solid var(--border);
+  background:var(--bg);
+  padding:18px 20px;
+  animation:fadeUp .25s ease both;
+}
+.report-edit-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px 16px;
+  margin-bottom:14px;
+}
+.report-edit-grid .fg-full { grid-column:1/-1; }
+.edit-finput {
+  width:100%; padding:8px 11px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-size:13px; font-family:inherit; outline:none;
+  background:var(--surface); color:var(--txt);
+  transition:border .15s;
+}
+.edit-finput:focus { border-color:var(--teal2); background:#fff; }
+.edit-label { font-size:11px; font-weight:600; color:var(--txt2); margin-bottom:4px; display:block; }
+.edit-photo-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
+  margin-bottom:12px;
+}
+.edit-photo-slot {
+  aspect-ratio:1; border-radius:8px; overflow:hidden;
+  border:2px dashed var(--border); background:var(--surface);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; cursor:pointer; position:relative;
+  transition:.15s;
+}
+.edit-photo-slot:hover { border-color:var(--teal2); }
+.edit-photo-slot.has-img { border-style:solid; border-color:var(--teal); }
+.edit-photo-slot img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+.edit-photo-slot input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0; }
+.edit-photo-slot .ep-icon { font-size:18px;color:var(--txt3);pointer-events:none; }
+.edit-photo-slot .ep-num  { font-size:9px;color:var(--txt3);margin-top:3px;pointer-events:none; }
+.edit-photo-rm {
+  position:absolute;top:3px;right:3px;
+  background:rgba(232,68,90,.9);color:#fff;
+  border:none;border-radius:50%;width:18px;height:18px;
+  font-size:10px;cursor:pointer;display:none;
+  align-items:center;justify-content:center;font-weight:700;
+  z-index:2;
+}
+.edit-photo-slot.has-img .edit-photo-rm { display:flex; }
+.edit-actions {
+  display:flex; gap:8px; justify-content:flex-end;
+  padding-top:12px; border-top:1px solid var(--border);
+}
+.btn-save-report {
+  padding:8px 20px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#fff; border:none; border-radius:8px;
+  font-size:13px; font-weight:600; cursor:pointer; transition:.15s;
+}
+.btn-save-report:hover { transform:translateY(-1px); }
+.btn-cancel-edit {
+  padding:8px 16px; border:1.5px solid var(--border);
+  border-radius:8px; background:var(--surface);
+  font-size:13px; color:var(--txt2); cursor:pointer; transition:.15s;
+}
+.btn-cancel-edit:hover { border-color:var(--teal2); color:var(--teal); }
+
+/* ============================================================
+   PHOTO UPLOAD ENHANCED
+============================================================ */
+.photo-size-badge {
+  position:absolute; bottom:3px; left:3px; right:3px;
+  background:rgba(13,33,55,.72); color:#fff;
+  font-size:9px; font-family:'IBM Plex Mono',monospace;
+  padding:1px 4px; border-radius:4px;
+  text-align:center; z-index:3; pointer-events:none;
+}
+.photo-size-badge.oversize { background:rgba(232,68,90,.85); }
+.upload-zone-wrap {
+  border:2px dashed var(--border); border-radius:12px;
+  padding:16px; margin-bottom:10px;
+  background:var(--bg); transition:border-color .2s;
+}
+.upload-zone-wrap.dragover { border-color:var(--teal2); background:var(--sky); }
+.upload-zone-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.upload-zone-title { font-size:12px; font-weight:600; color:var(--txt2); }
+.upload-limit-badge {
+  font-size:10px; padding:2px 8px; border-radius:10px;
+  background:#fef3e2; color:#854f0b; border:1px solid #fac775;
+  font-weight:600;
+}
+.upload-from-folder-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 14px; border:1.5px solid var(--border);
+  border-radius:8px; background:var(--surface);
+  font-size:12px; color:var(--txt2); cursor:pointer;
+  transition:.15s; position:relative; overflow:hidden;
+}
+.upload-from-folder-btn:hover { border-color:var(--teal2); color:var(--teal); background:var(--sky); }
+.upload-from-folder-btn input[type=file] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0;
+}
+.upload-actions-row {
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.photo-progress {
+  font-size:11px; color:var(--txt2);
+}
+.photo-progress .filled { color:var(--teal); font-weight:600; }
+.photo-progress .over   { color:var(--red); font-weight:600; }
+.photo-slot-overlay-err {
+  position:absolute; inset:0; background:rgba(232,68,90,.15);
+  border-radius:8px; border:2px solid var(--red);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--red); font-weight:600; z-index:4;
+  pointer-events:none; text-align:center; padding:2px;
+}
+
+/* ============================================================
+   OPEN CHANNEL METER PAGE
+============================================================ */
+.ocm-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;
+}
+.ocm-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden; box-shadow:var(--shadow);
+  transition:box-shadow .2s, transform .2s;
+}
+.ocm-card:hover { box-shadow:var(--shadow2); transform:translateY(-2px); }
+.ocm-card-hd {
+  background:linear-gradient(135deg,var(--navy),#1a4060);
+  padding:14px 16px;
+}
+.ocm-card-id { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--cyan); margin-bottom:4px; }
+.ocm-card-model { font-weight:700; font-size:15px; color:#fff; margin-bottom:2px; }
+.ocm-card-maker { font-size:12px; color:rgba(255,255,255,.6); }
+.ocm-card-body { padding:14px 16px; }
+.ocm-chips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+.ocm-chip {
+  font-size:11px; padding:3px 8px; border-radius:12px;
+  background:var(--sky); color:var(--teal); border:1px solid #b2dfe4;
+  font-weight:500;
+}
+.ocm-chip.principle-Ultrasonic { background:#e8f4fd; color:#185fa5; border-color:#b5d4f4; }
+.ocm-chip.principle-Radar      { background:#fef3e2; color:#854f0b; border-color:#fac775; }
+.ocm-specs { display:grid; grid-template-columns:1fr 1fr; gap:5px 12px; font-size:12px; margin-bottom:10px; }
+.ocm-spec-k { color:var(--txt2); font-size:10px; }
+.ocm-spec-v { font-weight:500; color:var(--txt); }
+.ocm-price {
+  background:var(--bg); border-radius:8px; padding:8px 12px;
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px;
+}
+.ocm-price-val { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; color:var(--teal); }
+.ocm-price-lbl { font-size:10px; color:var(--txt2); }
+.ocm-footer { display:flex; gap:6px; }
+.ocm-web-btn {
+  flex:1; padding:6px 10px; border:1.5px solid var(--border);
+  border-radius:8px; background:var(--bg); font-size:11px;
+  color:var(--txt2); cursor:pointer; text-decoration:none;
+  display:flex; align-items:center; justify-content:center; gap:4px;
+  transition:.15s;
+}
+.ocm-web-btn:hover { border-color:var(--teal2); color:var(--teal); background:var(--sky); }
+
+/* Table view */
+.ocm-tbl-wrap { overflow-x:auto; }
+.ocm-tbl { width:100%; border-collapse:collapse; font-size:12px; min-width:900px; }
+.ocm-tbl th {
+  font-size:10px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--txt2); padding:8px 12px; border-bottom:2px solid var(--border);
+  text-align:left; white-space:nowrap; background:var(--bg);
+}
+.ocm-tbl td { padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.ocm-tbl tr:last-child td { border:none; }
+.ocm-tbl tr:hover td { background:var(--sky); }
+.ocm-badge-ultra { background:#e8f4fd; color:#185fa5; }
+.ocm-badge-radar  { background:#fef3e2; color:#854f0b; }
 </style>
 </head>
 <body>
@@ -1430,6 +1624,65 @@ tr:hover td{background:#f8fcfd;}
     </div>
 
 
+    <!-- OPEN CHANNEL METER PAGE -->
+    <div id="page-openchannel" class="page">
+      <div class="filter-bar" style="flex-wrap:wrap;gap:8px">
+        <div class="search-box" style="flex:1;min-width:200px">
+          <span>🔍</span>
+          <input type="text" id="ocm-search" placeholder="ค้นหารุ่น / ผู้ผลิต..." onkeyup="renderOCM()">
+        </div>
+        <select class="filter-select" id="ocm-filter-principle" onchange="renderOCM()">
+          <option value="">ทุกหลักการ</option>
+          <option value="Ultrasonic">Ultrasonic</option>
+          <option value="Radar">Radar</option>
+        </select>
+        <select class="filter-select" id="ocm-filter-country" onchange="renderOCM()">
+          <option value="">ทุกประเทศ</option>
+        </select>
+        <div class="view-toggle" id="ocm-view-toggle">
+          <button class="view-toggle-btn active" onclick="setOCMView('card')" id="ocm-vbtn-card">⊞ Cards</button>
+          <button class="view-toggle-btn" onclick="setOCMView('table')" id="ocm-vbtn-table">☰ Table</button>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--txt2)">
+          พบ <strong id="ocm-count" style="color:var(--navy)">0</strong> รุ่น
+          <span style="font-size:11px;color:var(--txt3);margin-left:8px">ข้อมูลจาก Spec_ทางน้ำเปิด.xlsx</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="exportOCM()">📥 ส่งออก CSV</button>
+      </div>
+
+      <!-- Card View -->
+      <div id="ocm-card-view">
+        <div class="ocm-grid" id="ocm-grid"></div>
+      </div>
+
+      <!-- Table View -->
+      <div id="ocm-table-view" style="display:none">
+        <div class="card">
+          <div class="ocm-tbl-wrap">
+            <table class="ocm-tbl">
+              <thead><tr>
+                <th>รหัส</th>
+                <th>รุ่น / โมเดล</th>
+                <th>ผู้ผลิต</th>
+                <th>ประเทศ</th>
+                <th>หลักการ</th>
+                <th>ความแม่นยำ</th>
+                <th>แหล่งจ่ายไฟ</th>
+                <th>Interface</th>
+                <th>Output</th>
+                <th>ราคา (บาท)</th>
+                <th>เว็บไซต์</th>
+              </tr></thead>
+              <tbody id="ocm-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- FIELD REPORT PAGE -->
     <div id="page-fieldreport" class="page">
       <!-- toolbar -->
@@ -1561,7 +1814,7 @@ tr:hover td{background:#f8fcfd;}
 <div class="modal-overlay" id="modal-field-report">
   <div class="modal" style="max-width:640px">
     <div class="modal-hd">
-      <div class="modal-title">📷 บันทึกรายงานมิเตอร์วัดน้ำ ภาคสนาม</div>
+      <div class="modal-title">📷 บันทึกรายงานมิเตอร์วัดน้ำ ภาคสนาม <span class="modal-title-badge badge-new">ใหม่</span></div>
       <button class="modal-close" onclick="closeModal('modal-field-report')">×</button>
     </div>
     <div class="modal-body">
@@ -1602,37 +1855,63 @@ tr:hover td{background:#f8fcfd;}
           </select>
         </div>
         <div class="fg full">
-          <label class="form-label">ภาพถ่ายตำแหน่งวัดน้ำ (สูงสุด 5 ภาพ)</label>
-          <div class="photo-upload-grid">
-            <div class="photo-upload-slot" id="pu-0" onclick="triggerUpload(0)">
-              <input type="file" id="pu-file-0" accept="image/*" onchange="handlePhotoUpload(0,this)">
-              <div class="upload-icon">📷</div>
-              <div class="upload-num">ภาพที่ 1</div>
-              <button class="photo-remove-btn" onclick="removePhoto(event,0)">✕</button>
+          <div class="upload-zone-wrap" id="upload-drop-zone"
+               ondragover="handleDragOver(event,'upload-drop-zone')"
+               ondragleave="handleDragLeave('upload-drop-zone')"
+               ondrop="handleDrop(event,'new')">
+            <div class="upload-zone-header">
+              <span class="upload-zone-title">📸 ภาพถ่ายตำแหน่งวัดน้ำ</span>
+              <span class="upload-limit-badge">แต่ละไฟล์ ≤ 3 MB</span>
             </div>
-            <div class="photo-upload-slot" id="pu-1" onclick="triggerUpload(1)">
-              <input type="file" id="pu-file-1" accept="image/*" onchange="handlePhotoUpload(1,this)">
-              <div class="upload-icon">📷</div>
-              <div class="upload-num">ภาพที่ 2</div>
-              <button class="photo-remove-btn" onclick="removePhoto(event,1)">✕</button>
+            <div class="upload-actions-row">
+              <label class="upload-from-folder-btn">
+                📁 เลือกจากโฟลเดอร์
+                <input type="file" id="pu-folder" accept="image/*" multiple
+                       onchange="handleFolderSelect(this,'new')">
+              </label>
+              <label class="upload-from-folder-btn">
+                📷 เลือกรูปทีละภาพ
+                <input type="file" id="pu-single-any" accept="image/*"
+                       onchange="handleSingleAny(this,'new')">
+              </label>
+              <span class="photo-progress" id="pu-progress">
+                อัปโหลดแล้ว <span class="filled" id="pu-filled">0</span>/5 ภาพ
+              </span>
             </div>
-            <div class="photo-upload-slot" id="pu-2" onclick="triggerUpload(2)">
-              <input type="file" id="pu-file-2" accept="image/*" onchange="handlePhotoUpload(2,this)">
-              <div class="upload-icon">📷</div>
-              <div class="upload-num">ภาพที่ 3</div>
-              <button class="photo-remove-btn" onclick="removePhoto(event,2)">✕</button>
+            <div class="photo-upload-grid" id="pu-grid">
+              <div class="photo-upload-slot" id="pu-0" onclick="triggerUpload(0)">
+                <input type="file" id="pu-file-0" accept="image/*" onchange="handlePhotoUpload(0,this,'new')">
+                <div class="upload-icon">📷</div>
+                <div class="upload-num">ภาพที่ 1</div>
+                <button class="photo-remove-btn" onclick="removePhoto(event,0)">✕</button>
+              </div>
+              <div class="photo-upload-slot" id="pu-1" onclick="triggerUpload(1)">
+                <input type="file" id="pu-file-1" accept="image/*" onchange="handlePhotoUpload(1,this,'new')">
+                <div class="upload-icon">📷</div>
+                <div class="upload-num">ภาพที่ 2</div>
+                <button class="photo-remove-btn" onclick="removePhoto(event,1)">✕</button>
+              </div>
+              <div class="photo-upload-slot" id="pu-2" onclick="triggerUpload(2)">
+                <input type="file" id="pu-file-2" accept="image/*" onchange="handlePhotoUpload(2,this,'new')">
+                <div class="upload-icon">📷</div>
+                <div class="upload-num">ภาพที่ 3</div>
+                <button class="photo-remove-btn" onclick="removePhoto(event,2)">✕</button>
+              </div>
+              <div class="photo-upload-slot" id="pu-3" onclick="triggerUpload(3)">
+                <input type="file" id="pu-file-3" accept="image/*" onchange="handlePhotoUpload(3,this,'new')">
+                <div class="upload-icon">📷</div>
+                <div class="upload-num">ภาพที่ 4</div>
+                <button class="photo-remove-btn" onclick="removePhoto(event,3)">✕</button>
+              </div>
+              <div class="photo-upload-slot" id="pu-4" onclick="triggerUpload(4)">
+                <input type="file" id="pu-file-4" accept="image/*" onchange="handlePhotoUpload(4,this,'new')">
+                <div class="upload-icon">📷</div>
+                <div class="upload-num">ภาพที่ 5</div>
+                <button class="photo-remove-btn" onclick="removePhoto(event,4)">✕</button>
+              </div>
             </div>
-            <div class="photo-upload-slot" id="pu-3" onclick="triggerUpload(3)">
-              <input type="file" id="pu-file-3" accept="image/*" onchange="handlePhotoUpload(3,this)">
-              <div class="upload-icon">📷</div>
-              <div class="upload-num">ภาพที่ 4</div>
-              <button class="photo-remove-btn" onclick="removePhoto(event,3)">✕</button>
-            </div>
-            <div class="photo-upload-slot" id="pu-4" onclick="triggerUpload(4)">
-              <input type="file" id="pu-file-4" accept="image/*" onchange="handlePhotoUpload(4,this)">
-              <div class="upload-icon">📷</div>
-              <div class="upload-num">ภาพที่ 5</div>
-              <button class="photo-remove-btn" onclick="removePhoto(event,4)">✕</button>
+            <div style="font-size:10px;color:var(--txt3);margin-top:6px">
+              รองรับ JPG, PNG, WEBP · ลาก-วางได้โดยตรง · แต่ละไฟล์ขนาดสูงสุด 3 MB
             </div>
           </div>
         </div>
@@ -1744,6 +2023,8 @@ tr:hover td{background:#f8fcfd;}
 <div class="toast" id="toast">✅ <span id="toast-msg">บันทึกข้อมูลเรียบร้อย</span></div>
 
 <script>
+const OCM_DB = [{"id": "OCM-001", "model": "AWRT(T6)", "maker": "Hawk Measurement", "distributor": "", "country": "ออสเตรเลีย", "principle": "Ultrasonic", "frequency": "30-50kHz", "source": "Weir,Flume", "accuracy": "+/- 0.25%", "qmin": "", "qmax": "", "power": "12 - 30VDC / 90 - 265VAC", "display": "2 line x 12 character LCD", "output": "รีเลย์, 4-20mA", "interface": "RS-485(Modbus)", "memory": "", "price": "", "web": "https://www.hawkmeasurement.com/product/AWRF234/", "status": "ใช้งานได้"}, {"id": "OCM-002", "model": "AWRT(T4)", "maker": "Hawk Measurement", "distributor": "", "country": "ออสเตรเลีย", "principle": "Ultrasonic", "frequency": "20/30kHz", "source": "Weir,Flume", "accuracy": "+/- 0.25%", "qmin": "", "qmax": "", "power": "12 - 30VDC / 90 - 265VAC", "display": "2 line x 12 character LCD", "output": "รีเลย์, 4-20mA", "interface": "RS-485(Modbus)", "memory": "", "price": "", "web": "https://www.hawkmeasurement.com/product/AWRF234/", "status": "ใช้งานได้"}, {"id": "OCM-003", "model": "HD1200 TS40-5", "maker": "HONDA ELECTRONICS", "distributor": "แสงชัยมิเตอร์", "country": "", "principle": "Ultrasonic", "frequency": "10-60 kHz", "source": "Weir,Flume", "accuracy": "+/- 0.25%", "qmin": "", "qmax": "", "power": "100 - 240V AC", "display": "LCD", "output": "รีเลย์, 4-20mA", "interface": "RS-232C,RS-485(Modbus)", "memory": "Micro SD card", "price": "65000", "web": "", "status": "ใช้งานได้"}, {"id": "OCM-004", "model": "AUF790", "maker": "INTECH 2000 CO.,LTD.", "distributor": "", "country": "ไทย", "principle": "Ultrasonic", "frequency": "40KHz", "source": "Weir,Flume", "accuracy": "+/- 0.25%", "qmin": "0 ลบ.ม./วินาที", "qmax": "120,000 ลบ.ม./วินาที", "power": "90 ~ 260Vac / 18-36Vdc", "display": "4 Line LCD", "output": "4-20 mA", "interface": "RS-485(Modbus)", "memory": "EEPROM", "price": "60,000 – 65,000 บาท", "web": "https://aliathailand.com/products/ultrasonic-open-channel-flowmeter/auf790-series/?utm_source=chatgpt.com", "status": "ใช้งานได้"}, {"id": "OCM-005", "model": "GAOTEK-UMTM-136", "maker": "GAO Tek Inc.", "distributor": "", "country": "สหรัฐอเมริกา", "principle": "Ultrasonic", "frequency": "40 kHz", "source": "Weir,Flume", "accuracy": "+/- 0.5%", "qmin": "0.36 ลบ.ม./วินาที", "qmax": "999.99 ลบ.ม./วินาที", "power": "220V AC / 24V DC", "display": "LCD Display", "output": "4-20 mA", "interface": "RS485 / RS232 / MODBUS", "memory": "", "price": "30,000 - 50,000 บาท", "web": "https://gaotek.com/product/gaotek-open-channel-ultrasonic-water-flow-meter", "status": "ใช้งานได้"}, {"id": "OCM-006", "model": "FM8000", "maker": "Flomotion Systems Inc.", "distributor": "", "country": "สหรัฐอเมริกา", "principle": "Ultrasonic", "frequency": "40 kHz", "source": "Weir,Flume", "accuracy": "+/- 0.2%", "qmin": "", "qmax": "", "power": "100 - 240V AC / 9-30V DC", "display": "Backlit LCD Graphics Display", "output": "2 x 4-20mA", "interface": "RS-232 (Standard), RS-485, Modbus", "memory": "Data Logging", "price": "90,000 - 110,000 บาท", "web": "https://flomotionsystems.com/open-channel-ultrasonic", "status": "ใช้งานได้"}, {"id": "OCM-007", "model": "UFL9000", "maker": "Holykell", "distributor": "", "country": "จีน", "principle": "Ultrasonic", "frequency": "", "source": "Weir,Flume", "accuracy": "1%～5%", "qmin": "0.1l/s", "qmax": "99999.99m3/h", "power": "220V AC หรือ 24V DC", "display": "backlit LCD", "output": "4～20mA", "interface": "RS485 / RS232 / MODBUS", "memory": "", "price": "", "web": "https://www.holykell.com/products/UFL9000_Open_Channel_Flow_Meter.html?gad_source=1&gad_campaignid=22942152122&gbraid=0AAAAADJTXYOk9Btu7vY4wpBHfTZCe9Ndj&gclid=Cj0KCQjw4PPNBhD8ARIsAMo-icxUGuBeQdLAjVKu-FhYrcvZmyJ0rYECp1V19cZfnOy_oZxOJE3DkcIaAoyGEALw_wcB#S3", "status": "ใช้งานได้"}, {"id": "OCM-008", "model": "HGUOC", "maker": "Jiangsu Hongguang Instrument", "distributor": "", "country": "จีน", "principle": "Ultrasonic", "frequency": "40 kHz", "source": "Weir,Flume", "accuracy": "+/- 0.2%", "qmin": "", "qmax": "", "power": "220V AC (±20%) หรือ 24V DC (±5%)", "display": "LCD display with graph and backlight", "output": "4-20mA, Pulse Output, 6 Relays", "interface": "RS485 (Modbus-RTU)", "memory": "", "price": "21,000 - 42,000 บาท", "web": "https://www.hginstrument.com/flow-instrument/hguoc-ultrasonic-open-channel-flow-meter", "status": "ใช้งานได้"}, {"id": "OCM-009", "model": "PLCM Series", "maker": "Q&T Instrument Co., Lt", "distributor": "", "country": "จีน", "principle": "Ultrasonic", "frequency": "40 kHz", "source": "Weir,Flume", "accuracy": "+/- 0.2%", "qmin": "", "qmax": "", "power": "220V AC (±20%) หรือ 24V DC (±5%) (มีออปชัน 12V DC)", "display": "Backlit LCD", "output": "4-20mA, Relays", "interface": "RS485 (Modbus-RTU)", "memory": "", "price": "24,000 - 45,000 บาท", "web": "https://www.qtmeters.com/flowmeter/flow-meter/ultrasonic-flow-meter/qt-open-channel-flow-meter-ultrasonic-flow-meter-for-liquid.html", "status": "ใช้งานได้"}, {"id": "OCM-010", "model": "UltraFlo UF-500", "maker": "Icon Process Controls", "distributor": "", "country": "", "principle": "Ultrasonic", "frequency": "", "source": "Weir, Flume", "accuracy": "+/- 2%", "qmin": "", "qmax": "", "power": "24V DC", "display": "OLED Display", "output": "Analog 4-20mA / Pulse", "interface": "RS485 (Modbus-RTU)", "memory": "", "price": "52,000 - 87,000 บาท", "web": "Https://iconprocon.com/blog-post/a-complete-guide-to-ultrasonic-flow-meters-exploring-the-truflo-ultraflo-uf-500-clamp-on-ultrasonic-flow-meter/", "status": "ใช้งานได้"}, {"id": "OCM-011", "model": "HRF600", "maker": "Holykell", "distributor": "", "country": "จีน", "principle": "Radar", "frequency": "24GHz", "source": "รางระบายน้ำ", "accuracy": "±0.2-0.5%", "qmin": "0.03m/s", "qmax": "20m/s", "power": "7~32 V DC", "display": "", "output": "", "interface": "RS485 / RS232, 4~20mA, LoRa (wireless option), NB-IoT (wireless option), 4G RTU (wireless option)", "memory": "", "price": "21,000บาท", "web": "https://www.holykell.com/products/24GHz_Radar_Flow_Meter_With_Large_Range_In_Model_HRF_600.html?gad_source=1&gad_campaignid=22942152122&gbraid=0AAAAADJTXYNe6VmLkVBKwBcY5w1XbXZ64&gclid=Cj0KCQjw7IjOBhDyARIsAFzrWQyNMtqq22tRW2SbjJufj40e4vzzYbyHo_GupFjBfrZc7hfFEnvLoloaAsXwEALw_wcB#S3", "status": "ใช้งานได้"}, {"id": "OCM-012", "model": "OCF-0", "maker": "The NIVUS Group", "distributor": "", "country": "เยอรมนี", "principle": "Ultrasonic", "frequency": "", "source": "Weir,flume", "accuracy": "±1 %", "qmin": "-600 cm/s", "qmax": "600cm/s", "power": "220V AC หรือ 24V DC", "display": "", "output": "20 mA,5 relay", "interface": "", "memory": "USB", "price": "", "web": "https://www.nivus.com/en/products-solutions/measurement-systems/flow-measurement-for-liquids/flow-meters-part-filled/flow-meter/ocm-f-flow-meter", "status": "ใช้งานได้"}, {"id": "OCM-013", "model": "RS485 Parshall Flume Ultrasonic", "maker": "Generic", "distributor": "", "country": "จีน", "principle": "Ultrasonic", "frequency": "", "source": "Weir, Flume", "accuracy": "±0.2-0.5%", "qmin": "", "qmax": "", "power": "24VDC / 220VAC", "display": "Backlight LCD", "output": "4–20 mA, Relay", "interface": "RS485 (Modbus)", "memory": "", "price": "9,000 บาท", "web": "https://kfcxflowmeter.en.made-in-china.com/product/SngYMqUbhBpi/China-RS485-Parshall-Flume-Ultrasonic-Open-Channel-Flow-Meter-for-River.html", "status": "ใช้งานได้"}, {"id": "OCM-014", "model": "UPC-UFM-OC-211", "maker": "UPC", "distributor": "EnvMart", "country": "อินเดีย", "principle": "Ultrasonic", "frequency": "", "source": "Weir, Flume", "accuracy": "+/- 0.5%", "qmin": "0.1 m³/h", "qmax": "999.99 m³/h", "power": "230V AC", "display": "LCD", "output": "4-20 mA", "interface": "RS485", "memory": "", "price": "18,000 บาท", "web": "https://envmart.com/7514-open-channel-ultrasonic-flow-meter-upc-ufm-oc-211.html", "status": "ใช้งานได้"}, {"id": "OCM-015", "model": "Open Channel Ultrasonic", "maker": "Generic", "distributor": "EnvMart", "country": "อินเดีย", "principle": "Ultrasonic", "frequency": "", "source": "Weir / Flume", "accuracy": "+/- 0.5%", "qmin": "", "qmax": "", "power": "230V AC", "display": "LCD", "output": "4-20 mA", "interface": "RS485", "memory": "", "price": "18,000 บาท", "web": "https://envmart.com/52749-open-channel-ultrasonic-flow-meter.html", "status": "ใช้งานได้"}];
+
 /* ================================================================
    STATE
 ================================================================ */
@@ -1765,6 +2046,7 @@ const NAV_CONFIG = {
     { label:'แดชบอร์ด', labelEn:'Dashboard', icon:'📊', page:'dashboard' },
     { section:'ข้อมูลหลัก', sectionEn:'Core Data' },
     { label:'ฐานข้อมูลมาตรวัด', labelEn:'Meter DB', icon:'🔧', page:'meters' },
+    { label:'มาตรวัดทางน้ำเปิด', labelEn:'Open Channel', icon:'🌊', page:'openchannel' },
     { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
     { section:'เครื่องมือ', sectionEn:'Tools' },
     { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
@@ -1776,6 +2058,7 @@ const NAV_CONFIG = {
     { label:'แดชบอร์ด', labelEn:'Dashboard', icon:'📊', page:'dashboard' },
     { section:'งานของฉัน', sectionEn:'My Tasks' },
     { label:'มาตรวัด', labelEn:'Meters', icon:'🔧', page:'meters' },
+    { label:'มาตรวัดทางน้ำเปิด', labelEn:'Open Channel', icon:'🌊', page:'openchannel' },
     { label:'หน่วยงานตรวจสอบ', labelEn:'Inspectors', icon:'🏢', page:'inspectors' },
     { section:'เครื่องมือ', sectionEn:'Tools' },
     { label:'คำนวณปริมาณน้ำ', labelEn:'Calculator', icon:'🧮', page:'calculator' },
@@ -3782,7 +4065,7 @@ function showPage(id) {
     n.classList.toggle('active', n.getAttribute('data-page')===id);
   });
 
-  const titles = {dashboard:'Dashboard',looker:'📊 Analytics Dashboard',fieldreport:'📷 รายงานมิเตอร์วัดน้ำ ภาคสนาม',licenses:'ผู้ขออนุญาต / Applicants',meters:'ฐานข้อมูลมาตรวัด / Meter DB',inspectors:'หน่วยงานตรวจสอบ / Inspectors',calculator:'คำนวณปริมาณน้ำ / Calculator',reports:'รายงาน / Reports',myapp:'คำขอของฉัน / My Applications',public:'ข้อมูลสาธารณะ / Public'};
+  const titles = {dashboard:'Dashboard',openchannel:'🌊 มาตรวัดน้ำในทางน้ำเปิด',looker:'📊 Analytics Dashboard',fieldreport:'📷 รายงานมิเตอร์วัดน้ำ ภาคสนาม',licenses:'ผู้ขออนุญาต / Applicants',meters:'ฐานข้อมูลมาตรวัด / Meter DB',inspectors:'หน่วยงานตรวจสอบ / Inspectors',calculator:'คำนวณปริมาณน้ำ / Calculator',reports:'รายงาน / Reports',myapp:'คำขอของฉัน / My Applications',public:'ข้อมูลสาธารณะ / Public'};
   document.getElementById('page-title').textContent = titles[id]||id;
 
   // role-based: hide edit buttons for public
@@ -3796,6 +4079,7 @@ function showPage(id) {
 
   if(id==='licenses') renderLicenses();
   if(id==='meters') renderMeters();
+  if(id==='openchannel') renderOCM();
   if(id==='inspectors') renderInspectors();
   if(id==='reports') renderLogs();
   if(id==='fieldreport') renderFieldReports();
@@ -4254,9 +4538,10 @@ function renderFieldReports() {
   // --- CARD VIEW ---
   document.getElementById('fr-list').innerHTML = data.map(r => {
     const photos = (r.photos||[]).filter(Boolean);
-    const statusColor = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
+    const sc = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
+    const meterOptions = DB.meters.map(m=>`<option value="${m.serial||m.id}" ${(m.serial||m.id)===r.meterSN?'selected':''}>${m.serial||m.id} — ${m.brand} ${m.model}</option>`).join('');
     return `
-    <div class="report-card fade-up">
+    <div class="report-card fade-up" id="rc-${r.id}">
       <div class="report-card-hd" onclick="toggleReportCard('${r.id}')">
         <div class="report-card-hd-left">
           <span class="report-round-badge">ครั้งที่ ${r.round}</span>
@@ -4265,12 +4550,16 @@ function renderFieldReports() {
             <div class="report-card-sub">${r.meterBrand||r.meterSN||''} · ${r.date} · ผู้ตรวจ: ${r.inspector||'—'}</div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="badge ${statusColor}" style="font-size:11px">${r.status}</span>
-          ${canEdit?`<button class="btn btn-danger btn-xs" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}
-          <span style="color:var(--txt3);font-size:16px" id="fr-chevron-${r.id}">▼</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge ${sc}" style="font-size:11px">${r.status}</span>
+          ${canEdit?`
+          <button class="btn btn-outline btn-xs" title="แก้ไข" onclick="toggleInlineEdit(event,'${r.id}')">✏️ แก้ไข</button>
+          <button class="btn btn-danger btn-xs" title="ลบ" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}
+          <span style="color:var(--txt3);font-size:14px" id="fr-chevron-${r.id}">▼</span>
         </div>
       </div>
+
+      <!-- VIEW BODY -->
       <div class="report-card-body" id="fr-body-${r.id}">
         <div class="report-info-grid">
           <div><div class="ri-label">บริษัท</div><div class="ri-val">${r.company}</div></div>
@@ -4299,23 +4588,117 @@ function renderFieldReports() {
           }).join('')}
         </div>
       </div>
+
+      <!-- INLINE EDIT PANEL (hidden by default) -->
+      <div class="report-edit-panel" id="fr-edit-${r.id}" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          ✏️ แก้ไขรายงาน
+          <span class="badge" style="background:#e8f5f7;color:var(--teal);font-size:10px">${r.id}</span>
+        </div>
+        <div class="report-edit-grid">
+          <div class="fg-full">
+            <label class="edit-label">ชื่อบริษัท *</label>
+            <input class="edit-finput" id="ei-company-${r.id}" value="${r.company.replace(/"/g,'&quot;')}" list="fr-company-list">
+          </div>
+          <div>
+            <label class="edit-label">หมายเลขมาตรวัด (S/N)</label>
+            <select class="edit-finput" id="ei-meter-${r.id}">
+              <option value="">-- ไม่ระบุ --</option>
+              ${meterOptions}
+            </select>
+          </div>
+          <div>
+            <label class="edit-label">ครั้งที่</label>
+            <input class="edit-finput" id="ei-round-${r.id}" type="number" min="1" value="${r.round}">
+          </div>
+          <div>
+            <label class="edit-label">วันที่ตรวจสอบ *</label>
+            <input class="edit-finput" id="ei-date-${r.id}" type="date" value="${r.date}">
+          </div>
+          <div>
+            <label class="edit-label">ค่าอ่านมาตรวัด (m³/h)</label>
+            <input class="edit-finput" id="ei-reading-${r.id}" type="number" step="0.1" value="${r.reading!=null?r.reading:''}">
+          </div>
+          <div>
+            <label class="edit-label">ผู้ตรวจสอบ</label>
+            <input class="edit-finput" id="ei-inspector-${r.id}" value="${(r.inspector||'').replace(/"/g,'&quot;')}">
+          </div>
+          <div>
+            <label class="edit-label">สถานะ</label>
+            <select class="edit-finput" id="ei-status-${r.id}">
+              <option ${r.status==='สมบูรณ์'?'selected':''}>สมบูรณ์</option>
+              <option ${r.status==='รอตรวจสอบ'?'selected':''}>รอตรวจสอบ</option>
+              <option ${r.status==='มีปัญหา'?'selected':''}>มีปัญหา</option>
+            </select>
+          </div>
+          <div class="fg-full">
+            <label class="edit-label">หมายเหตุ</label>
+            <textarea class="edit-finput" id="ei-note-${r.id}" rows="2">${r.note||''}</textarea>
+          </div>
+          <div class="fg-full">
+            <div class="upload-zone-wrap" id="edit-drop-${r.id}"
+                 ondragover="handleDragOver(event,'edit-drop-${r.id}')"
+                 ondragleave="handleDragLeave('edit-drop-${r.id}')"
+                 ondrop="handleDrop(event,'${r.id}')">
+              <div class="upload-zone-header">
+                <span class="edit-label" style="margin-bottom:0">📸 ภาพถ่าย</span>
+                <span class="upload-limit-badge">แต่ละไฟล์ ≤ 3 MB</span>
+              </div>
+              <div class="upload-actions-row" style="margin-top:8px">
+                <label class="upload-from-folder-btn" style="font-size:11px;padding:4px 10px">
+                  📁 โฟลเดอร์
+                  <input type="file" accept="image/*" multiple onchange="handleFolderSelect(this,'${r.id}')">
+                </label>
+                <label class="upload-from-folder-btn" style="font-size:11px;padding:4px 10px">
+                  📷 เลือกรูป
+                  <input type="file" accept="image/*" onchange="handleSingleAny(this,'${r.id}')">
+                </label>
+                <span class="photo-progress" id="eps-progress-${r.id}" style="font-size:10px"></span>
+              </div>
+              <div class="edit-photo-grid">
+                ${[0,1,2,3,4].map(i => {
+                  const url = (r.photos||[])[i];
+                  return `<div class="edit-photo-slot ${url?'has-img':''}" id="eps-${r.id}-${i}">
+                    <input type="file" accept="image/*" onchange="editPhotoUpload('${r.id}',${i},this)">
+                    ${url?`<img src="${url}" alt="">`:``}
+                    <div class="ep-icon">📷</div>
+                    <div class="ep-num">ภาพที่ ${i+1}</div>
+                    <button class="edit-photo-rm" onclick="editPhotoRemove(event,'${r.id}',${i})">✕</button>
+                  </div>`;
+                }).join('')}
+              </div>
+              <div style="font-size:9px;color:var(--txt3);margin-top:4px">ลาก-วางได้ · JPG, PNG, WEBP · ≤ 3 MB/ภาพ</div>
+            </div>
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-cancel-edit" onclick="toggleInlineEdit(null,'${r.id}')">ยกเลิก</button>
+          <button class="btn-save-report" onclick="saveInlineEdit('${r.id}')">💾 บันทึกการแก้ไข</button>
+        </div>
+      </div>
     </div>`;
   }).join('') || '<div style="text-align:center;padding:40px;color:var(--txt2)">ยังไม่มีรายงาน — กด "+ รายงานใหม่" เพื่อเพิ่ม</div>';
 
   // --- TABLE VIEW ---
   document.getElementById('fr-tbody').innerHTML = data.map(r => {
     const photos = (r.photos||[]).filter(Boolean);
-    const statusColor = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
+    const sc = r.status==='สมบูรณ์'?'bg-lime':r.status==='มีปัญหา'?'bg-red':'bg-amber';
     const thumbs = photos.slice(0,3).map(u=>`<img src="${u}" onclick="openLightbox('${r.id}',0)">`).join('');
     const more = photos.length>3?`<div class="thumb-more">+${photos.length-3}</div>`:'';
-    return `<tr>
+    return `<tr id="tr-${r.id}">
       <td><strong>ครั้งที่ ${r.round}</strong><br><span style="font-size:11px;color:var(--txt2)">${r.date}</span></td>
       <td style="max-width:200px">${r.company}</td>
       <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${r.meterSN||'—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace">${r.reading!=null?r.reading+' m³/h':'—'}</td>
       <td><div class="thumb-strip">${thumbs}${more}</div></td>
-      <td><span class="badge ${statusColor}">${r.status}</span></td>
-      <td>${canEdit?`<button class="btn btn-danger btn-xs" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}</td>
+      <td><span class="badge ${sc}">${r.status}</span></td>
+      <td>
+        <div style="display:flex;gap:5px">
+          ${canEdit?`
+          <button class="btn btn-outline btn-xs" onclick="switchToCardAndEdit('${r.id}')" title="แก้ไข">✏️</button>
+          <button class="btn btn-danger btn-xs" onclick="delFieldReport(event,'${r.id}')">✕</button>`:''}
+        </div>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -4336,35 +4719,197 @@ function delFieldReport(e, id) {
   showToast('ลบรายงานเรียบร้อย');
 }
 
-/* --- Photo upload --- */
+/* ================================================================
+   PHOTO UPLOAD — enhanced with folder, drag-drop, 3MB limit
+================================================================ */
+const MAX_PHOTO_MB = 3;
+const MAX_PHOTO_BYTES = MAX_PHOTO_MB * 1024 * 1024;
+
 function triggerUpload(idx) {
   document.getElementById('pu-file-'+idx).click();
 }
-function handlePhotoUpload(idx, input) {
-  if(!input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    _uploadedPhotos[idx] = e.target.result;
-    const slot = document.getElementById('pu-'+idx);
-    slot.classList.add('has-img');
-    // remove existing img if any
-    const existing = slot.querySelector('img.preview');
-    if(existing) existing.remove();
-    const img = document.createElement('img');
-    img.className='preview';
-    img.src = e.target.result;
-    slot.insertBefore(img, slot.firstChild);
-  };
-  reader.readAsDataURL(input.files[0]);
+
+/* Shared: compress image via canvas if > limit, then store */
+function processImageFile(file, onDone, onError) {
+  if (!file.type.startsWith('image/')) { onError('ไฟล์ไม่ใช่รูปภาพ'); return; }
+  if (file.size > MAX_PHOTO_BYTES) {
+    // compress via canvas
+    const img = new Image();
+    const objUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objUrl);
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      // scale down until estimated size < limit (rough: quality 0.7 ≈ 30% reduction)
+      const scale = Math.sqrt(MAX_PHOTO_BYTES / file.size) * 0.92;
+      if (scale < 1) { w = Math.round(w * scale); h = Math.round(h * scale); }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+      const approxBytes = Math.round(dataUrl.length * 0.75);
+      onDone(dataUrl, approxBytes);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objUrl); onError('โหลดรูปไม่ได้'); };
+    img.src = objUrl;
+  } else {
+    const reader = new FileReader();
+    reader.onload = e => onDone(e.target.result, file.size);
+    reader.onerror = () => onError('อ่านไฟล์ไม่ได้');
+    reader.readAsDataURL(file);
+  }
 }
+
+/* Format bytes */
+function fmtBytes(b) {
+  if (b < 1024) return b+'B';
+  if (b < 1024*1024) return (b/1024).toFixed(0)+'KB';
+  return (b/1024/1024).toFixed(1)+'MB';
+}
+
+/* Update new-report photo slot UI */
+function setNewPhotoSlot(idx, dataUrl, bytes) {
+  _uploadedPhotos[idx] = dataUrl;
+  const slot = document.getElementById('pu-'+idx);
+  if (!slot) return;
+  slot.classList.add('has-img');
+  const existing = slot.querySelector('img.preview');
+  if (existing) existing.remove();
+  const sizeBadge = slot.querySelector('.photo-size-badge');
+  if (sizeBadge) sizeBadge.remove();
+  const img = document.createElement('img');
+  img.className = 'preview';
+  img.src = dataUrl;
+  slot.insertBefore(img, slot.firstChild);
+  // size badge
+  const badge = document.createElement('div');
+  badge.className = 'photo-size-badge';
+  badge.textContent = fmtBytes(bytes) + (bytes > MAX_PHOTO_BYTES ? ' ⚠' : '');
+  if (bytes > MAX_PHOTO_BYTES) badge.classList.add('oversize');
+  slot.appendChild(badge);
+  updateNewProgressBar();
+}
+
+function updateNewProgressBar() {
+  const filled = _uploadedPhotos.filter(Boolean).length;
+  const el = document.getElementById('pu-filled');
+  if (el) el.textContent = filled;
+}
+
+/* New report — single slot upload */
+function handlePhotoUpload(idx, input, ctx) {
+  if (!input.files[0]) return;
+  processImageFile(
+    input.files[0],
+    (dataUrl, bytes) => setNewPhotoSlot(idx, dataUrl, bytes),
+    msg => showToast('⚠ ภาพที่ '+(idx+1)+': '+msg)
+  );
+}
+
+/* Remove from new report */
 function removePhoto(e, idx) {
   e.stopPropagation();
   _uploadedPhotos[idx] = null;
   const slot = document.getElementById('pu-'+idx);
+  if (!slot) return;
   slot.classList.remove('has-img');
   const img = slot.querySelector('img.preview');
-  if(img) img.remove();
-  document.getElementById('pu-file-'+idx).value='';
+  if (img) img.remove();
+  const badge = slot.querySelector('.photo-size-badge');
+  if (badge) badge.remove();
+  const fi = document.getElementById('pu-file-'+idx);
+  if (fi) fi.value = '';
+  updateNewProgressBar();
+}
+
+/* Folder select — fill empty slots in order */
+function handleFolderSelect(input, ctx) {
+  if (!input.files.length) return;
+  const files = Array.from(input.files).filter(f=>f.type.startsWith('image/')).slice(0,5);
+  let queue = [...files];
+  function processNext() {
+    if (!queue.length) return;
+    const file = queue.shift();
+    // find next empty slot
+    let slotIdx = -1;
+    if (ctx === 'new') {
+      slotIdx = _uploadedPhotos.findIndex(v => !v);
+    } else {
+      if (!_editPhotos[ctx]) _editPhotos[ctx] = [null,null,null,null,null];
+      slotIdx = _editPhotos[ctx].findIndex(v => !v);
+    }
+    if (slotIdx === -1) { showToast('ครบ 5 ภาพแล้ว'); return; }
+    processImageFile(file,
+      (dataUrl, bytes) => {
+        if (ctx === 'new') {
+          setNewPhotoSlot(slotIdx, dataUrl, bytes);
+        } else {
+          setEditPhotoSlot(ctx, slotIdx, dataUrl, bytes);
+        }
+        processNext();
+      },
+      msg => { showToast('⚠ '+file.name+': '+msg); processNext(); }
+    );
+  }
+  processNext();
+  input.value = '';
+}
+
+/* Single file picker (any empty slot) */
+function handleSingleAny(input, ctx) {
+  if (!input.files[0]) return;
+  let slotIdx = -1;
+  if (ctx === 'new') {
+    slotIdx = _uploadedPhotos.findIndex(v => !v);
+  } else {
+    if (!_editPhotos[ctx]) _editPhotos[ctx] = [null,null,null,null,null];
+    slotIdx = _editPhotos[ctx].findIndex(v => !v);
+  }
+  if (slotIdx === -1) { showToast('ครบ 5 ภาพแล้ว กรุณาลบภาพเดิมก่อน'); input.value=''; return; }
+  processImageFile(input.files[0],
+    (dataUrl, bytes) => {
+      if (ctx === 'new') setNewPhotoSlot(slotIdx, dataUrl, bytes);
+      else setEditPhotoSlot(ctx, slotIdx, dataUrl, bytes);
+    },
+    msg => showToast('⚠ ' + msg)
+  );
+  input.value = '';
+}
+
+/* Drag and drop */
+function handleDragOver(e, zoneId) {
+  e.preventDefault();
+  document.getElementById(zoneId)?.classList.add('dragover');
+}
+function handleDragLeave(zoneId) {
+  document.getElementById(zoneId)?.classList.remove('dragover');
+}
+function handleDrop(e, ctx) {
+  e.preventDefault();
+  const zoneId = ctx === 'new' ? 'upload-drop-zone' : 'edit-drop-'+ctx;
+  document.getElementById(zoneId)?.classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).slice(0,5);
+  if (!files.length) { showToast('ไม่พบไฟล์รูปภาพ'); return; }
+  let queue = [...files];
+  function processNext() {
+    if (!queue.length) return;
+    const file = queue.shift();
+    let slotIdx = -1;
+    if (ctx === 'new') slotIdx = _uploadedPhotos.findIndex(v=>!v);
+    else {
+      if(!_editPhotos[ctx]) _editPhotos[ctx]=[null,null,null,null,null];
+      slotIdx = _editPhotos[ctx].findIndex(v=>!v);
+    }
+    if (slotIdx === -1) { showToast('ครบ 5 ภาพแล้ว'); return; }
+    processImageFile(file,
+      (dataUrl, bytes) => {
+        if (ctx==='new') setNewPhotoSlot(slotIdx, dataUrl, bytes);
+        else setEditPhotoSlot(ctx, slotIdx, dataUrl, bytes);
+        processNext();
+      },
+      msg => { showToast('⚠ '+file.name+': '+msg); processNext(); }
+    );
+  }
+  processNext();
 }
 
 /* --- Save --- */
@@ -4467,6 +5012,283 @@ document.addEventListener('keydown', e=>{
     if(e.key==='Escape') closeLightbox();
   }
 });
+
+
+/* ----------------------------------------------------------------
+   INLINE EDIT FUNCTIONS
+---------------------------------------------------------------- */
+let _editPhotos = {}; // { reportId: [url|null x5] }
+
+function toggleInlineEdit(e, id) {
+  if(e) e.stopPropagation();
+  const editPanel = document.getElementById('fr-edit-'+id);
+  const viewBody  = document.getElementById('fr-body-'+id);
+  const isOpen = editPanel.style.display !== 'none';
+
+  // close all other open edit panels first
+  document.querySelectorAll('[id^="fr-edit-"]').forEach(p => {
+    if(p.id !== 'fr-edit-'+id) p.style.display = 'none';
+  });
+
+  if(isOpen) {
+    editPanel.style.display = 'none';
+    if(viewBody) viewBody.style.display = 'block';
+  } else {
+    // make sure card body is visible
+    if(viewBody) viewBody.style.display = 'block';
+    // init edit photos state
+    const r = DB.fieldReports.find(x=>x.id===id);
+    if(r) _editPhotos[id] = [...(r.photos||[null,null,null,null,null])].slice(0,5);
+    while(_editPhotos[id].length < 5) _editPhotos[id].push(null);
+    editPanel.style.display = 'block';
+    // scroll into view
+    editPanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+/* Edit inline photo slot */
+function setEditPhotoSlot(reportId, idx, dataUrl, bytes) {
+  if (!_editPhotos[reportId]) _editPhotos[reportId] = [null,null,null,null,null];
+  _editPhotos[reportId][idx] = dataUrl;
+  const slot = document.getElementById('eps-'+reportId+'-'+idx);
+  if (!slot) return;
+  slot.classList.add('has-img');
+  let img = slot.querySelector('img');
+  if (!img) { img = document.createElement('img'); slot.insertBefore(img, slot.firstChild); }
+  img.src = dataUrl;
+  // size badge
+  let badge = slot.querySelector('.photo-size-badge');
+  if (!badge) { badge = document.createElement('div'); badge.className='photo-size-badge'; slot.appendChild(badge); }
+  badge.textContent = fmtBytes(bytes);
+  badge.classList.toggle('oversize', bytes > MAX_PHOTO_BYTES);
+  // update progress
+  const prog = document.getElementById('eps-progress-'+reportId);
+  if (prog) {
+    const filled = (_editPhotos[reportId]||[]).filter(Boolean).length;
+    prog.innerHTML = `ภาพ <span class="filled">${filled}</span>/5`;
+  }
+}
+
+function editPhotoUpload(reportId, idx, input) {
+  if (!input.files[0]) return;
+  processImageFile(
+    input.files[0],
+    (dataUrl, bytes) => setEditPhotoSlot(reportId, idx, dataUrl, bytes),
+    msg => showToast('⚠ ' + msg)
+  );
+}
+
+function editPhotoRemove(e, reportId, idx) {
+  e.stopPropagation();
+  if(!_editPhotos[reportId]) return;
+  _editPhotos[reportId][idx] = null;
+  const slot = document.getElementById('eps-'+reportId+'-'+idx);
+  if(!slot) return;
+  slot.classList.remove('has-img');
+  const img = slot.querySelector('img');
+  if(img) img.remove();
+  const fi = slot.querySelector('input[type=file]');
+  if(fi) fi.value = '';
+}
+
+function saveInlineEdit(id) {
+  const company = (document.getElementById('ei-company-'+id)?.value||'').trim();
+  const date    = document.getElementById('ei-date-'+id)?.value||'';
+  if(!company || !date) { showToast('⚠ กรุณากรอกชื่อบริษัทและวันที่'); return; }
+
+  const idx = DB.fieldReports.findIndex(r=>r.id===id);
+  if(idx === -1) { showToast('ไม่พบรายงาน'); return; }
+
+  const meterSN  = document.getElementById('ei-meter-'+id)?.value||'';
+  const meterObj = DB.meters.find(m=>(m.serial||m.id)===meterSN);
+  const reading  = parseFloat(document.getElementById('ei-reading-'+id)?.value);
+
+  const updated = {
+    ...DB.fieldReports[idx],
+    company,
+    date,
+    round:      parseInt(document.getElementById('ei-round-'+id)?.value)||DB.fieldReports[idx].round,
+    meterSN,
+    meterBrand: meterObj ? meterObj.brand+' '+meterObj.model : DB.fieldReports[idx].meterBrand,
+    reading:    isNaN(reading) ? null : reading,
+    inspector:  document.getElementById('ei-inspector-'+id)?.value.trim()||'',
+    status:     document.getElementById('ei-status-'+id)?.value||'สมบูรณ์',
+    note:       document.getElementById('ei-note-'+id)?.value.trim()||'',
+    photos:     _editPhotos[id] ? [..._editPhotos[id]] : DB.fieldReports[idx].photos,
+  };
+
+  DB.fieldReports[idx] = updated;
+  DB.logs.unshift({
+    date: now(),
+    user: USERS[ROLE]?.name||'User',
+    action: 'แก้ไขรายงาน',
+    detail: `แก้ไขรายงานภาคสนาม ${id} — ${company}`
+  });
+
+  renderFieldReports();
+  showToast('✅ บันทึกการแก้ไขเรียบร้อย');
+
+  // re-open the card body and keep expanded
+  const body  = document.getElementById('fr-body-'+id);
+  const chev  = document.getElementById('fr-chevron-'+id);
+  if(body) body.style.display = 'block';
+  if(chev) chev.textContent = '▼';
+}
+
+function switchToCardAndEdit(id) {
+  // switch to card view first, then open edit
+  _frView = 'card';
+  document.getElementById('fr-card-view').style.display = 'block';
+  document.getElementById('fr-table-view').style.display = 'none';
+  document.getElementById('fr-view-btn').textContent = '☰ รายการ';
+  renderFieldReports();
+  // open card then edit panel
+  const body = document.getElementById('fr-body-'+id);
+  const chev = document.getElementById('fr-chevron-'+id);
+  if(body){ body.style.display='block'; }
+  if(chev){ chev.textContent='▼'; }
+  setTimeout(()=>toggleInlineEdit(null, id), 80);
+}
+
+
+/* ================================================================
+   OPEN CHANNEL METER
+================================================================ */
+let _ocmView = 'card';
+
+function initOCMFilters() {
+  const countries = [...new Set(OCM_DB.map(m=>m.country).filter(Boolean))].sort();
+  const sel = document.getElementById('ocm-filter-country');
+  if(sel && sel.options.length <= 1) {
+    countries.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function setOCMView(v) {
+  _ocmView = v;
+  document.getElementById('ocm-card-view').style.display  = v==='card'?'block':'none';
+  document.getElementById('ocm-table-view').style.display = v==='table'?'block':'none';
+  document.getElementById('ocm-vbtn-card').classList.toggle('active',  v==='card');
+  document.getElementById('ocm-vbtn-table').classList.toggle('active', v==='table');
+  renderOCM();
+}
+
+function renderOCM() {
+  initOCMFilters();
+  const q   = (document.getElementById('ocm-search')?.value||'').toLowerCase();
+  const pri = document.getElementById('ocm-filter-principle')?.value||'';
+  const ctr = document.getElementById('ocm-filter-country')?.value||'';
+
+  const data = OCM_DB.filter(m =>
+    (!q   || (m.model+m.maker+m.distributor).toLowerCase().includes(q)) &&
+    (!pri || m.principle===pri) &&
+    (!ctr || m.country===ctr)
+  );
+
+  document.getElementById('ocm-count').textContent = data.length;
+
+  /* ── Card view ── */
+  document.getElementById('ocm-grid').innerHTML = data.map(m => `
+    <div class="ocm-card fade-up">
+      <div class="ocm-card-hd">
+        <div class="ocm-card-id">${m.id} · ${m.source}</div>
+        <div class="ocm-card-model">${m.model}</div>
+        <div class="ocm-card-maker">${m.maker}${m.distributor?' · '+m.distributor:''}${m.country?' ('+m.country+')':''}</div>
+      </div>
+      <div class="ocm-card-body">
+        <div class="ocm-chips">
+          <span class="ocm-chip principle-${m.principle}">${m.principle}</span>
+          ${m.frequency?`<span class="ocm-chip">${m.frequency}</span>`:''}
+          ${m.accuracy?`<span class="ocm-chip">±${m.accuracy.replace(/[+\-\/\s]/g,'').replace('0.','0.')}</span>`:''}
+        </div>
+        <div class="ocm-specs">
+          ${m.power?`<div><div class="ocm-spec-k">แหล่งจ่ายไฟ</div><div class="ocm-spec-v">${m.power}</div></div>`:''}
+          ${m.display?`<div><div class="ocm-spec-k">จอแสดงผล</div><div class="ocm-spec-v">${m.display}</div></div>`:''}
+          ${m.output?`<div><div class="ocm-spec-k">Output</div><div class="ocm-spec-v">${m.output}</div></div>`:''}
+          ${m.interface?`<div><div class="ocm-spec-k">Interface</div><div class="ocm-spec-v">${m.interface}</div></div>`:''}
+          ${m.memory?`<div><div class="ocm-spec-k">Memory</div><div class="ocm-spec-v">${m.memory}</div></div>`:''}
+          ${(m.qmin||m.qmax)?`<div><div class="ocm-spec-k">ช่วงวัด</div><div class="ocm-spec-v">${[m.qmin,m.qmax].filter(Boolean).join(' – ')}</div></div>`:''}
+        </div>
+        ${m.price?`<div class="ocm-price">
+          <div class="ocm-price-val">${m.price}</div>
+          <div class="ocm-price-lbl">ราคาโดยประมาณ</div>
+        </div>`:'<div class="ocm-price"><div class="ocm-price-lbl" style="color:var(--txt3)">ไม่ระบุราคา</div></div>'}
+        <div class="ocm-footer">
+          ${m.web?`<a href="${m.web}" target="_blank" rel="noopener" class="ocm-web-btn">🔗 เว็บไซต์</a>`:''}
+          <button class="ocm-web-btn" onclick="showOCMDetail('${m.id}')">👁 รายละเอียด</button>
+        </div>
+      </div>
+    </div>`).join('') || '<div style="text-align:center;padding:40px;color:var(--txt2)">ไม่พบข้อมูล</div>';
+
+  /* ── Table view ── */
+  document.getElementById('ocm-tbody').innerHTML = data.map(m => `<tr>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">${m.id}</td>
+    <td><strong>${m.model}</strong></td>
+    <td>${m.maker}${m.distributor?`<br><span style="font-size:10px;color:var(--txt2)">${m.distributor}</span>`:''}</td>
+    <td>${m.country||'—'}</td>
+    <td><span class="badge ${m.principle==='Radar'?'ocm-badge-radar':'ocm-badge-ultra'}">${m.principle}</span></td>
+    <td style="font-family:'IBM Plex Mono',monospace">${m.accuracy||'—'}</td>
+    <td style="font-size:11px;max-width:160px">${m.power||'—'}</td>
+    <td style="font-size:11px">${m.interface||'—'}</td>
+    <td style="font-size:11px">${m.output||'—'}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;color:var(--teal)">${m.price||'—'}</td>
+    <td>${m.web?`<a href="${m.web}" target="_blank" class="btn btn-outline btn-xs">🔗</a>`:'—'}</td>
+  </tr>`).join('');
+}
+
+function showOCMDetail(id) {
+  const m = OCM_DB.find(x=>x.id===id);
+  if(!m) return;
+  const rows = [
+    ['รหัส',m.id],['รุ่น / โมเดล',m.model],['ผู้ผลิต',m.maker],
+    ['ผู้จัดจำหน่าย',m.distributor||'—'],['ประเทศ',m.country||'—'],
+    ['หลักการทำงาน',m.principle],['ความถี่',m.frequency||'—'],
+    ['แหล่งที่วัด',m.source],['ระดับความแม่นยำ',m.accuracy||'—'],
+    ['Qmin',m.qmin||'—'],['Qmax',m.qmax||'—'],
+    ['แหล่งจ่ายไฟ',m.power||'—'],['จอแสดงผล',m.display||'—'],
+    ['Output',m.output||'—'],['Interface',m.interface||'—'],
+    ['Memory',m.memory||'—'],['ราคา',m.price||'ไม่ระบุ'],
+  ].map(([k,v])=>`<div style="display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+    <span style="flex:0 0 140px;color:var(--txt2);font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding-top:2px">${k}</span>
+    <span style="font-weight:500;color:var(--txt)">${v}</span>
+  </div>`).join('');
+  const webBtn = m.web ? `<a href="${m.web}" target="_blank" class="btn btn-outline" style="text-decoration:none">🔗 เปิดเว็บไซต์</a>` : '';
+  // reuse the lightbox area as a simple detail modal (quick approach)
+  alert = undefined; // prevent accidental use
+  // use existing modal infrastructure
+  const modal = document.getElementById('modal-field-report');
+  if(!modal) return;
+  const origHd = modal.querySelector('.modal-title').innerHTML;
+  const origBody = modal.querySelector('.modal-body').innerHTML;
+  const origFt = modal.querySelector('.modal-ft').innerHTML;
+  modal.querySelector('.modal-title').textContent = `🌊 ${m.model}`;
+  modal.querySelector('.modal-body').innerHTML = `<div style="padding:4px 0">${rows}</div>`;
+  modal.querySelector('.modal-ft').innerHTML = `${webBtn}<button class="btn btn-outline" onclick="closeModal('modal-field-report')">ปิด</button>`;
+  modal.classList.add('open');
+  // restore on close
+  const origClose = window._ocmDetailClose;
+  window._ocmDetailClose = () => {
+    modal.querySelector('.modal-title').innerHTML = origHd;
+    modal.querySelector('.modal-body').innerHTML = origBody;
+    modal.querySelector('.modal-ft').innerHTML = origFt;
+    modal.classList.remove('open');
+  };
+  modal.querySelector('.modal-close').onclick = window._ocmDetailClose;
+}
+
+function exportOCM() {
+  const headers = ['id','model','maker','distributor','country','principle','frequency','source','accuracy','qmin','qmax','power','display','output','interface','memory','price','web'];
+  const csv = [headers.join(','), ...OCM_DB.map(m=>headers.map(h=>`"${(m[h]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = 'open_channel_meters.csv';
+  a.click();
+  showToast('✅ ส่งออก CSV เรียบร้อย');
+}
 
 </script>
 </body>
