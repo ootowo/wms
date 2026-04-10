@@ -1064,6 +1064,175 @@ tr:hover td{background:#f8fcfd;}
 .ocm-tbl tr:hover td { background:var(--sky); }
 .ocm-badge-ultra { background:#e8f4fd; color:#185fa5; }
 .ocm-badge-radar  { background:#fef3e2; color:#854f0b; }
+
+/* ============================================================
+   NEW CALCULATOR v2
+============================================================ */
+.calc-mode-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:6px;
+}
+.calc-mode-card {
+  border:1.5px solid var(--border); border-radius:10px;
+  padding:10px 12px; cursor:pointer; transition:.15s;
+  background:var(--bg); text-align:left;
+}
+.calc-mode-card:hover { border-color:var(--teal2); background:var(--sky); }
+.calc-mode-card.active { border-color:var(--teal); background:#e1f5ee; }
+.calc-mode-card.active .cmc-icon { color:var(--teal); }
+.cmc-icon { font-size:18px; margin-bottom:4px; }
+.cmc-name { font-size:12px; font-weight:600; color:var(--navy); line-height:1.3; }
+.cmc-sub  { font-size:10px; color:var(--txt2); margin-top:2px; }
+
+/* Input group */
+.cig { margin-bottom:12px; }
+.cig label { display:block; font-size:11px; font-weight:600; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px; }
+.cig input, .cig select {
+  width:100%; padding:8px 11px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-size:13px; font-family:inherit; outline:none;
+  background:var(--surface); color:var(--txt); transition:border .15s;
+}
+.cig input:focus, .cig select:focus { border-color:var(--teal2); }
+.cig .hint { font-size:10px; color:var(--txt3); margin-top:3px; }
+.calc-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.calc-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.calc-run-btn {
+  width:100%; padding:10px; margin-top:4px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#fff; border:none; border-radius:9px;
+  font-size:14px; font-weight:600; cursor:pointer; transition:.15s;
+}
+.calc-run-btn:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(14,124,134,.3); }
+.case-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.case-tab {
+  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:500;
+  border:1.5px solid var(--border); background:var(--bg);
+  color:var(--txt2); cursor:pointer; transition:.15s;
+}
+.case-tab.active { border-color:var(--teal); background:#e1f5ee; color:var(--teal); }
+.case-panel { display:none; }
+.case-panel.active { display:block; }
+
+/* Result cards */
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.res-card { background:var(--bg); border-radius:10px; padding:10px 14px; text-align:center; }
+.res-card.primary { background:var(--navy); }
+.res-val { font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; color:var(--navy); }
+.res-card.primary .res-val { color:var(--cyan); font-size:24px; }
+.res-lbl { font-size:10px; color:var(--txt2); margin-top:3px; }
+.res-card.primary .res-lbl { color:rgba(255,255,255,.5); }
+.formula-box {
+  background:#0d2137; border-radius:8px; padding:10px 14px;
+  font-family:'IBM Plex Mono',monospace; font-size:11px;
+  color:#8ecfd6; line-height:1.8; margin-top:10px;
+  white-space:pre-wrap;
+}
+.warn-box {
+  background:#fef3e2; border-left:3px solid var(--amber);
+  border-radius:0 8px 8px 0; padding:8px 12px;
+  font-size:11px; color:#854f0b; margin-bottom:10px;
+}
+.info-box {
+  background:#e8f5f7; border-left:3px solid var(--teal);
+  border-radius:0 8px 8px 0; padding:8px 12px;
+  font-size:11px; color:var(--teal); margin-bottom:10px;
+}
+
+/* ============================================================
+   CALCULATOR v2 — full coverage
+============================================================ */
+.calc-mode-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:8px; margin-bottom:20px;
+}
+.calc-mode-card {
+  border:1.5px solid var(--border); border-radius:12px;
+  padding:12px 14px; cursor:pointer; transition:.15s;
+  background:var(--surface); text-align:center;
+}
+.calc-mode-card:hover { border-color:var(--teal2); background:var(--sky); }
+.calc-mode-card.active { border-color:var(--teal); background:#e1f5ee; }
+.calc-mode-card .cm-icon { font-size:22px; margin-bottom:6px; }
+.calc-mode-card .cm-title { font-size:12px; font-weight:600; color:var(--navy); }
+.calc-mode-card .cm-sub { font-size:10px; color:var(--txt2); margin-top:2px; }
+
+.calc-panel { display:none; }
+.calc-panel.active { display:block; }
+.calc-section-title {
+  font-size:12px; font-weight:600; color:var(--txt2);
+  text-transform:uppercase; letter-spacing:.6px;
+  margin-bottom:10px; padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.calc-case-tabs {
+  display:flex; gap:0; border-bottom:2px solid var(--border);
+  margin-bottom:16px;
+}
+.calc-case-tab {
+  padding:7px 16px; font-size:12px; font-weight:600;
+  color:var(--txt2); cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-2px;
+  transition:.15s;
+}
+.calc-case-tab.active { color:var(--teal); border-bottom-color:var(--teal); }
+.calc-case-panel { display:none; }
+.calc-case-panel.active { display:block; }
+
+.calc-input-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px; margin-bottom:16px;
+}
+.calc-input-group label {
+  display:block; font-size:11px; font-weight:600;
+  color:var(--txt2); margin-bottom:4px;
+  text-transform:uppercase; letter-spacing:.4px;
+}
+.calc-input-group input,
+.calc-input-group select {
+  width:100%; padding:8px 11px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-size:13px; font-family:inherit; outline:none;
+  background:var(--surface); color:var(--txt); transition:border .15s;
+}
+.calc-input-group input:focus,
+.calc-input-group select:focus { border-color:var(--teal2); }
+.calc-input-group .unit-hint {
+  font-size:10px; color:var(--txt3); margin-top:3px;
+}
+
+.calc-result-box {
+  background:linear-gradient(135deg,var(--navy),#1a4060);
+  border-radius:14px; padding:20px 24px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:14px; margin-bottom:16px;
+}
+.calc-res-item2 { text-align:center; }
+.calc-res-val2 {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:22px; font-weight:700; color:var(--cyan); line-height:1;
+}
+.calc-res-unit { font-size:11px; color:rgba(255,255,255,.5); margin-top:4px; }
+.calc-res-label2 { font-size:11px; color:rgba(255,255,255,.6); margin-top:2px; }
+
+.calc-formula-box {
+  background:var(--bg); border-radius:10px; padding:12px 16px;
+  font-size:12px; color:var(--txt2); line-height:1.8;
+  border-left:3px solid var(--teal);
+  margin-bottom:12px;
+}
+.calc-formula-box strong { color:var(--navy); }
+
+.calc-warn { color:var(--amber); font-size:12px; font-weight:600; margin-bottom:8px; }
+.calc-note { font-size:11px; color:var(--txt3); margin-top:8px; }
+
+/* PF table */
+.pf-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+.pf-table th { background:var(--navy); color:var(--cyan); padding:5px 10px; font-size:10px; }
+.pf-table td { padding:5px 10px; border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; }
+.pf-table tr.highlight td { background:#e1f5ee; font-weight:600; color:var(--teal); }
 </style>
 </head>
 <body>
@@ -1443,71 +1612,291 @@ tr:hover td{background:#f8fcfd;}
 
     <!-- CALCULATOR PAGE -->
     <div id="page-calculator" class="page">
-      <div class="calc-hero">
-        <div class="calc-hero-title" data-th="🧮 โปรแกรมคำนวณปริมาณน้ำ" data-en="🧮 Water Volume Calculator">🧮 โปรแกรมคำนวณปริมาณน้ำ</div>
-        <div class="calc-hero-sub" data-th="คำนวณได้ 3 รูปแบบ สำหรับผู้ใช้น้ำและพนักงานเจ้าหน้าที่" data-en="3 calculation modes for operators and officers">คำนวณได้ 3 รูปแบบ สำหรับผู้ใช้น้ำและพนักงานเจ้าหน้าที่</div>
-        <div class="calc-modes">
-          <button class="calc-mode-btn active" onclick="setCalcMode('flow',this)" data-th="📊 อัตราการไหล" data-en="📊 Flow Rate">📊 อัตราการไหล</button>
-          <button class="calc-mode-btn" onclick="setCalcMode('meter',this)" data-th="🔢 หน้าปัดมาตรวัด" data-en="🔢 Meter Reading">🔢 หน้าปัดมาตรวัด</button>
-          <button class="calc-mode-btn" onclick="setCalcMode('area',this)" data-th="🌾 พื้นที่เกษตร" data-en="🌾 Agricultural Area">🌾 พื้นที่เกษตร</button>
+      <div class="calc-hero" style="padding-bottom:10px">
+        <div class="calc-hero-title">🧮 โปรแกรมคำนวณปริมาณน้ำ</div>
+        <div class="calc-hero-sub">ครอบคลุม 10 วิธีตาม cal_v7.xlsx — เลือกประเภทการคำนวณด้านล่าง</div>
+      </div>
+
+      <!-- MODE SELECTOR -->
+      <div class="calc-mode-grid" id="calc-mode-grid">
+        <div class="calc-mode-card active" onclick="setCalcMode('flow',this)">
+          <div class="cm-icon">💧</div><div class="cm-title">อัตราการไหล</div><div class="cm-sub">L/s → m³</div>
         </div>
-        <div id="calc-inputs-flow" class="calc-inputs">
-          <div class="calc-ig"><label data-th="อัตราไหล (ลิตร/วินาที)" data-en="Flow Rate (L/s)">อัตราไหล (ลิตร/วินาที)</label><input type="number" id="fl-rate" placeholder="เช่น 50" oninput="calcFlow()"></div>
-          <div class="calc-ig"><label data-th="ชั่วโมง/วัน" data-en="Hours/day">ชั่วโมง/วัน</label><input type="number" id="fl-h" placeholder="เช่น 8" oninput="calcFlow()"></div>
-          <div class="calc-ig"><label data-th="จำนวนวัน" data-en="Number of Days">จำนวนวัน</label><input type="number" id="fl-d" placeholder="เช่น 30" oninput="calcFlow()"></div>
+        <div class="calc-mode-card" onclick="setCalcMode('meter',this)">
+          <div class="cm-icon">🔢</div><div class="cm-title">หน้าปัดมาตรวัด</div><div class="cm-sub">ต้น-ปลายงวด</div>
         </div>
-        <div id="calc-inputs-meter" class="calc-inputs" style="display:none">
-          <div class="calc-ig"><label data-th="ค่าต้นงวด (ลบ.ม.)" data-en="Start Reading (m³)">ค่าต้นงวด (ลบ.ม.)</label><input type="number" id="mt-s" placeholder="เช่น 1000" oninput="calcMeter()"></div>
-          <div class="calc-ig"><label data-th="ค่าปลายงวด (ลบ.ม.)" data-en="End Reading (m³)">ค่าปลายงวด (ลบ.ม.)</label><input type="number" id="mt-e" placeholder="เช่น 1250" oninput="calcMeter()"></div>
-          <div class="calc-ig"><label data-th="Multiplier" data-en="Multiplier">Multiplier</label><input type="number" id="mt-mul" value="1" oninput="calcMeter()"></div>
+        <div class="calc-mode-card" onclick="setCalcMode('area',this)">
+          <div class="cm-icon">🌾</div><div class="cm-title">พื้นที่เกษตร</div><div class="cm-sub">ไร่ × ความลึก</div>
         </div>
-        <div id="calc-inputs-area" class="calc-inputs" style="display:none">
-          <div class="calc-ig"><label data-th="พื้นที่ (ไร่)" data-en="Area (Rai)">พื้นที่ (ไร่)</label><input type="number" id="ar-rai" placeholder="เช่น 100" oninput="calcArea()"></div>
-          <div class="calc-ig"><label data-th="ความลึกน้ำ (เมตร)" data-en="Water Depth (m)">ความลึกน้ำ (เมตร)</label><input type="number" id="ar-dep" placeholder="เช่น 0.5" oninput="calcArea()"></div>
-          <div class="calc-ig"><label data-th="รอบการให้น้ำ/ปี" data-en="Cycles/Year">รอบการให้น้ำ/ปี</label><input type="number" id="ar-cyc" placeholder="เช่น 2" oninput="calcArea()"></div>
+        <div class="calc-mode-card" onclick="setCalcMode('drain',this)">
+          <div class="cm-icon">🌊</div><div class="cm-title">รางระบายน้ำ</div><div class="cm-sub">Manning สี่เหลี่ยม</div>
         </div>
-        <div class="calc-result-row">
-          <div class="calc-res-item">
-            <div class="calc-res-val" id="res-m3">0</div>
-            <div class="calc-res-label" data-th="ลูกบาศก์เมตร (ลบ.ม.)" data-en="Cubic Meters (m³)">ลูกบาศก์เมตร (ลบ.ม.)</div>
-          </div>
-          <div class="calc-res-item">
-            <div class="calc-res-val" id="res-ml">0</div>
-            <div class="calc-res-label" data-th="ล้านลิตร (Mℓ)" data-en="Million Litres (Mℓ)">ล้านลิตร (Mℓ)</div>
-          </div>
-          <div class="calc-res-item">
-            <div class="calc-res-val" id="res-day">0</div>
-            <div class="calc-res-label" data-th="ลบ.ม./วัน (เฉลี่ย)" data-en="m³/day (average)">ลบ.ม./วัน (เฉลี่ย)</div>
-          </div>
+        <div class="calc-mode-card" onclick="setCalcMode('pump',this)">
+          <div class="cm-icon">⚙️</div><div class="cm-title">เครื่องสูบน้ำ</div><div class="cm-sub">Pump Power</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('pipe_round',this)">
+          <div class="cm-icon">⭕</div><div class="cm-title">ท่อกลม</div><div class="cm-sub">3 กรณี</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('pipe_rect',this)">
+          <div class="cm-icon">▭</div><div class="cm-title">ท่อเหลี่ยม</div><div class="cm-sub">3 กรณี</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('weir',this)">
+          <div class="cm-icon">🏗️</div><div class="cm-title">ฝายสันตรง</div><div class="cm-sub">Sharp-crested weir</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('pf',this)">
+          <div class="cm-icon">📐</div><div class="cm-title">รางวัดน้ำ PF</div><div class="cm-sub">Parshall Flume</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('hydro',this)">
+          <div class="cm-icon">⚡</div><div class="cm-title">ไฟฟ้าพลังน้ำ</div><div class="cm-sub">Hydro Power</div>
+        </div>
+        <div class="calc-mode-card" onclick="setCalcMode('evap',this)">
+          <div class="cm-icon">☁️</div><div class="cm-title">ระเหย + รั่วซึม</div><div class="cm-sub">Evaporation loss</div>
         </div>
       </div>
-      <div class="two-col">
+
+      <!-- ─── PANEL: อัตราการไหล ─── -->
+      <div class="calc-panel active" id="cp-flow">
+        <div class="calc-section-title">💧 อัตราการไหล (Flow Rate → Volume)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>อัตราไหล (ลิตร/วินาที)</label><input type="number" id="fl-rate" placeholder="50" oninput="calcFlow()"><div class="unit-hint">L/s</div></div>
+          <div class="calc-input-group"><label>ชั่วโมงต่อวัน</label><input type="number" id="fl-h" placeholder="8" oninput="calcFlow()"><div class="unit-hint">h/วัน</div></div>
+          <div class="calc-input-group"><label>จำนวนวัน</label><input type="number" id="fl-d" placeholder="30" oninput="calcFlow()"><div class="unit-hint">วัน</div></div>
+        </div>
+        <div class="calc-formula-box"><strong>Q (m³/วัน) = อัตราไหล (L/s) × 3.6 × ชม./วัน</strong></div>
+        <div id="res-flow" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: มาตรวัด ─── -->
+      <div class="calc-panel" id="cp-meter">
+        <div class="calc-section-title">🔢 หน้าปัดมาตรวัด (Meter Reading)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>ค่าต้นงวด (m³)</label><input type="number" id="mt-s" placeholder="1000" oninput="calcMeter()"></div>
+          <div class="calc-input-group"><label>ค่าปลายงวด (m³)</label><input type="number" id="mt-e" placeholder="1250" oninput="calcMeter()"></div>
+          <div class="calc-input-group"><label>Multiplier</label><input type="number" id="mt-mul" value="1" oninput="calcMeter()"></div>
+          <div class="calc-input-group"><label>จำนวนวัน</label><input type="number" id="mt-days" placeholder="30" oninput="calcMeter()"></div>
+        </div>
+        <div class="calc-formula-box"><strong>V (m³) = (ปลาย − ต้น) × Multiplier</strong></div>
+        <div id="res-meter" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: พื้นที่เกษตร ─── -->
+      <div class="calc-panel" id="cp-area">
+        <div class="calc-section-title">🌾 พื้นที่เกษตร (Agricultural Volume)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>พื้นที่ (ไร่)</label><input type="number" id="ar-rai" placeholder="100" oninput="calcArea()"></div>
+          <div class="calc-input-group"><label>ความลึกน้ำ (เมตร)</label><input type="number" id="ar-dep" placeholder="0.5" oninput="calcArea()"></div>
+          <div class="calc-input-group"><label>รอบการให้น้ำ/ปี</label><input type="number" id="ar-cyc" placeholder="2" oninput="calcArea()"></div>
+        </div>
+        <div class="calc-formula-box"><strong>V = ไร่ × 1,600 m² × ความลึก × รอบ/ปี</strong></div>
+        <div id="res-area" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: รางระบายน้ำ (Manning) ─── -->
+      <div class="calc-panel" id="cp-drain">
+        <div class="calc-section-title">🌊 รางระบายน้ำสี่เหลี่ยม (Manning's Equation)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>b — ความกว้างราง (ม.)</label><input type="number" id="dr-b" value="0.8" step="0.01" oninput="calcDrain()"></div>
+          <div class="calc-input-group"><label>h — ความลึกน้ำ (ม.)</label><input type="number" id="dr-h" value="0.8" step="0.01" oninput="calcDrain()"></div>
+          <div class="calc-input-group"><label>Sf — ความลาดชันผิวน้ำ</label><input type="number" id="dr-s" value="0.001" step="0.0001" oninput="calcDrain()"><div class="unit-hint">เช่น 1/1000 = 0.001</div></div>
+          <div class="calc-input-group"><label>n — Manning roughness</label><input type="number" id="dr-n" value="0.014" step="0.001" oninput="calcDrain()"><div class="unit-hint">คอนกรีต≈0.013, ดิน≈0.025</div></div>
+        </div>
+        <div class="calc-formula-box">
+          <strong>A = b × h</strong> &nbsp;|&nbsp; <strong>P = b + 2h</strong> &nbsp;|&nbsp; <strong>R = A/P</strong><br>
+          <strong>V = (1/n) × R²/³ × Sf½</strong> &nbsp;|&nbsp; <strong>Q = V × A</strong>
+        </div>
+        <div id="res-drain" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: เครื่องสูบน้ำ ─── -->
+      <div class="calc-panel" id="cp-pump">
+        <div class="calc-section-title">⚙️ เครื่องสูบน้ำ (Pump Power & Volume)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>np — ประสิทธิภาพปั๊ม</label><input type="number" id="pu-np" value="0.7" step="0.01" min="0.1" max="1" oninput="calcPump()"><div class="unit-hint">0–1 (ทั่วไป 0.65–0.80)</div></div>
+          <div class="calc-input-group"><label>nm — ประสิทธิภาพมอเตอร์</label><input type="number" id="pu-nm" value="0.8" step="0.01" min="0.1" max="1" oninput="calcPump()"></div>
+          <div class="calc-input-group"><label>TDH — Total Dynamic Head (ม.)</label><input type="number" id="pu-tdh" value="7" step="0.1" oninput="calcPump()"></div>
+          <div class="calc-input-group"><label>Q — อัตราสูบ (m³/h)</label><input type="number" id="pu-q" value="10" step="0.1" oninput="calcPump()"></div>
+          <div class="calc-input-group"><label>W — พลังงานที่ใช้ (หน่วย kWh)</label><input type="number" id="pu-w" value="1000" step="1" oninput="calcPump()"></div>
+        </div>
+        <div class="calc-formula-box">
+          <strong>Pp = Q × TDH × 9.81 / (3600 × 0.746 × np)</strong> HP<br>
+          <strong>Pm = Pp / nm</strong> HP &nbsp;|&nbsp; <strong>Pk = Pm × 0.746</strong> kW<br>
+          <strong>E = Q / Pk</strong> m³/kW &nbsp;|&nbsp; <strong>V = W × E</strong> m³
+        </div>
+        <div id="res-pump" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: ท่อกลม ─── -->
+      <div class="calc-panel" id="cp-pipe_round">
+        <div class="calc-section-title">⭕ ท่อกลม (Circular Pipe Flow)</div>
+        <div class="calc-case-tabs">
+          <div class="calc-case-tab active" onclick="setPipeCase('round','partial',this)">กรณี 1: น้ำไม่เต็มท่อ</div>
+          <div class="calc-case-tab" onclick="setPipeCase('round','full_free',this)">กรณี 2: น้ำเต็มท่อ (ไม่ท่วมหลังท่อ)</div>
+          <div class="calc-case-tab" onclick="setPipeCase('round','full_sub',this)">กรณี 3: น้ำเต็มท่อ (ท่วมหลังท่อ)</div>
+        </div>
+        <div class="calc-case-panel active" id="pr-partial">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>D — เส้นผ่านศูนย์กลางท่อ (ม.)</label><input type="number" id="prp-D" value="0.8" step="0.01" oninput="calcPipeRound('partial')"></div>
+            <div class="calc-input-group"><label>depth — ความลึกน้ำ (ม.)</label><input type="number" id="prp-d" value="0.1" step="0.01" oninput="calcPipeRound('partial')"></div>
+            <div class="calc-input-group"><label>S — ความลาดชันท่อ</label><input type="number" id="prp-S" value="0.002" step="0.0001" oninput="calcPipeRound('partial')"></div>
+            <div class="calc-input-group"><label>n — Manning roughness</label><input type="number" id="prp-n" value="0.014" step="0.001" oninput="calcPipeRound('partial')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>θ = 2·acos((D/2 − depth)/(D/2))</strong><br><strong>A = (D/2)² / 2 × (θ − sinθ)</strong> &nbsp;|&nbsp; <strong>V = (D/4)²/³ × S½ / n</strong></div>
+        </div>
+        <div class="calc-case-panel" id="pr-full_free">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>H — ความสูงน้ำเหนือน้ำ (ม.)</label><input type="number" id="prf-H" value="1" step="0.01" oninput="calcPipeRound('full_free')"></div>
+            <div class="calc-input-group"><label>D — เส้นผ่านศูนย์กลาง (ม.)</label><input type="number" id="prf-D" value="0.8" step="0.01" oninput="calcPipeRound('full_free')"></div>
+            <div class="calc-input-group"><label>Cd — สัมประสิทธิ์การไหล</label><input type="number" id="prf-Cd" value="0.6" step="0.01" oninput="calcPipeRound('full_free')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>เงื่อนไข: H > 1.2D</strong><br><strong>V = √(2gH)</strong> &nbsp;|&nbsp; <strong>A = π D²/4</strong> &nbsp;|&nbsp; <strong>Q = Cd × A × V</strong></div>
+        </div>
+        <div class="calc-case-panel" id="pr-full_sub">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>Hu — ความสูงน้ำเหนือน้ำ (ม.)</label><input type="number" id="prs-Hu" value="1" step="0.01" oninput="calcPipeRound('full_sub')"></div>
+            <div class="calc-input-group"><label>Hd — ความสูงน้ำท้ายน้ำ (ม.)</label><input type="number" id="prs-Hd" value="0.8" step="0.01" oninput="calcPipeRound('full_sub')"></div>
+            <div class="calc-input-group"><label>D — เส้นผ่านศูนย์กลาง (ม.)</label><input type="number" id="prs-D" value="0.8" step="0.01" oninput="calcPipeRound('full_sub')"></div>
+            <div class="calc-input-group"><label>Cd — สัมประสิทธิ์การไหล</label><input type="number" id="prs-Cd" value="0.6" step="0.01" oninput="calcPipeRound('full_sub')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>เงื่อนไข: Hu > 1.2D และ Hd ท่วมหลังท่อ</strong><br><strong>V = √(2g(Hu−Hd))</strong> &nbsp;|&nbsp; <strong>Q = Cd × A × V</strong></div>
+        </div>
+        <div id="res-pipe_round" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: ท่อเหลี่ยม ─── -->
+      <div class="calc-panel" id="cp-pipe_rect">
+        <div class="calc-section-title">▭ ท่อเหลี่ยม (Rectangular Pipe Flow)</div>
+        <div class="calc-case-tabs">
+          <div class="calc-case-tab active" onclick="setPipeCase('rect','partial',this)">กรณี 1: น้ำไม่เต็มท่อ (Manning)</div>
+          <div class="calc-case-tab" onclick="setPipeCase('rect','full_free',this)">กรณี 2: น้ำเต็มท่อ (ไม่มีแรงดันท้าย)</div>
+          <div class="calc-case-tab" onclick="setPipeCase('rect','full_sub',this)">กรณี 3: น้ำเต็มท่อ (มีแรงดันท้าย)</div>
+        </div>
+        <div class="calc-case-panel active" id="rect-partial">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>b — ความกว้าง (ม.)</label><input type="number" id="rcp-b" value="1.5" step="0.01" oninput="calcPipeRect('partial')"></div>
+            <div class="calc-input-group"><label>d — ความลึกน้ำ (ม.)</label><input type="number" id="rcp-d" value="1" step="0.01" oninput="calcPipeRect('partial')"></div>
+            <div class="calc-input-group"><label>S — ความลาดชัน</label><input type="number" id="rcp-S" value="0.001" step="0.0001" oninput="calcPipeRect('partial')"></div>
+            <div class="calc-input-group"><label>n — Manning roughness</label><input type="number" id="rcp-n" value="0.015" step="0.001" oninput="calcPipeRect('partial')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>A=b×d | P=b+2d | R=A/P | V=(1/n)R²/³S½ | Q=V×A</strong></div>
+        </div>
+        <div class="calc-case-panel" id="rect-full_free">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>b — ความกว้าง (ม.)</label><input type="number" id="rcf-b" value="1" step="0.01" oninput="calcPipeRect('full_free')"></div>
+            <div class="calc-input-group"><label>h — ความสูงท่อ (ม.)</label><input type="number" id="rcf-h" value="1" step="0.01" oninput="calcPipeRect('full_free')"></div>
+            <div class="calc-input-group"><label>Hu — ความสูงน้ำเหนือน้ำ (ม.)</label><input type="number" id="rcf-Hu" value="1.5" step="0.01" oninput="calcPipeRect('full_free')"></div>
+            <div class="calc-input-group"><label>Cd — สัมประสิทธิ์การไหล</label><input type="number" id="rcf-Cd" value="0.62" step="0.01" oninput="calcPipeRect('full_free')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>A=b×h | V=Cd×√(2gHu) | Q=A×V</strong></div>
+        </div>
+        <div class="calc-case-panel" id="rect-full_sub">
+          <div class="calc-input-grid">
+            <div class="calc-input-group"><label>b — ความกว้าง (ม.)</label><input type="number" id="rcs-b" value="1" step="0.01" oninput="calcPipeRect('full_sub')"></div>
+            <div class="calc-input-group"><label>h — ความสูงท่อ (ม.)</label><input type="number" id="rcs-h" value="1" step="0.01" oninput="calcPipeRect('full_sub')"></div>
+            <div class="calc-input-group"><label>Hu — ความสูงน้ำเหนือน้ำ (ม.)</label><input type="number" id="rcs-Hu" value="1.5" step="0.01" oninput="calcPipeRect('full_sub')"></div>
+            <div class="calc-input-group"><label>Hd — ความสูงน้ำท้ายน้ำ (ม.)</label><input type="number" id="rcs-Hd" value="0.8" step="0.01" oninput="calcPipeRect('full_sub')"></div>
+            <div class="calc-input-group"><label>Cd — สัมประสิทธิ์การไหล</label><input type="number" id="rcs-Cd" value="0.62" step="0.01" oninput="calcPipeRect('full_sub')"></div>
+          </div>
+          <div class="calc-formula-box"><strong>A=b×h | V=Cd×√(2g(Hu−Hd)) | Q=A×V</strong></div>
+        </div>
+        <div id="res-pipe_rect" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: ฝายสันตรง ─── -->
+      <div class="calc-panel" id="cp-weir">
+        <div class="calc-section-title">🏗️ ฝายสันตรง Sharp-Crested Rectangular Weir</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>Cd — สัมประสิทธิ์การไหล</label><input type="number" id="wc-Cd" value="0.62" step="0.01" oninput="calcWeir()"><div class="unit-hint">ทั่วไป 0.60–0.65</div></div>
+          <div class="calc-input-group"><label>b — ความกว้างฝาย (ม.)</label><input type="number" id="wc-b" value="1" step="0.01" oninput="calcWeir()"></div>
+          <div class="calc-input-group"><label>H — ความสูงน้ำเหนือสันฝาย (ม.)</label><input type="number" id="wc-H" value="0.25" step="0.001" oninput="calcWeir()"></div>
+        </div>
+        <div class="calc-formula-box"><strong>Q = (2/3) × Cd × b × √(2g) × H^1.5</strong></div>
+        <div id="res-weir" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: Parshall Flume ─── -->
+      <div class="calc-panel" id="cp-pf">
+        <div class="calc-section-title">📐 รางวัดน้ำ Parshall Flume (Free Flow)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group">
+            <label>W — ขนาดของราง (นิ้ว)</label>
+            <select id="pf-W" onchange="calcPF()">
+              <option value="1">1″</option><option value="2">2″</option><option value="3">3″</option>
+              <option value="6" selected>6″</option><option value="9">9″</option><option value="12">12″</option>
+              <option value="18">18″</option><option value="24">24″</option><option value="36">36″</option>
+              <option value="48">48″</option><option value="60">60″</option><option value="72">72″</option>
+              <option value="84">84″</option><option value="96">96″</option><option value="120">120″</option>
+              <option value="144">144″</option><option value="180">180″</option><option value="240">240″</option>
+              <option value="300">300″</option><option value="360">360″</option><option value="480">480″</option>
+              <option value="600">600″</option>
+            </select>
+          </div>
+          <div class="calc-input-group"><label>Ha — ระดับน้ำในบ่อนิ่ง (ม.)</label><input type="number" id="pf-Ha" value="0.5" step="0.001" oninput="calcPF()"></div>
+        </div>
+        <div id="pf-kn-info" class="calc-formula-box"></div>
+        <div id="pf-warn" class="calc-warn" style="display:none"></div>
+        <div class="calc-formula-box"><strong>Q = k × Ha^n</strong> &nbsp; (k, n ขึ้นกับขนาดราง)</div>
+        <div id="res-pf" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: ไฟฟ้าพลังน้ำ ─── -->
+      <div class="calc-panel" id="cp-hydro">
+        <div class="calc-section-title">⚡ ไฟฟ้าพลังน้ำ (Hydroelectric Power)</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>h — ความสูงท่อส่งน้ำ (ม.)</label><input type="number" id="hy-h" value="95" step="1" oninput="calcHydro()"></div>
+          <div class="calc-input-group"><label>L — ความยาวท่อ (ม.)</label><input type="number" id="hy-L" value="12" step="0.1" oninput="calcHydro()"></div>
+          <div class="calc-input-group"><label>D — ขนาดท่อ (ม.)</label><input type="number" id="hy-D" value="0.8" step="0.01" oninput="calcHydro()"></div>
+          <div class="calc-input-group"><label>Q — ปริมาณน้ำ (m³/s)</label><input type="number" id="hy-Q" value="0.6" step="0.01" oninput="calcHydro()"></div>
+          <div class="calc-input-group"><label>n — ประสิทธิภาพระบบ (%)</label><input type="number" id="hy-n" value="56" step="1" min="1" max="100" oninput="calcHydro()"><div class="unit-hint">Pelton 81–88%, Francis 86–92%, Kaplan 80–87%</div></div>
+          <div class="calc-input-group"><label>f — Darcy friction factor</label><input type="number" id="hy-f" value="0.03" step="0.001" oninput="calcHydro()"><div class="unit-hint">ท่อเหล็ก ≈ 0.03</div></div>
+        </div>
+        <div class="calc-formula-box">
+          <strong>A = πD²/4 | V = Q/A | Hf = f×L/D×V²/(2g)</strong><br>
+          <strong>H = h − Hf | P = ρ×g×Q×H×n/100/1000 (kW)</strong>
+        </div>
+        <div id="res-hydro" class="calc-result-box"></div>
+      </div>
+
+      <!-- ─── PANEL: ระเหย + รั่วซึม ─── -->
+      <div class="calc-panel" id="cp-evap">
+        <div class="calc-section-title">☁️ ปริมาณน้ำสูญเสีย — ระเหย + รั่วซึม</div>
+        <div class="calc-input-grid">
+          <div class="calc-input-group"><label>พื้นที่ผิวน้ำ (ตร.ม.)</label><input type="number" id="ev-area" value="50500" step="100" oninput="calcEvap()"></div>
+          <div class="calc-input-group"><label>การระเหยสุทธิ (ระเหย − ฝน) (มม./เดือน)</label><input type="number" id="ev-net" value="89.2" step="0.1" oninput="calcEvap()"><div class="unit-hint">ค่าเฉลี่ยรายเดือน เช่น 133.5 − 28.3 = 105.2</div></div>
+          <div class="calc-input-group"><label>สัมประสิทธิ์ถาดระเหย</label><input type="number" id="ev-coef" value="0.7" step="0.01" oninput="calcEvap()"><div class="unit-hint">ค่ามาตรฐาน = 0.7</div></div>
+          <div class="calc-input-group"><label>อัตรารั่วซึม (m/วัน)</label><input type="number" id="ev-leak" value="0.0015" step="0.0001" oninput="calcEvap()"><div class="unit-hint">ค่าเริ่มต้น 0.0015 m/วัน</div></div>
+          <div class="calc-input-group"><label>จำนวนวัน</label><input type="number" id="ev-days" value="31" step="1" oninput="calcEvap()"></div>
+        </div>
+        <div class="calc-formula-box">
+          <strong>ปริมาณน้ำระเหย = (ระเหย−ฝน) × พื้นที่ / 1000 × 0.7</strong><br>
+          <strong>ปริมาณรั่วซึม = พื้นที่ × อัตรารั่วซึม × วัน</strong>
+        </div>
+        <div id="res-evap" class="calc-result-box"></div>
+      </div>
+
+      <!-- History + Reference -->
+      <div class="two-col" style="margin-top:20px">
         <div class="card">
-          <div class="card-hd"><div class="card-title" data-th="ประวัติการคำนวณ" data-en="Calculation History">ประวัติการคำนวณ</div></div>
+          <div class="card-hd"><div class="card-title">ประวัติการคำนวณ</div><button class="btn btn-outline btn-xs" onclick="calcHistory=[];renderCalcHist()">ล้าง</button></div>
           <div class="tbl-wrap">
             <table>
-              <thead><tr>
-                <th data-th="เวลา" data-en="Time">เวลา</th>
-                <th data-th="โหมด" data-en="Mode">โหมด</th>
-                <th data-th="ผลลัพธ์ (ลบ.ม.)" data-en="Result (m³)">ผลลัพธ์ (ลบ.ม.)</th>
-              </tr></thead>
+              <thead><tr><th>เวลา</th><th>โหมด</th><th>Q (m³/s)</th><th>Q (m³/วัน)</th></tr></thead>
               <tbody id="calc-hist-tbody"></tbody>
             </table>
           </div>
         </div>
         <div class="card">
-          <div class="card-hd"><div class="card-title" data-th="ค่าอ้างอิงมาตรฐาน" data-en="Standard Reference Values">ค่าอ้างอิงมาตรฐาน</div></div>
+          <div class="card-hd"><div class="card-title">ค่าอ้างอิงมาตรฐาน</div></div>
           <div class="card-body">
-            <div class="info-row"><span class="info-k" data-th="อุตสาหกรรมขนาดใหญ่" data-en="Large Industry">อุตสาหกรรมขนาดใหญ่</span><span class="info-v">500–5,000 m³/วัน</span></div>
-            <div class="info-row"><span class="info-k" data-th="อุตสาหกรรมขนาดกลาง" data-en="Medium Industry">อุตสาหกรรมขนาดกลาง</span><span class="info-v">100–500 m³/วัน</span></div>
-            <div class="info-row"><span class="info-k" data-th="เกษตร (ข้าว)" data-en="Agriculture (Rice)">เกษตร (ข้าว)</span><span class="info-v">1,200 m³/ไร่/ปี</span></div>
-            <div class="info-row"><span class="info-k" data-th="เกษตร (ผัก)" data-en="Agriculture (Veg.)">เกษตร (ผัก)</span><span class="info-v">800 m³/ไร่/ปี</span></div>
-            <div class="info-row"><span class="info-k" data-th="พาณิชยกรรม" data-en="Commerce">พาณิชยกรรม</span><span class="info-v">50–200 m³/วัน</span></div>
+            <div class="info-row"><span class="info-k">อุตสาหกรรมขนาดใหญ่</span><span class="info-v">500–5,000 m³/วัน</span></div>
+            <div class="info-row"><span class="info-k">อุตสาหกรรมขนาดกลาง</span><span class="info-v">100–500 m³/วัน</span></div>
+            <div class="info-row"><span class="info-k">เกษตร (ข้าว)</span><span class="info-v">1,200 m³/ไร่/ปี</span></div>
+            <div class="info-row"><span class="info-k">เกษตร (ผัก)</span><span class="info-v">800 m³/ไร่/ปี</span></div>
+            <div class="info-row"><span class="info-k">ไฟฟ้าพลังน้ำ P=ρgQHη</span><span class="info-v">η≈56–92%</span></div>
+            <div class="info-row"><span class="info-k">Parshall flume Q=k·Ha^n</span><span class="info-v">k,n ตามขนาดราง</span></div>
           </div>
         </div>
       </div>
     </div>
-
     <!-- MY APPLICATION (Applicant) -->
     <div id="page-myapp" class="page">
       <div class="card fade-up">
@@ -4360,48 +4749,633 @@ function renderMyApps() {
 /* ================================================================
    CALCULATOR
 ================================================================ */
-function setCalcMode(m, btn) {
-  calcMode = m;
-  ['flow','meter','area'].forEach(k => {
-    document.getElementById('calc-inputs-'+k).style.display = k===m?'grid':'none';
-  });
-  document.querySelectorAll('.calc-mode-btn').forEach(b => b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  setResult(0,0);
-}
-function setResult(m3, days) {
-  document.getElementById('res-m3').textContent = fmt(m3);
-  document.getElementById('res-ml').textContent = fmt(m3/1000,4);
-  document.getElementById('res-day').textContent = days>0 ? fmt(m3/days) : fmt(m3);
-}
-function fmt(n,d=2){ return isNaN(n)?'0':n.toLocaleString(undefined,{maximumFractionDigits:d}); }
-function saveHistory(mode,m3) {
-  if(m3<=0) return;
-  calcHistory.unshift({date:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),mode,val:m3});
-  if(calcHistory.length>8) calcHistory.pop();
+/* ================================================================
+   CALCULATOR v2 — 10 modes from cal_v7.xlsx
+================================================================ */
+function fmt(n,d=2){ return (isNaN(n)||!isFinite(n))?'0':n.toLocaleString('th-TH',{maximumFractionDigits:d}); }
+function fmtSci(n){ if(Math.abs(n)<0.001&&n!==0) return n.toExponential(3); return fmt(n,4); }
+
+function renderCalcHistory() {
   const tb = document.getElementById('calc-hist-tbody');
-  if(tb) tb.innerHTML = calcHistory.map(r=>`<tr><td style="font-size:12px">${r.date}</td><td>${r.mode}</td><td style="font-family:'IBM Plex Mono',monospace;font-weight:700">${fmt(r.val)}</td></tr>`).join('');
+  if(!tb) return;
+  tb.innerHTML = calcHistory.map(r=>`<tr>
+    <td style="font-size:11px">${r.date}</td>
+    <td style="font-size:11px">${r.mode}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--teal)">${fmt(r.Qday)}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">${fmtSci(r.Qs)}</td>
+  </tr>`).join('');
 }
+function saveCalcHistory(mode, Qs, Qday) {
+  if(!Qs && !Qday) return;
+  calcHistory.unshift({
+    date:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),
+    mode, Qs, Qday
+  });
+  if(calcHistory.length>12) calcHistory.pop();
+  renderCalcHistory();
+}
+function showResult(html, Qs, Qday, mode) {
+  document.getElementById('calc-result-panel').innerHTML = html;
+  saveCalcHistory(mode, Qs, Qday);
+}
+function resCards(rows) {
+  // rows: [[val, label, primary?], ...]
+  return '<div class="result-grid">' +
+    rows.map(([v,l,p])=>`<div class="res-card ${p?'primary':''}"><div class="res-val">${v}</div><div class="res-lbl">${l}</div></div>`).join('') +
+    '</div>';
+}
+
+const CALC_MODES = [
+  { id:'drain',   icon:'〰️', name:'รางระบายน้ำ',     sub:'Manning equation', group:'ทางน้ำเปิด' },
+  { id:'pipe_open',icon:'⭕',name:'ท่อกลม (ทางน้ำเปิด)',sub:'กรณีน้ำไม่เต็มท่อ',group:'ทางน้ำเปิด' },
+  { id:'pipe_full1',icon:'🔵',name:'ท่อกลม (เต็ม 1)',  sub:'ท้ายน้ำไม่ท่วม', group:'ทางน้ำเปิด' },
+  { id:'pipe_full2',icon:'💧',name:'ท่อกลม (เต็ม 2)',  sub:'ท้ายน้ำท่วม',    group:'ทางน้ำเปิด' },
+  { id:'rect1',   icon:'⬜', name:'ท่อเหลี่ยม (เปิด)', sub:'ไหลเปิด',       group:'ท่อเหลี่ยม' },
+  { id:'rect2',   icon:'🔲', name:'ท่อเหลี่ยม (เต็ม)', sub:'ไม่มีแรงดันท้าย',group:'ท่อเหลี่ยม' },
+  { id:'rect3',   icon:'🟦', name:'ท่อเหลี่ยม (แรงดัน)',sub:'มีแรงดันท้ายน้ำ',group:'ท่อเหลี่ยม' },
+  { id:'weir',    icon:'🌊', name:'ฝายสันตรง',        sub:'Broad-crested',  group:'ฝาย/ราง' },
+  { id:'pflumeFF',icon:'📐', name:'รางวัดน้ำ PF',      sub:'Parshall Flume', group:'ฝาย/ราง' },
+  { id:'cflumeFF',icon:'🌀', name:'รางวัดน้ำ CF',      sub:'Cutthroat Flume',group:'ฝาย/ราง' },
+  { id:'pump',    icon:'⚙️', name:'เครื่องสูบน้ำ',     sub:'พลังงาน→ปริมาณ', group:'อื่นๆ' },
+  { id:'hydro',   icon:'⚡', name:'ไฟฟ้าพลังน้ำ',      sub:'Hydro power',   group:'อื่นๆ' },
+  { id:'evap',    icon:'☀️', name:'ระเหย+รั่วซึม',     sub:'อ่างเก็บน้ำ',   group:'อื่นๆ' },
+  { id:'meterread',icon:'🔢',name:'หน้าปัดมาตรวัด',    sub:'ค่าต้น-ปลายงวด',group:'อื่นๆ' },
+];
+
+let _calcMode = null;
+function initCalcModes() {
+  /* grid is already built as static HTML — just trigger first calc */
+  try{ calcFlow(); }catch(e){}
+}
+
+function selectCalcMode(id) {
+  /* redirect old IDs to new panel IDs */
+  const MAP = {drain:'drain',pipe_open:'pipe_round',pipe_full1:'pipe_round',
+    pipe_full2:'pipe_round',rect1:'pipe_rect',rect2:'pipe_rect',rect3:'pipe_rect',
+    weir:'weir',pflumeFF:'pf',cflumeFF:'pf',pump:'pump',hydro:'hydro',
+    evap:'evap',meterread:'meter'};
+  id = MAP[id] || id;
+  document.querySelectorAll('.calc-mode-card').forEach(c=>c.classList.remove('active'));
+  /* mark the card that matches — try both cmc- prefix and data-mode */
+  document.querySelector('[id="cmc-'+id+'"]')?.classList.add('active');
+  /* show the right panel */
+  document.querySelectorAll('.calc-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cp-'+id)?.classList.add('active');
+  /* trigger first calc */
+  const FN = {flow:calcFlow,meter:calcMeter,area:calcArea,drain:calcDrain,pump:calcPump,
+    pipe_round:()=>calcPipeRound('partial'),pipe_rect:()=>calcPipeRect('partial'),
+    weir:calcWeir,pf:calcPF,hydro:calcHydro,evap:calcEvap};
+  if(FN[id]) try{ FN[id](); }catch(e){}
+}
+
+/* ─── Parshall Flume lookup table ─── */
+const PF_TABLE = [
+  {w:1,  k:0.06,  n:1.55, minH:0.015, maxH:0.21},
+  {w:2,  k:0.121, n:1.55, minH:0.015, maxH:0.24},
+  {w:3,  k:0.177, n:1.55, minH:0.03,  maxH:0.33},
+  {w:6,  k:0.381, n:1.58, minH:0.03,  maxH:0.45},
+  {w:9,  k:0.535, n:1.53, minH:0.03,  maxH:0.61},
+  {w:12, k:0.691, n:1.522,minH:0.03,  maxH:0.76},
+  {w:18, k:1.056, n:1.538,minH:0.03,  maxH:0.76},
+  {w:24, k:1.429, n:1.55, minH:0.046, maxH:0.76},
+  {w:36, k:2.184, n:1.566,minH:0.046, maxH:0.76},
+  {w:48, k:2.954, n:1.578,minH:0.06,  maxH:0.76},
+  {w:60, k:3.732, n:1.587,minH:0.06,  maxH:0.76},
+  {w:72, k:4.518, n:1.595,minH:0.076, maxH:0.76},
+  {w:84, k:5.313, n:1.601,minH:0.076, maxH:0.76},
+  {w:96, k:6.115, n:1.607,minH:0.076, maxH:0.76},
+  {w:120,k:7.463, n:1.6,  minH:0.09,  maxH:1.07},
+  {w:144,k:8.859, n:1.6,  minH:0.09,  maxH:1.37},
+  {w:180,k:10.96, n:1.6,  minH:0.09,  maxH:1.67},
+  {w:240,k:14.45, n:1.6,  minH:0.09,  maxH:1.83},
+  {w:300,k:17.94, n:1.6,  minH:0.09,  maxH:1.83},
+];
+
+/* ─── Cutthroat Flume lookup table ─── */
+const CF_TABLE = [
+  {L:0.91,W:0.152,C:1.05,n:1.58},
+  {L:1.22,W:0.152,C:1.45,n:1.58},
+  {L:1.22,W:0.305,C:2.81,n:1.58},
+  {L:1.22,W:0.457,C:4.38,n:1.58},
+  {L:1.83,W:0.152,C:2.13,n:1.58},
+  {L:1.83,W:0.305,C:4.22,n:1.58},
+  {L:1.83,W:0.457,C:6.40,n:1.58},
+  {L:1.83,W:0.610,C:8.75,n:1.58},
+  {L:2.44,W:0.305,C:5.67,n:1.58},
+  {L:2.44,W:0.457,C:8.24,n:1.58},
+  {L:2.44,W:0.610,C:9.60,n:1.58},
+  {L:3.05,W:0.305,C:7.12,n:1.58},
+  {L:3.05,W:0.457,C:9.38,n:1.58},
+  {L:3.05,W:0.610,C:11.1,n:1.58},
+];
+
+/* ─── IG helper ─── */
+function ig(id,label,placeholder,hint='',type='number',step='any',val='') {
+  return `<div class="cig"><label>${label}</label>
+    <input type="${type}" id="${id}" placeholder="${placeholder}" step="${step}" value="${val}" oninput="runCalc()">
+    ${hint?`<div class="hint">${hint}</div>`:''}
+  </div>`;
+}
+function isel(id,label,options,onchange='runCalc()') {
+  return `<div class="cig"><label>${label}</label>
+    <select id="${id}" onchange="${onchange}">
+      ${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}
+    </select></div>`;
+}
+function btn() { return '<button class="calc-run-btn" onclick="runCalc()">🧮 คำนวณ</button>'; }
+
+/* ─── FORM DEFINITIONS ─── */
+const CALC_FORMS = {
+  drain: ()=>`
+    <div class="info-box">Manning's Equation: Q = (1/n)·A·R^(2/3)·S^(1/2)</div>
+    <div class="calc-grid-2">
+      ${ig('dr-b','ความกว้างคลอง b (ม.)','เช่น 0.8','ช่องสี่เหลี่ยม')}
+      ${ig('dr-h','ความลึกน้ำ h (ม.)','เช่น 0.6')}
+      ${ig('dr-S','ความลาดชัน Sf (-)','เช่น 0.001','เช่น 1/1000 = 0.001')}
+      ${ig('dr-n','Manning n','เช่น 0.014','คอนกรีต≈0.013, ดิน≈0.025')}
+    </div>${btn()}`,
+
+  pipe_open: ()=>`
+    <div class="info-box">ท่อกลม ทางน้ำเปิด — น้ำลึกน้อยกว่า 1.2D</div>
+    <div class="calc-grid-2">
+      ${ig('po-D','เส้นผ่านศูนย์กลาง D (ม.)','เช่น 0.8')}
+      ${ig('po-d','ความลึกน้ำ depth (ม.)','เช่น 0.5','ต้องน้อยกว่า D')}
+      ${ig('po-S','ความลาดชัน S (-)','เช่น 0.002')}
+      ${ig('po-n','Manning n','เช่น 0.014')}
+    </div>${btn()}`,
+
+  pipe_full1: ()=>`
+    <div class="info-box">ท่อกลม เต็มท่อ — ท้ายน้ำไม่ท่วมหลังท่อ (H > 1.2D)</div>
+    <div class="calc-grid-2">
+      ${ig('pf1-H','ความสูงน้ำเหนือน้ำ H (ม.)','เช่น 1.0')}
+      ${ig('pf1-D','เส้นผ่านศูนย์กลาง D (ม.)','เช่น 0.8')}
+      ${ig('pf1-Cd','ค่าสัมประสิทธิ์ Cd','0.6','โดยทั่วไป 0.6',undefined,undefined,'0.6')}
+    </div>${btn()}`,
+
+  pipe_full2: ()=>`
+    <div class="info-box">ท่อกลม เต็มท่อ — ท้ายน้ำท่วมหลังท่อ (H > 1.2D)</div>
+    <div class="calc-grid-2">
+      ${ig('pf2-Hu','ความสูงน้ำเหนือน้ำ Hu (ม.)','เช่น 1.0')}
+      ${ig('pf2-Hd','ความสูงน้ำท้ายน้ำ Hd (ม.)','เช่น 0.8')}
+      ${ig('pf2-D','เส้นผ่านศูนย์กลาง D (ม.)','เช่น 0.8')}
+      ${ig('pf2-Cd','ค่าสัมประสิทธิ์ Cd','0.6',undefined,undefined,undefined,'0.6')}
+    </div>${btn()}`,
+
+  rect1: ()=>`
+    <div class="info-box">ท่อเหลี่ยม ไหลเปิด — Manning equation</div>
+    <div class="calc-grid-2">
+      ${ig('r1-b','ความกว้าง b (ม.)','เช่น 1.5')}
+      ${ig('r1-d','ความลึกน้ำ d (ม.)','เช่น 1.0')}
+      ${ig('r1-S','ความลาดชัน S (-)','เช่น 0.001')}
+      ${ig('r1-n','Manning n','เช่น 0.015','คอนกรีต≈0.013')}
+    </div>${btn()}`,
+
+  rect2: ()=>`
+    <div class="info-box">ท่อเหลี่ยม เต็มท่อ — ไม่มีแรงดันท้ายน้ำ</div>
+    <div class="calc-grid-2">
+      ${ig('r2-b','ความกว้าง b (ม.)','เช่น 1.0')}
+      ${ig('r2-h','ความสูงท่อ h (ม.)','เช่น 1.0')}
+      ${ig('r2-Hu','ความสูงน้ำเหนือน้ำ Hu (ม.)','เช่น 1.5')}
+      ${ig('r2-Cd','ค่าสัมประสิทธิ์ Cd','0.62',undefined,undefined,undefined,'0.62')}
+    </div>${btn()}`,
+
+  rect3: ()=>`
+    <div class="info-box">ท่อเหลี่ยม เต็มท่อ — มีแรงดันท้ายน้ำ</div>
+    <div class="calc-grid-2">
+      ${ig('r3-b','ความกว้าง b (ม.)','เช่น 1.0')}
+      ${ig('r3-h','ความสูงท่อ h (ม.)','เช่น 1.0')}
+      ${ig('r3-Hu','ความสูงน้ำเหนือน้ำ Hu (ม.)','เช่น 1.5')}
+      ${ig('r3-Hd','ความสูงน้ำท้ายน้ำ Hd (ม.)','เช่น 0.8')}
+      ${ig('r3-Cd','ค่าสัมประสิทธิ์ Cd','0.62',undefined,undefined,undefined,'0.62')}
+    </div>${btn()}`,
+
+  weir: ()=>`
+    <div class="info-box">ฝายสันตรง: Q = (2/3)·Cd·b·√(2g)·H^(3/2)</div>
+    <div class="calc-grid-2">
+      ${ig('wv-Cd','ค่าสัมประสิทธิ์ Cd','0.62','ทั่วไป 0.60–0.65',undefined,undefined,'0.62')}
+      ${ig('wv-b','ความกว้างฝาย b (ม.)','เช่น 2.0')}
+      ${ig('wv-H','ความสูงระดับน้ำเหนือสันฝาย H (ม.)','เช่น 0.25')}
+    </div>${btn()}`,
+
+  pflumeFF: ()=>`
+    <div class="info-box">Parshall Flume: Q = k·Ha^n (Free flow)</div>
+    <div class="calc-grid-2">
+      ${isel('pf-W','ขนาดรางวัดน้ำ (นิ้ว)',PF_TABLE.map(r=>[r.w,r.w+' นิ้ว']))}
+      ${ig('pf-Ha','ระดับน้ำในบ่อนิ่ง Ha (ม.)','เช่น 0.3')}
+    </div>
+    <div id="pf-range-hint" class="hint" style="margin-bottom:10px"></div>
+    ${btn()}`,
+
+  cflumeFF: ()=>`
+    <div class="info-box">Cutthroat Flume: Q = C·Ha^n (Free flow, Ha/L ≤ 0.4)</div>
+    <div class="calc-grid-2">
+      ${isel('cf-L','ความยาวราง L (ม.)',[...new Set(CF_TABLE.map(r=>r.L))].map(v=>[v,v+' ม.']))}
+      ${isel('cf-W','ความกว้าง throat W (ม.)',CF_TABLE.map(r=>[r.W,r.W+' ม.']),'filterCFWidths()')}
+      ${ig('cf-Ha','ระดับน้ำ Ha (ม.)','เช่น 0.3')}
+    </div>
+    <div id="cf-ratio-hint" class="hint" style="margin-bottom:10px"></div>
+    ${btn()}`,
+
+  pump: ()=>`
+    <div class="info-box">เครื่องสูบน้ำ: ปริมาณน้ำ = W × Q/Pk (จากพลังงานที่ใช้)</div>
+    <div class="calc-grid-2">
+      ${ig('pp-np','ประสิทธิภาพปั๊ม np (-)','เช่น 0.7','ทั่วไป 0.65–0.80',undefined,undefined,'0.7')}
+      ${ig('pp-nm','ประสิทธิภาพมอเตอร์ nm (-)','เช่น 0.8',undefined,undefined,undefined,'0.8')}
+      ${ig('pp-TDH','Total Dynamic Head (ม.)','เช่น 7')}
+      ${ig('pp-Q','อัตราสูบน้ำ Q (ลบ.ม./ชม.)','เช่น 10')}
+      ${ig('pp-W','พลังงานที่ใช้ W (หน่วย kWh)','เช่น 1000')}
+    </div>${btn()}`,
+
+  hydro: ()=>`
+    <div class="info-box">ไฟฟ้าพลังน้ำ: P = ρ·g·Q·H·η/100 (kW)</div>
+    <div class="calc-grid-2">
+      ${ig('hy-h','ความสูงท่อ h (ม.)','เช่น 95')}
+      ${ig('hy-L','ความยาวท่อ L (ม.)','เช่น 12')}
+      ${ig('hy-D','ขนาดท่อ D (ม.)','เช่น 0.8')}
+      ${ig('hy-Q','ปริมาณน้ำ Q (ลบ.ม./วินาที)','เช่น 0.6')}
+      ${ig('hy-P','ขนาดเครื่องกำเนิด P (kW)','เช่น 100')}
+      ${ig('hy-n','ประสิทธิภาพระบบ η (%)','เช่น 56','Pelton≈81-88%, Francis≈86-92%',undefined,undefined,'56')}
+      ${ig('hy-f','Darcy friction factor f','0.03','ท่อเหล็ก≈0.03',undefined,undefined,'0.03')}
+    </div>${btn()}`,
+
+  evap: ()=>`
+    <div class="info-box">การสูญเสียน้ำ = ระเหย×0.7 + รั่วซึม<br>รั่วซึม = พื้นที่ × k × จำนวนวัน (k≈0.0015 ม./วัน)</div>
+    <div class="calc-grid-2">
+      ${ig('ev-E','ค่าระเหย (มม./เดือน)','เช่น 140')}
+      ${ig('ev-R','ฝนเฉลี่ย (มม./เดือน)','เช่น 50')}
+      ${ig('ev-A','พื้นที่ผิวน้ำ (ตร.ม.)','เช่น 50500')}
+      ${ig('ev-k','ค่ารั่วซึม k (ม./วัน)','0.0015','ทั่วไป 0.001–0.003',undefined,undefined,'0.0015')}
+      ${ig('ev-days','จำนวนวัน','เช่น 31',undefined,undefined,undefined,'31')}
+    </div>${btn()}`,
+
+  meterread: ()=>`
+    <div class="info-box">ปริมาณน้ำ = (ปลายงวด − ต้นงวด) × Multiplier</div>
+    <div class="calc-grid-2">
+      ${ig('mr-s','ค่าต้นงวด (ลบ.ม.)','เช่น 1000')}
+      ${ig('mr-e','ค่าปลายงวด (ลบ.ม.)','เช่น 1250')}
+      ${ig('mr-mul','Multiplier','1','ทั่วไป = 1',undefined,undefined,'1')}
+      ${ig('mr-days','ช่วงเวลา (วัน)','เช่น 30',undefined,undefined,undefined,'30')}
+    </div>${btn()}`,
+};
+
+/* ─── RUN CALCULATION ─── */
+function runCalc() {
+  if(!_calcMode) return;
+  const g=9.81, pi=Math.PI;
+  const gv=id=>parseFloat(document.getElementById(id)?.value)||0;
+  const sv=id=>document.getElementById(id)?.value||'';
+  let Qs=0, Qday=0, formula='', warn='', extra='';
+
+  switch(_calcMode) {
+    case 'drain': {
+      const b=gv('dr-b'), h=gv('dr-h'), S=gv('dr-S'), n=gv('dr-n');
+      const A=b*h, P=b+2*h, R=A/P;
+      const V=(1/n)*Math.pow(R,2/3)*Math.pow(S,0.5);
+      Qs=A*V; Qday=Qs*86400;
+      formula=`A = b×h = ${b}×${h} = ${fmt(A,4)} ม²\nP = b+2h = ${fmt(P,4)} ม.\nR = A/P = ${fmt(R,4)} ม.\nV = (1/n)·R^(2/3)·S^(1/2) = ${fmt(V,4)} ม./วินาที\nQ = A·V = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'pipe_open': {
+      const D=gv('po-D'), d=gv('po-d'), S=gv('po-S'), n=gv('po-n');
+      if(d>D) { warn='ความลึก depth ต้องน้อยกว่า D'; break; }
+      const theta=Math.acos((D/2-d)/(D/2))*2;
+      const A=(D/2)**2/2*(theta-Math.sin(theta));
+      const V=(D/4)**(2/3)*S**0.5/n;
+      Qs=A*V; Qday=Qs*86400;
+      formula=`θ = 2·acos((D/2-depth)/(D/2)) = ${fmt(theta,4)} rad\nA = (D/2)²/2·(θ-sin(θ)) = ${fmt(A,4)} ม²\nV = (D/4)^(2/3)·S^(1/2)/n = ${fmt(V,4)} ม./วินาที\nQ = A·V = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'pipe_full1': {
+      const H=gv('pf1-H'), D=gv('pf1-D'), Cd=gv('pf1-Cd');
+      if(H<1.2*D) warn=`⚠ H/D = ${fmt(H/D,2)} ควร > 1.2 สำหรับกรณีนี้`;
+      const V=Math.sqrt((H-D)*2*g);
+      const A=pi*D*D/4;
+      Qs=Cd*A*V; Qday=Qs*86400;
+      formula=`V = √((H-D)·2g) = ${fmt(V,4)} ม./วินาที\nA = π·D²/4 = ${fmt(A,4)} ม²\nQ = Cd·A·V = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'pipe_full2': {
+      const Hu=gv('pf2-Hu'), Hd=gv('pf2-Hd'), D=gv('pf2-D'), Cd=gv('pf2-Cd');
+      const V=Math.sqrt((Hu-Hd)*2*g);
+      const A=pi*D*D/4;
+      Qs=Cd*A*V; Qday=Qs*86400;
+      formula=`V = √((Hu-Hd)·2g) = ${fmt(V,4)} ม./วินาที\nA = π·D²/4 = ${fmt(A,4)} ม²\nQ = Cd·A·V = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'rect1': {
+      const b=gv('r1-b'), d=gv('r1-d'), S=gv('r1-S'), n=gv('r1-n');
+      const A=b*d, P=b+2*d, R=A/P;
+      const V=(1/n)*R**(2/3)*S**0.5;
+      Qs=A*V; Qday=Qs*86400;
+      formula=`A=${fmt(A,4)}, P=${fmt(P,4)}, R=${fmt(R,4)}\nV=(1/n)·R^(2/3)·S^(1/2)=${fmt(V,4)} ม./วินาที\nQ=${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'rect2': {
+      const b=gv('r2-b'), h=gv('r2-h'), Hu=gv('r2-Hu'), Cd=gv('r2-Cd');
+      const A=b*h, V=Cd*Math.sqrt(2*g*Hu);
+      Qs=A*V; Qday=Qs*86400;
+      formula=`A=b×h=${fmt(A,4)} ม²\nV=Cd·√(2gHu)=${fmt(V,4)} ม./วินาที\nQ=A·V=${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'rect3': {
+      const b=gv('r3-b'), h=gv('r3-h'), Hu=gv('r3-Hu'), Hd=gv('r3-Hd'), Cd=gv('r3-Cd');
+      const A=b*h, V=Cd*Math.sqrt(2*g*(Hu-Hd));
+      Qs=A*V; Qday=Qs*86400;
+      formula=`A=b×h=${fmt(A,4)} ม²\nV=Cd·√(2g(Hu-Hd))=${fmt(V,4)} ม./วินาที\nQ=A·V=${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'weir': {
+      const Cd=gv('wv-Cd'), b=gv('wv-b'), H=gv('wv-H');
+      Qs=(2/3)*Cd*b*Math.sqrt(2*g)*H**1.5;
+      Qday=Qs*86400;
+      formula=`Q = (2/3)·Cd·b·√(2g)·H^(3/2)\n  = (2/3)·${Cd}·${b}·${fmt(Math.sqrt(2*g),4)}·${H}^1.5\n  = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'pflumeFF': {
+      const W=parseFloat(sv('pf-W')), Ha=gv('pf-Ha');
+      const row=PF_TABLE.find(r=>r.w===W)||PF_TABLE[PF_TABLE.length-1];
+      const hint=document.getElementById('pf-range-hint');
+      if(hint) hint.textContent=`ช่วง Ha: ${row.minH}–${row.maxH} ม.  |  k=${row.k}, n=${row.n}`;
+      if(Ha<row.minH||Ha>row.maxH) warn=`Ha=${Ha} ม. อยู่นอกช่วง ${row.minH}–${row.maxH} ม.`;
+      Qs=row.k*Ha**row.n; Qday=Qs*86400;
+      formula=`Q = k·Ha^n = ${row.k}·${Ha}^${row.n} = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'cflumeFF': {
+      const L=parseFloat(sv('cf-L')), W=parseFloat(sv('cf-W')), Ha=gv('cf-Ha');
+      const row=CF_TABLE.find(r=>r.L===L&&r.W===W);
+      const hint=document.getElementById('cf-ratio-hint');
+      const ratio=Ha/L;
+      if(hint) hint.textContent=`Ha/L = ${fmt(ratio,3)} ${ratio<=0.4?'✅ Free flow':'⚠ > 0.4 อาจเป็น submerged flow'}`;
+      if(!row) { warn='ไม่พบค่า C,n สำหรับขนาดนี้'; break; }
+      if(ratio>0.4) warn='Ha/L > 0.4 — อาจต้องใช้สูตร submerged flow';
+      Qs=row.C*Ha**row.n; Qday=Qs*86400;
+      formula=`Q = C·Ha^n = ${row.C}·${Ha}^${row.n} = ${fmt(Qs,6)} ลบ.ม./วินาที`;
+      break;
+    }
+    case 'pump': {
+      const np=gv('pp-np'), nm=gv('pp-nm'), TDH=gv('pp-TDH'), Q=gv('pp-Q'), W=gv('pp-W');
+      const Pp=Q*TDH*9.81/(3600*0.746*np);
+      const Pm=Pp/nm, Pk=Pm*0.746;
+      const E=Q/Pk;
+      const V=W*E;
+      Qs=Q/3600; Qday=V;
+      formula=`Pp = Q·TDH·9.81/(3600·0.746·np) = ${fmt(Pp,3)} HP\nPm = Pp/nm = ${fmt(Pm,3)} HP\nPk = Pm·0.746 = ${fmt(Pk,3)} kW\nE = Q/Pk = ${fmt(E,4)} ลบ.ม./kW\nV = W·E = ${fmt(V,2)} ลบ.ม. (ปริมาณน้ำจาก ${W} kWh)`;
+      extra=`<div class="res-card" style="grid-column:1/-1"><div class="res-val" style="font-size:15px">${fmt(Pk,2)} kW</div><div class="res-lbl">ขนาดมอเตอร์ที่แนะนำ</div></div>`;
+      break;
+    }
+    case 'hydro': {
+      const h=gv('hy-h'), L=gv('hy-L'), D=gv('hy-D'), Q=gv('hy-Q');
+      const P=gv('hy-P'), n=gv('hy-n'), f=gv('hy-f');
+      const A=pi*D*D/4, V=Q/A;
+      const Hf=f*L/D*V*V/(2*g);
+      const Hnet=h-Hf;
+      const Pout=1000*g*Q*Hnet*n/100/1000;
+      const Qperhour=Q*3600, QperkW=Qperhour/Pout;
+      Qs=Q; Qday=Q*86400;
+      formula=`A=πD²/4=${fmt(A,4)} ม²\nV=Q/A=${fmt(V,4)} ม./วินาที\nHf=f·L/D·V²/2g=${fmt(Hf,3)} ม.\nH_net=${fmt(Hnet,3)} ม.\nP_out=${fmt(Pout,2)} kW\nQ/kW=${fmt(QperkW,3)} ลบ.ม./kW`;
+      extra=`<div class="res-card"><div class="res-val">${fmt(Pout,2)}</div><div class="res-lbl">กำลังผลิต (kW)</div></div>`;
+      break;
+    }
+    case 'evap': {
+      const E=gv('ev-E'), R=gv('ev-R'), A=gv('ev-A'), k=gv('ev-k'), days=gv('ev-days');
+      const netEvap=Math.max(0,(E-R)/1000);
+      const Vevap=netEvap*A*0.7;
+      const Vseep=A*k*days;
+      const Vtotal=Vevap+Vseep;
+      Qs=0; Qday=Vtotal/days;
+      formula=`ระเหย-ฝน = (${E}-${R})/1000 = ${fmt(netEvap,4)} ม.\nปริมาณระเหย = ${fmt(netEvap,4)}·${A}·0.7 = ${fmt(Vevap,2)} ลบ.ม./เดือน\nรั่วซึม = ${A}·${k}·${days} = ${fmt(Vseep,2)} ลบ.ม./เดือน\nรวม = ${fmt(Vtotal,2)} ลบ.ม./เดือน`;
+      extra=`<div class="res-card"><div class="res-val">${fmt(Vevap,1)}</div><div class="res-lbl">ระเหย (ลบ.ม./เดือน)</div></div><div class="res-card"><div class="res-val">${fmt(Vseep,1)}</div><div class="res-lbl">รั่วซึม (ลบ.ม./เดือน)</div></div>`;
+      break;
+    }
+    case 'meterread': {
+      const s=gv('mr-s'), e=gv('mr-e'), mul=gv('mr-mul')||1, days=gv('mr-days')||30;
+      const V=(e-s)*mul;
+      Qs=V/days/86400; Qday=V/days;
+      formula=`V = (${e}-${s})×${mul} = ${fmt(V,2)} ลบ.ม.\nQ = V/days = ${fmt(Qday,4)} ลบ.ม./วัน`;
+      break;
+    }
+  }
+
+  const m=CALC_MODES.find(x=>x.id===_calcMode);
+  let html='';
+  if(warn) html+=`<div class="warn-box">⚠ ${warn}</div>`;
+  if(Qs!==0||Qday!==0) {
+    html+=resCards([
+      [fmt(Qs,6),'อัตราการไหล (ลบ.ม./วินาที)',true],
+      [fmt(Qday,2),'อัตราการไหล (ลบ.ม./วัน)',false],
+      [fmt(Qs*1000,3),'อัตราการไหล (ลิตร/วินาที)',false],
+      [fmt(Qs*3600,4),'อัตราการไหล (ลบ.ม./ชม.)',false],
+    ]+extra);
+    if(formula) html+=`<div class="formula-box">${formula}</div>`;
+    showResult(html, Qs, Qday, m?.name||_calcMode);
+  } else if(warn) {
+    showResult(`<div class="warn-box">⚠ ${warn}</div>`, 0, 0, '');
+  }
+}
+
+function filterCFWidths() {
+  const L=parseFloat(document.getElementById('cf-L')?.value||0);
+  const sel=document.getElementById('cf-W');
+  if(!sel) return;
+  const opts=CF_TABLE.filter(r=>r.L===L);
+  sel.innerHTML=opts.map(r=>`<option value="${r.W}">${r.W} ม.</option>`).join('');
+  runCalc();
+}
+
+/* setCalcMode — routes to correct panel */
+function setCalcMode(m,btn) {
+  document.querySelectorAll('.calc-mode-card').forEach(c=>c.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.calc-panel').forEach(p=>p.classList.remove('active'));
+  const panelId = 'cp-'+m;
+  const panel = document.getElementById(panelId);
+  if(panel) panel.classList.add('active');
+  const FN = {flow:calcFlow,meter:calcMeter,area:calcArea,drain:calcDrain,pump:calcPump,
+    pipe_round:()=>calcPipeRound('partial'),pipe_rect:()=>calcPipeRect('partial'),
+    weir:calcWeir,pf:calcPF,hydro:calcHydro,evap:calcEvap};
+  if(FN[m]) try{ FN[m](); }catch(e){}
+}
+function setResult(){}
+
+/* init on page show */
+const _origShowPage = showPage;
+window.showPage = function(id) {
+  _origShowPage(id);
+  if(id==='calculator') initCalcModes();
+};
+
+
+/* ================================================================
+   CALCULATOR v2 — wrapper functions called by new calc page HTML
+================================================================ */
+function fmts(n,d=4){ if(n===null||n===undefined||isNaN(n)||!isFinite(n))return'—'; return n.toLocaleString('th-TH',{maximumFractionDigits:d}); }
+function gv(id){ return parseFloat(document.getElementById(id)?.value)||0; }
+
+function showResult2(resId, items) {
+  const el = document.getElementById(resId);
+  if(!el) return;
+  el.innerHTML = items.map(([val,unit,label])=>
+    `<div class="calc-res-item2"><div class="calc-res-val2">${val}</div><div class="calc-res-unit">${unit}</div><div class="calc-res-label2">${label}</div></div>`
+  ).join('');
+}
+function saveHist(mode, Qs, Qd) {
+  if(!Qs&&!Qd) return;
+  calcHistory.unshift({date:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),mode,Qs:Qs||0,Qd:Qd||0});
+  if(calcHistory.length>10) calcHistory.pop();
+  renderCalcHist();
+}
+function renderCalcHist() {
+  const tb=document.getElementById('calc-hist-tbody');
+  if(!tb) return;
+  tb.innerHTML = calcHistory.map(r=>`<tr>
+    <td style="font-size:12px">${r.date}</td><td>${r.mode}</td>
+    <td style="font-family:'IBM Plex Mono',monospace">${fmts(r.Qs,6)}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-weight:700">${fmt(r.Qd)}</td>
+  </tr>`).join('');
+}
+
+/* 1. อัตราการไหล */
 function calcFlow() {
-  const r=parseFloat(document.getElementById('fl-rate').value)||0;
-  const h=parseFloat(document.getElementById('fl-h').value)||0;
-  const d=parseFloat(document.getElementById('fl-d').value)||1;
-  const m3 = r*3.6*h*d;
-  setResult(m3,d); saveHistory('อัตราไหล',m3);
+  const r=gv('fl-rate'),h=gv('fl-h'),d=gv('fl-d')||1;
+  const Qs=r/1000, Qd=r*3.6*h, Qtot=Qd*d;
+  showResult2('res-flow',[[fmts(Qs,4),'m³/s','อัตราการไหล Q'],[fmt(Qd),'m³/วัน','ปริมาณต่อวัน'],[fmt(Qtot),'m³','รวม '+d+' วัน']]);
+  saveHist('อัตราไหล',Qs,Qd);
 }
+/* 2. มาตรวัด */
 function calcMeter() {
-  const s=parseFloat(document.getElementById('mt-s').value)||0;
-  const e=parseFloat(document.getElementById('mt-e').value)||0;
-  const mul=parseFloat(document.getElementById('mt-mul').value)||1;
-  const m3=(e-s)*mul;
-  setResult(m3>0?m3:0,30); saveHistory('มาตรวัด',m3);
+  const s=gv('mt-s'),e=gv('mt-e'),mul=gv('mt-mul')||1,d=gv('mt-days')||30;
+  const V=Math.max(0,(e-s)*mul);
+  showResult2('res-meter',[[fmt(V),'m³','ปริมาณน้ำ'],[fmt(V/1000,4),'ล้าน L',''],[fmt(V/d),'m³/วัน','เฉลี่ย/วัน']]);
+  saveHist('มาตรวัด',V/86400,V/d);
 }
+/* 3. พื้นที่เกษตร */
 function calcArea() {
-  const a=parseFloat(document.getElementById('ar-rai').value)||0;
-  const d=parseFloat(document.getElementById('ar-dep').value)||0;
-  const c=parseFloat(document.getElementById('ar-cyc').value)||1;
-  const m3=a*1600*d*c;
-  setResult(m3,365); saveHistory('พื้นที่',m3);
+  const a=gv('ar-rai'),dep=gv('ar-dep'),c=gv('ar-cyc')||1;
+  const V=a*1600*dep*c;
+  showResult2('res-area',[[fmt(V),'m³/ปี','ปริมาณน้ำรวม'],[fmt(V/365),'m³/วัน','เฉลี่ย/วัน'],[fmt(V/1000,4),'ล้าน L','']]);
+  saveHist('เกษตร',V/365/86400,V/365);
+}
+/* 4. รางระบายน้ำ */
+function calcDrain() {
+  const b=gv('dr-b'),h=gv('dr-h'),Sf=gv('dr-s'),n=gv('dr-n');
+  if(!b||!h||!Sf||!n) return;
+  const A=b*h,P=b+2*h,R=A/P;
+  const V=(1/n)*Math.pow(R,2/3)*Math.pow(Sf,0.5);
+  const Q=V*A;
+  showResult2('res-drain',[[fmts(Q,4),'m³/s','Q'],[fmt(Q*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V'],[fmts(R,4),'ม.','R']]);
+  saveHist('ราง Manning',Q,Q*86400);
+}
+/* 5. เครื่องสูบน้ำ */
+function calcPump() {
+  const np=gv('pu-np'),nm=gv('pu-nm'),TDH=gv('pu-tdh'),Q=gv('pu-q'),W=gv('pu-w');
+  if(!np||!nm||!TDH||!Q) return;
+  const Pp=Q*TDH*9.81/(3600*0.746*np),Pm=Pp/nm,Pk=Pm*0.746,E=Q/Pk,V=W*E;
+  showResult2('res-pump',[[fmts(Pp,2),'HP','Pp'],[fmts(Pk,2),'kW','Pk'],[fmts(E,3),'m³/kW','E'],[fmt(V),'m³','V=W×E']]);
+  saveHist('สูบน้ำ',null,V/30);
+}
+/* 6. ท่อกลม */
+function setPipeCase(type,cas,btn) {
+  const pre=type==='round'?'pr':'rect';
+  document.querySelectorAll('#cp-pipe_'+type+' .calc-case-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#cp-pipe_'+type+' .calc-case-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(pre+'-'+cas)?.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(type==='round') calcPipeRound(cas); else calcPipeRect(cas);
+}
+function calcPipeRound(cas) {
+  let Qs=0,info=[];
+  if(cas==='partial') {
+    const D=gv('prp-D'),depth=gv('prp-d'),S=gv('prp-S'),n=gv('prp-n');
+    if(!D||depth<=0) return;
+    const theta=2*Math.acos(Math.max(-1,Math.min(1,(D/2-depth)/(D/2))));
+    const A=(D/2)*(D/2)/2*(theta-Math.sin(theta));
+    const V=Math.pow(D/4,2/3)*Math.pow(S,0.5)/n;
+    Qs=A*V;
+    info=[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(A,4),'ตร.ม.','A'],[fmts(V,3),'m/s','V']];
+  } else if(cas==='full_free') {
+    const H=gv('prf-H'),D=gv('prf-D'),Cd=gv('prf-Cd');
+    const chk=H/D, V=Math.sqrt(2*9.81*H), A=Math.PI*D*D/4;
+    Qs=Cd*A*V;
+    info=[[chk>1.2?'✅ H/D='+fmts(chk,2):'⚠ H/D='+fmts(chk,2),'','H>1.2D'],[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V']];
+  } else {
+    const Hu=gv('prs-Hu'),Hd=gv('prs-Hd'),D=gv('prs-D'),Cd=gv('prs-Cd');
+    const chk=Hu/D, V=Math.sqrt(2*9.81*(Hu-Hd)), A=Math.PI*D*D/4;
+    Qs=Cd*A*V;
+    info=[[chk>1.2?'✅ Hu/D='+fmts(chk,2):'⚠ Hu/D='+fmts(chk,2),'','Hu>1.2D'],[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V']];
+  }
+  showResult2('res-pipe_round',info);
+  saveHist('ท่อกลม',Qs,Qs*86400);
+}
+/* 7. ท่อเหลี่ยม */
+function calcPipeRect(cas) {
+  let Qs=0,info=[];
+  if(cas==='partial') {
+    const b=gv('rcp-b'),d=gv('rcp-d'),S=gv('rcp-S'),n=gv('rcp-n');
+    if(!b||!d) return;
+    const A=b*d,P=b+2*d,R=A/P,V=(1/n)*Math.pow(R,2/3)*Math.pow(S,0.5);
+    Qs=V*A;
+    info=[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V'],[fmts(R,4),'ม.','R']];
+  } else if(cas==='full_free') {
+    const b=gv('rcf-b'),h=gv('rcf-h'),Hu=gv('rcf-Hu'),Cd=gv('rcf-Cd');
+    const A=b*h,V=Cd*Math.sqrt(2*9.81*Hu); Qs=A*V;
+    info=[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V']];
+  } else {
+    const b=gv('rcs-b'),h=gv('rcs-h'),Hu=gv('rcs-Hu'),Hd=gv('rcs-Hd'),Cd=gv('rcs-Cd');
+    const A=b*h,V=Cd*Math.sqrt(2*9.81*(Hu-Hd)); Qs=A*V;
+    info=[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(V,3),'m/s','V']];
+  }
+  showResult2('res-pipe_rect',info);
+  saveHist('ท่อเหลี่ยม',Qs,Qs*86400);
+}
+/* 8. ฝายสันตรง */
+function calcWeir() {
+  const Cd=gv('wc-Cd'),b=gv('wc-b'),H=gv('wc-H');
+  if(!b||!H) return;
+  const Qs=2/3*Cd*b*Math.sqrt(2*9.81)*Math.pow(H,1.5);
+  showResult2('res-weir',[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmt(Qs*3600),'m³/ชม.','Q/ชม.']]);
+  saveHist('ฝายสันตรง',Qs,Qs*86400);
+}
+/* 9. Parshall Flume */
+function calcPF() {
+  const W=parseFloat(document.getElementById('pf-W')?.value)||6, Ha=gv('pf-Ha');
+  const PF=[{W:1,k:0.06,n:1.55,mn:0.015,mx:0.21},{W:2,k:0.121,n:1.55,mn:0.015,mx:0.24},
+    {W:3,k:0.177,n:1.55,mn:0.030,mx:0.33},{W:6,k:0.381,n:1.58,mn:0.030,mx:0.45},
+    {W:9,k:0.535,n:1.53,mn:0.030,mx:0.61},{W:12,k:0.691,n:1.522,mn:0.030,mx:0.76},
+    {W:18,k:1.056,n:1.538,mn:0.030,mx:0.76},{W:24,k:1.429,n:1.55,mn:0.046,mx:0.76},
+    {W:36,k:2.184,n:1.566,mn:0.046,mx:0.76},{W:48,k:2.954,n:1.578,mn:0.060,mx:0.76},
+    {W:60,k:3.732,n:1.587,mn:0.060,mx:0.76},{W:72,k:4.518,n:1.595,mn:0.076,mx:0.76},
+    {W:84,k:5.313,n:1.601,mn:0.076,mx:0.76},{W:96,k:6.115,n:1.607,mn:0.076,mx:0.76},
+    {W:120,k:7.463,n:1.60,mn:0.090,mx:1.07},{W:144,k:8.859,n:1.60,mn:0.090,mx:1.37},
+    {W:180,k:10.96,n:1.60,mn:0.090,mx:1.67},{W:240,k:14.45,n:1.60,mn:0.090,mx:1.83},
+    {W:300,k:17.94,n:1.60,mn:0.090,mx:1.83},{W:360,k:21.44,n:1.60,mn:0.090,mx:1.83},
+    {W:480,k:28.43,n:1.60,mn:0.090,mx:1.83},{W:600,k:35.41,n:1.60,mn:0.090,mx:1.83}];
+  const row=PF.find(r=>r.W===W)||PF[3];
+  const info2=document.getElementById('pf-kn-info');
+  if(info2) info2.innerHTML=`<strong>ราง ${W}″ → k=${row.k}, n=${row.n}</strong> | ช่วง Ha: ${row.mn}–${row.mx} ม.`;
+  const warn=document.getElementById('pf-warn');
+  if(Ha<row.mn||Ha>row.mx){if(warn){warn.textContent=`⚠ Ha=${Ha} นอกช่วง (${row.mn}–${row.mx} ม.)`;warn.style.display='';}}
+  else{if(warn)warn.style.display='none';}
+  const Qs=row.k*Math.pow(Ha,row.n);
+  showResult2('res-pf',[[fmts(Qs,4),'m³/s','Q'],[fmt(Qs*86400),'m³/วัน','Q/วัน'],[fmts(Qs*3600,3),'m³/ชม.','Q/ชม.']]);
+  saveHist('Parshall '+W+'″',Qs,Qs*86400);
+}
+/* 10. ไฟฟ้าพลังน้ำ */
+function calcHydro() {
+  const h=gv('hy-h'),L=gv('hy-L'),D=gv('hy-D'),Q=gv('hy-Q'),n=gv('hy-n'),f=gv('hy-f');
+  if(!D||!Q) return;
+  const A=Math.PI*D*D/4, V=Q/A, Hf=f*L/D*(V*V)/(2*9.81), H=h-Hf;
+  const P=1000*9.81*Q*H*n/100/1000;
+  const Eff=P>0?Q*3600/P:0;
+  showResult2('res-hydro',[[fmts(Hf,2),'ม.','Hf'],[fmts(H,2),'ม.','H สุทธิ'],[fmts(P,2),'kW','P'],[fmts(Eff,2),'m³/kW','Q/P'],[fmt(Q*86400),'m³/วัน','Q/วัน']]);
+  saveHist('ไฟฟ้าพลังน้ำ',Q,Q*86400);
+}
+/* 11. ระเหย + รั่วซึม */
+function calcEvap() {
+  const area=gv('ev-area'),net=gv('ev-net'),coef=gv('ev-coef')||0.7,leak=gv('ev-leak')||0.0015,days=gv('ev-days')||31;
+  const Ve=net*area/1000*coef, Vl=area*leak*days, Vt=Ve+Vl;
+  showResult2('res-evap',[[fmt(Ve),'m³','ระเหย'],[fmt(Vl),'m³','รั่วซึม'],[fmt(Vt),'m³','รวม'],[fmt(Vt/days),'m³/วัน','เฉลี่ย/วัน']]);
+  saveHist('ระเหย+รั่วซึม',null,Vt/days);
 }
 
 /* ================================================================
