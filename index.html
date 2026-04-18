@@ -1682,7 +1682,7 @@ tr:hover td{background:#f8fcfd;}
       <option>ไม่อนุมัติ</option>
       <option>หมดอายุ</option>
     </select>
-    <button class="btn btn-primary" onclick="openModal('modal-add-lic')" id="btn-add-lic">+ เพิ่มผู้ขออนุญาต</button>
+    <button class="btn btn-primary" onclick="openLicDrawer(null)" id="btn-add-lic">+ เพิ่มผู้ขออนุญาต</button>
     <button class="btn btn-outline" onclick="exportCSV()">📥 CSV</button>
   </div>
 
@@ -2540,7 +2540,7 @@ tr:hover td{background:#f8fcfd;}
       <div class="card fade-up">
         <div class="card-hd">
           <div class="card-title" data-th="คำขออนุญาตของฉัน" data-en="My Applications">คำขออนุญาตของฉัน</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-lic')">
+          <button class="btn btn-primary btn-sm" onclick="openLicDrawer(null)">
             + <span data-th="ยื่นคำขอใหม่" data-en="New Application">ยื่นคำขอใหม่</span>
           </button>
         </div>
@@ -5314,19 +5314,21 @@ function showPage(id) {
 
   // role-based: hide edit buttons for public
   const canEdit = ROLE==='admin'||ROLE==='officer';
-  const canAdd = ROLE!=='public' && id!=='dashboard';
-  document.getElementById('topbar-add-btn').style.display = canAdd?'':'none';
+  var noAdd = ['dashboard','calculator','reports','looker','public'];
+  var canAdd = ROLE!=='public' && noAdd.indexOf(id) < 0;
+  var addBtn = document.getElementById('topbar-add-btn');
+  if(addBtn) addBtn.style.display = canAdd?'':'none';
   ['btn-add-lic','btn-add-mtr','btn-add-ins'].forEach(bid=>{
     const el=document.getElementById(bid);
     if(el) el.style.display = canEdit?'':'none';
   });
 
   if(id==='licenses') renderLicenses();
-  if(id==='meters') renderMeters();
+  if(id==='meters') { MTR_VIEW='card'; renderMeters(); }
   if(id==='inspectors') renderInspectors();
   if(id==='reports') renderLogs();
   if(id==='myapp') renderMyApps();
-  if(id==='openchannel') { if(typeof initOCMFilters==='function') initOCMFilters(); if(typeof renderOCM==='function') renderOCM(); }
+  if(id==='openchannel') { if(typeof renderOCM==='function') renderOCM(); }
   if(id==='fieldreport') { if(typeof initFieldReports==='function') initFieldReports(); if(typeof renderFieldReports==='function') renderFieldReports(); }
   if(id==='calculator') { initEvapProvince();
     var t=document.querySelector('#calc-tab-row .calc-tab.active');
@@ -5344,13 +5346,15 @@ function toggleSidebar() {
 }
 
 function handleTopbarAdd() {
-  const active = document.querySelector('.page.active');
+  var active = document.querySelector('.page.active');
   if(!active) return;
-  const id = active.id.replace('page-','');
-  if(id==='licenses'||id==='myapp') openModal('modal-add-lic');
-  else if(id==='meters') openModal('modal-add-mtr');
-  else if(id==='inspectors') openModal('modal-add-ins');
-  else openModal('modal-add-lic');
+  var id = active.id.replace('page-','');
+  if(id==='licenses'||id==='myapp') { if(typeof openLicDrawer==='function') openLicDrawer(null); else openModal('modal-add-lic'); }
+  else if(id==='meters')      { if(typeof openMtrDrawer==='function') openMtrDrawer(null); }
+  else if(id==='openchannel') { if(typeof openOCMDrawer==='function') openOCMDrawer(null); }
+  else if(id==='fieldreport') { if(typeof openFRModal==='function')   openFRModal(); }
+  else if(id==='inspectors')  openModal('modal-add-ins');
+  else if(id==='licenses')    openModal('modal-add-lic');
 }
 
 /* ================================================================
@@ -5395,6 +5399,9 @@ function filterByProvince(el, prov) {
   renderLicenses();
 }
 function renderLicenses(data) {
+  /* Re-init province list always to pick up new data */
+  var provSel = document.getElementById('filt-province');
+  if(provSel){ while(provSel.options.length>1) provSel.remove(1); }
   initLicProvince();
   data = data || filterData(DB.licenses);
   document.getElementById('lic-count').textContent = data.length;
@@ -5431,6 +5438,37 @@ function renderLicenses(data) {
 function openLicDrawer(id) {
   _licDrawerID = id;
   _visitPhotos = { 1:[null,null,null,null], 2:[null,null,null,null] };
+  var isNew = !id;
+
+  /* populate meter select */
+  var msel = document.getElementById('v2-meter-select');
+  if (msel) {
+    msel.innerHTML = '<option value="">-- เลือกจากฐานข้อมูล --</option>' +
+      (DB.meters||[]).map(function(m){
+        return '<option value="'+(m.serial||m.id)+'">'+(m.serial||m.id)+' — '+m.brand+' '+m.model+'</option>';
+      }).join('');
+  }
+
+  if (isNew) {
+    /* clear all fields for new entry */
+    var sv = function(eid,v){ var e=document.getElementById(eid); if(e) e.value=v||''; };
+    document.getElementById('ld-title').textContent = '+ เพิ่มผู้ขออนุญาตใหม่';
+    document.getElementById('ld-id').textContent    = '';
+    ['ld-name','ld-vol','ld-source','ld-province','ld-district','ld-subdistrict','ld-expire','ld-note',
+     'v1-date','v1-officer','v1-location','v1-meter-type','v1-note',
+     'v2-date','v2-officer','v2-note'].forEach(function(id){ sv(id,''); });
+    sv('ld-type',   'ประเภทที่ 2');
+    sv('ld-biz',    'อุตสาหกรรม');
+    sv('ld-status', 'รอตรวจสอบ');
+    document.getElementById('ld-v1-sub').textContent = 'ยังไม่มีข้อมูล';
+    document.getElementById('ld-v2-sub').textContent = 'ยังไม่มีข้อมูล';
+    if(document.getElementById('v2-new-meter-form'))
+      document.getElementById('v2-new-meter-form').style.display='none';
+    document.getElementById('lic-drawer-overlay').classList.add('open');
+    setTimeout(function(){ document.getElementById('lic-drawer').classList.add('open'); }, 10);
+    return;
+  }
+
   var r = (DB.licenses||[]).find(function(x){ return x.id===id; });
   if (!r) return;
 
@@ -5572,7 +5610,29 @@ function saveNewMeterInline() {
 }
 
 function saveLicDrawer() {
-  if (!_licDrawerID) return;
+  var gv = function(id){ var e=document.getElementById(id); return e?e.value.trim():''; };
+  /* เพิ่มใหม่ถ้าไม่มี ID */
+  if (!_licDrawerID) {
+    var name = gv('ld-name');
+    if(!name){ showToast('⚠ กรุณากรอกชื่อบริษัท'); return; }
+    var newId = 'WL-'+new Date().getFullYear()+'-'+String((DB.licenses||[]).length+1).padStart(3,'0');
+    var newRec = {
+      id:newId, name:name,
+      type:gv('ld-type'), biz:gv('ld-biz'),
+      vol:parseFloat(gv('ld-vol'))||0,
+      source:gv('ld-source'), province:gv('ld-province'),
+      district:gv('ld-district'), subdistrict:gv('ld-subdistrict'),
+      expire:gv('ld-expire'), status:gv('ld-status')||'รอตรวจสอบ',
+      note:gv('ld-note'), visit1:{}, visit2:{}
+    };
+    if(!DB.licenses) DB.licenses=[];
+    DB.licenses.unshift(newRec);
+    if(_supaReady && typeof dbSaveLicense==='function') dbSaveLicense(newRec);
+    closeLicDrawer();
+    renderLicenses();
+    showToast('✅ เพิ่ม '+name+' เรียบร้อยแล้ว');
+    return;
+  }
   var idx = (DB.licenses||[]).findIndex(function(r){ return r.id===_licDrawerID; });
   if (idx < 0) return;
   var r = DB.licenses[idx];
@@ -5718,7 +5778,10 @@ var _mtrPhotos = { main:null, 0:null, 1:null, 2:null, 3:null };
 function initMeterFilters() {
   var sizes   = document.getElementById('filt-msize');
   var brands  = document.getElementById('filt-mbrand');
-  if (!sizes || sizes.options.length > 1) return;
+  if (!sizes || !brands) return;
+  /* always refresh to reflect new meters added */
+  while(sizes.options.length  > 1) sizes.remove(1);
+  while(brands.options.length > 1) brands.remove(1);
   var sv=[], bv=[];
   (DB.meters||[]).forEach(function(m){
     if(m.size   && sv.indexOf(m.size)  <0) sv.push(m.size);
@@ -5739,12 +5802,20 @@ function renderMeters() {
     return (!q||(r.brand+r.model+r.serial+r.location+'').toLowerCase().includes(q)) &&
            (!t||r.type===t) && (!sz||r.size===sz) && (!br||r.brand===br) && (!st||r.status===st);
   });
-  document.getElementById('mtr-count').textContent = data.length;
+  var cntEl = document.getElementById('mtr-count');
+  if(cntEl) cntEl.textContent = data.length;
   var canEdit = ROLE==='admin'||ROLE==='officer';
 
+  /* ensure correct view is visible */
+  var cardView  = document.getElementById('mtr-card-view');
+  var tableView = document.getElementById('mtr-table-view');
+  if(cardView)  cardView.style.display  = MTR_VIEW==='table'?'none':'block';
+  if(tableView) tableView.style.display = MTR_VIEW==='table'?'block':'none';
+
   /* Card view */
-  document.getElementById('mtr-grid').innerHTML = data.map(function(r){
-    var img = r.image || (r.photos && r.photos.main) || '';
+  var grid = document.getElementById('mtr-grid');
+  if(grid) grid.innerHTML = data.map(function(r){
+    var img = r.image || (r.photos&&r.photos[0]) || '';
     var imgHtml = img
       ? '<img class="meter-card-img" src="'+img+'" alt="'+r.brand+' '+r.model+'" onerror="this.outerHTML=\'<div class=meter-card-img-placeholder>🔧</div>\'">'
       : '<div class="meter-card-img-placeholder">🔧</div>';
@@ -5762,33 +5833,32 @@ function renderMeters() {
           '<span class="badge '+statusCls+'" style="font-size:10px">'+r.status+'</span>'+
         '</div>'+
         '<div class="meter-card-reading">'+
-          '<div>'+
-            '<div class="meter-reading-val">'+(r.lastReading!=null?r.lastReading.toFixed(1):'—')+'</div>'+
-            '<div class="meter-reading-unit">m³/h</div>'+
-          '</div>'+
+          '<div><div class="meter-reading-val">'+(r.lastReading!=null?parseFloat(r.lastReading).toFixed(1):'—')+'</div>'+
+          '<div class="meter-reading-unit">m³/h</div></div>'+
           '<div class="meter-reading-time">'+(r.lastReadingTime||'ไม่มีข้อมูล')+'<br>'+(r.protocol||'')+'</div>'+
         '</div>'+
       '</div>'+
     '</div>';
-  }).join('');
+  }).join('') || '<div style="padding:32px;text-align:center;color:var(--txt3)">ไม่พบข้อมูล</div>';
 
   /* Table view */
-  document.getElementById('mtr-tbody').innerHTML = data.map(function(r){
+  var tbody = document.getElementById('mtr-tbody');
+  if(tbody) tbody.innerHTML = data.map(function(r){
     var statusCls = r.status==='ใช้งานได้'?'bg-green':r.status==='ซ่อมแซม'?'bg-red':'bg-amber';
     return '<tr style="cursor:pointer" onclick="openMtrDrawer(\''+r.id+'\')">'+
       '<td class="td-id">'+(r.serial||r.id)+'</td>'+
       '<td>'+r.type+'</td>'+
       '<td><strong>'+r.brand+'</strong><br><span style="font-size:11px;color:var(--txt2)">'+r.model+'</span></td>'+
-      '<td>'+r.size+'</td>'+
+      '<td>'+(r.size||'—')+'</td>'+
       '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12px">'+(r.range||'—')+'</td>'+
       '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12px">'+(r.acc||'—')+'</td>'+
-      '<td style="font-size:11px;max-width:140px">'+(r.location||'—')+'</td>'+
-      '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:13px;font-weight:600">'+(r.lastReading!=null?r.lastReading.toFixed(1)+' m³/h':'—')+'</td>'+
+      '<td style="font-size:11px">'+(r.location||'—')+'</td>'+
+      '<td style="font-family:\'IBM Plex Mono\',monospace;font-weight:600">'+(r.lastReading!=null?parseFloat(r.lastReading).toFixed(1)+' m³/h':'—')+'</td>'+
       '<td><span class="badge '+statusCls+'">'+r.status+'</span></td>'+
       '<td onclick="event.stopPropagation()">'+
         '<div style="display:flex;gap:4px">'+
           '<button class="btn btn-outline btn-xs" onclick="openMtrDrawer(\''+r.id+'\')">✏️</button>'+
-          (canEdit?'<button class="btn btn-danger btn-xs" onclick="delMtr(\''+r.id+'\')">✕</button>':'')+
+          (canEdit?'<button class="btn btn-danger btn-xs" onclick="event.stopPropagation();delMtr(\''+r.id+'\')">✕</button>':'')+
         '</div>'+
       '</td>'+
     '</tr>';
@@ -6026,12 +6096,8 @@ function switchMtrTab(tab) {
 }
 function delMtr(id){ if(!confirm('ยืนยันการลบ?')) return; DB.meters=DB.meters.filter(r=>r.id!==id); renderMeters(); showToast('ลบข้อมูลเรียบร้อย'); }
 function saveMeter() {
-  const brand = document.getElementById('mt-brand').value.trim();
-  if(!brand){ showToast('⚠ กรุณากรอกยี่ห้อ'); return; }
-  const id = 'MT-'+String(DB.meters.length+1).padStart(3,'0');
-  DB.meters.unshift({id,type:document.getElementById('mt-type').value,brand,model:document.getElementById('mt-model').value,serial:document.getElementById('mt-serial').value||id,size:document.getElementById('mt-size').value,range:document.getElementById('mt-range').value,acc:document.getElementById('mt-acc').value,status:document.getElementById('mt-status').value});
-  closeModal('modal-add-mtr'); renderMeters();
-  showToast(`✅ เพิ่มมาตรวัด ${brand} ${document.getElementById('mt-model').value} เรียบร้อย`);
+  /* ใช้ saveMtrDrawer แทน — modal-add-mtr ถูกแทนด้วย drawer */
+  if(typeof saveMtrDrawer==='function') saveMtrDrawer();
 }
 
 /* ================================================================
@@ -6413,7 +6479,9 @@ var _ocmPhotos = { main:null, 0:null, 1:null, 2:null, 3:null };
 function initOCMFilters() {
   var selCountry = document.getElementById('ocm-filter-country');
   var selMaker   = document.getElementById('ocm-filter-maker');
-  if (!selCountry || selCountry.options.length > 1) return;
+  if (!selCountry || !selMaker) return;
+  while(selCountry.options.length > 1) selCountry.remove(1);
+  while(selMaker.options.length   > 1) selMaker.remove(1);
   var cv=[], mv=[];
   (OCM_DB||[]).forEach(function(m){
     if(m.country && cv.indexOf(m.country)<0) cv.push(m.country);
@@ -6425,6 +6493,11 @@ function initOCMFilters() {
 
 function renderOCM() {
   initOCMFilters();
+  var ocmCard  = document.getElementById('ocm-card-view');
+  var ocmTable = document.getElementById('ocm-table-view');
+  var ocmMode  = (typeof OCM_VIEW!=='undefined') ? OCM_VIEW : 'card';
+  if(ocmCard)  ocmCard.style.display  = ocmMode==='table'?'none':'block';
+  if(ocmTable) ocmTable.style.display = ocmMode==='table'?'block':'none';
   if(typeof OCM_DB === 'undefined') return;
   var q   = (document.getElementById('ocm-search')?.value||'').toLowerCase();
   var pri = document.getElementById('ocm-filter-principle')?.value||'';
