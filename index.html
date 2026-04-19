@@ -3013,71 +3013,14 @@ async function syncFromSupabase() {
 }
 
 /* ── DB SAVE FUNCTIONS ──────────────────────────────────────── */
-async function dbSaveLicense(lic) {
-  if (!_supaReady) return;
-  const row = {
-    id:lic.id, name:lic.name, type:lic.type, biz:lic.biz,
-    biz_detail:lic.bizDetail, vol:lic.vol, source:lic.source,
-    status:lic.status, expire:lic.expire||null, note:lic.note,
-    district:lic.district, province:lic.province, subdistrict:lic.subdistrict,
-    lat:lic.lat||null, lon:lic.lon||null, doc_link:lic.docLink, stn:lic.stn,
-    meter_sn:lic.meterSN, visit1:lic.visit1||{}, visit2:lic.visit2||{},
-    created_by:_currentUser?.id
-  };
-  const { error } = await _sb.from('licenses').upsert(row);
-  if (error) console.warn('License save error:', error.message);
-}
-
-async function dbSaveMeter(m) {
-  if (!_supaReady) return;
-  const row = {
-    id:m.id, type:m.type, brand:m.brand, model:m.model,
-    serial:m.serial, size:m.size, range_spec:m.range, accuracy:m.acc,
-    protocol:m.protocol, endpoint:m.endpoint, location:m.location,
-    last_reading:m.lastReading, last_reading_time:m.lastReadingTime||null,
-    status:m.status, datasheet:m.datasheet, note:m.note,
-    image:m.image, photos:m.photos||[],
-    created_by:_currentUser?.id
-  };
-  const { error } = await _sb.from('meters').upsert(row);
-  if (error) console.warn('Meter save error:', error.message);
-}
-
 async function dbDeleteMeter(id) {
   if (!_supaReady) return;
   await _sb.from('meters').delete().eq('id', id);
 }
 
-async function dbSaveOCM(m) {
-  if (!_supaReady) return;
-  const row = {
-    id:m.id, model:m.model, maker:m.maker, distributor:m.distributor,
-    country:m.country, principle:m.principle, frequency:m.frequency,
-    source:m.source, accuracy:m.accuracy, qmin:m.qmin, qmax:m.qmax,
-    power:m.power, display:m.display, output:m.output,
-    interface:m.interface, memory:m.memory, price:m.price,
-    web:m.web, image:m.image, photos:m.photos||[], status:m.status||'ใช้งานได้'
-  };
-  const { error } = await _sb.from('open_channel_meters').upsert(row);
-  if (error) console.warn('OCM save error:', error.message);
-}
-
 async function dbDeleteOCM(id) {
   if (!_supaReady) return;
   await _sb.from('open_channel_meters').delete().eq('id', id);
-}
-
-async function dbSaveFieldReport(r) {
-  if (!_supaReady) return;
-  const row = {
-    id:r.id, round:r.round, date:r.date, company:r.company,
-    license_id:r.licenseId||null, meter_sn:r.meterSN, meter_brand:r.meterBrand,
-    reading:r.reading, inspector:r.inspector, status:r.status,
-    note:r.note, photos:r.photos||[],
-    created_by:_currentUser?.id
-  };
-  const { error } = await _sb.from('field_reports').upsert(row);
-  if (error) console.warn('Field report save error:', error.message);
 }
 
 async function dbDeleteFieldReport(id) {
@@ -3095,6 +3038,171 @@ async function dbLogActivity(action, detail, page) {
 }
 
 /* ── PHOTO UPLOAD TO STORAGE ───────────────────────────────── */
+
+/* ================================================================
+   PHOTO PIPELINE — base64 → Supabase Storage → URL
+================================================================ */
+
+/**
+ * uploadBase64Photo(base64, bucket, path)
+ * แปลง base64 dataURL เป็น Blob แล้ว upload ขึ้น Supabase Storage
+ * คืน public URL หรือ null ถ้าล้มเหลว / ไม่มี Supabase
+ */
+async function uploadBase64Photo(base64, bucket, filePath) {
+  if (!base64 || !base64.startsWith('data:')) return base64 || null; // already URL or null
+  if (!_supaReady || !_sb) return base64; // offline: return base64 as-is (local display)
+  try {
+    // แปลง dataURL → Blob
+    var arr  = base64.split(',');
+    var mime = arr[0].match(/:(.*?);/)[1];
+    var bstr = atob(arr[1]);
+    var u8   = new Uint8Array(bstr.length);
+    for (var i=0; i<bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+    var blob = new Blob([u8], {type: mime});
+    var ext  = mime.split('/')[1] || 'jpg';
+    var fullPath = filePath + '.' + ext;
+
+    var { error } = await _sb.storage.from(bucket).upload(fullPath, blob, {
+      cacheControl: '31536000', upsert: true, contentType: mime
+    });
+    if (error) { console.warn('Photo upload error:', error.message); return base64; }
+
+    var { data: pub } = _sb.storage.from(bucket).getPublicUrl(fullPath);
+    return pub.publicUrl || base64;
+  } catch(e) {
+    console.warn('uploadBase64Photo failed:', e.message);
+    return base64; // fallback: keep base64
+  }
+}
+
+/**
+ * uploadPhotosArray(arr, bucket, prefix)
+ * Upload array ของ base64 strings → คืน array ของ URLs
+ */
+async function uploadPhotosArray(arr, bucket, prefix) {
+  if (!arr || arr.length === 0) return [];
+  var results = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (!arr[i]) { results.push(null); continue; }
+    var url = await uploadBase64Photo(arr[i], bucket, prefix + '_' + i + '_' + Date.now());
+    results.push(url);
+  }
+  return results.filter(Boolean);
+}
+
+/* ── patched dbSaveMeter — upload photos first ── */
+async function dbSaveMeter(m) {
+  if (!_supaReady || !_sb) return;
+  try {
+    var prefix  = 'meters/' + (m.serial||m.id).replace(/[^a-zA-Z0-9-_]/g,'_');
+    var imageUrl = await uploadBase64Photo(m.image, 'meter-photos', prefix + '_main');
+    var photoUrls = await uploadPhotosArray(m.photos||[], 'meter-photos', prefix);
+
+    // อัปเดต DB.meters ด้วย URL จริง (ไม่ใช่ base64 อีกต่อไป)
+    var idx = (DB.meters||[]).findIndex(function(x){ return x.id===m.id; });
+    if (idx >= 0) {
+      DB.meters[idx].image  = imageUrl || DB.meters[idx].image;
+      DB.meters[idx].photos = photoUrls.length ? photoUrls : DB.meters[idx].photos;
+    }
+
+    var row = {
+      id:m.id, type:m.type, brand:m.brand, model:m.model,
+      serial:m.serial, size:m.size, range_spec:m.range, accuracy:m.acc,
+      protocol:m.protocol, endpoint:m.endpoint, location:m.location,
+      last_reading:m.lastReading||null, last_reading_time:m.lastReadingTime||null,
+      status:m.status, datasheet:m.datasheet||null, note:m.note||null,
+      image:imageUrl, photos:photoUrls,
+      created_by:_currentUser?.id||null
+    };
+    var { error } = await _sb.from('meters').upsert(row);
+    if (error) console.warn('Meter save error:', error.message);
+    else console.info('✅ Meter saved:', m.id);
+  } catch(e) { console.warn('dbSaveMeter error:', e.message); }
+}
+
+/* ── patched dbSaveOCM ── */
+async function dbSaveOCM(m) {
+  if (!_supaReady || !_sb) return;
+  try {
+    var prefix    = 'ocm/' + (m.id||'new').replace(/[^a-zA-Z0-9-_]/g,'_');
+    var imageUrl  = await uploadBase64Photo(m.image, 'meter-photos', prefix + '_main');
+    var photoUrls = await uploadPhotosArray(m.photos||[], 'meter-photos', prefix);
+
+    var row = {
+      id:m.id, model:m.model, maker:m.maker, distributor:m.distributor||null,
+      country:m.country||null, principle:m.principle||null, frequency:m.frequency||null,
+      source:m.source||null, accuracy:m.accuracy||null,
+      qmin:m.qmin||null, qmax:m.qmax||null, power:m.power||null,
+      display:m.display||null, output:m.output||null, interface:m.interface||null,
+      memory:m.memory||null, price:m.price||null, web:m.web||null,
+      image:imageUrl, photos:photoUrls, status:m.status||'ใช้งานได้'
+    };
+    var { error } = await _sb.from('open_channel_meters').upsert(row);
+    if (error) console.warn('OCM save error:', error.message);
+    else console.info('✅ OCM saved:', m.id);
+  } catch(e) { console.warn('dbSaveOCM error:', e.message); }
+}
+
+/* ── patched dbSaveLicense (visit photos) ── */
+async function dbSaveLicense(lic) {
+  if (!_supaReady || !_sb) return;
+  try {
+    var prefix = 'licenses/' + lic.id;
+
+    // Upload visit1 photos
+    var v1 = Object.assign({}, lic.visit1||{});
+    if (v1.photos && v1.photos.length) {
+      v1.photos = await uploadPhotosArray(v1.photos, 'visit-photos', prefix + '_v1');
+    }
+    // Upload visit2 photos
+    var v2 = Object.assign({}, lic.visit2||{});
+    if (v2.photos && v2.photos.length) {
+      v2.photos = await uploadPhotosArray(v2.photos, 'visit-photos', prefix + '_v2');
+    }
+
+    var row = {
+      id:lic.id, name:lic.name, type:lic.type||null, biz:lic.biz||null,
+      biz_detail:lic.bizDetail||null, vol:lic.vol||null, source:lic.source||null,
+      status:lic.status||'รอตรวจสอบ',
+      expire: lic.expire && lic.expire !== '-' ? lic.expire : null,
+      note:lic.note||null,
+      district:lic.district||null, province:lic.province||null,
+      subdistrict:lic.subdistrict||null,
+      lat:lic.lat||null, lon:lic.lon||null,
+      doc_link:lic.docLink||null, stn:lic.stn||null,
+      meter_sn:lic.meterSN||null,
+      visit1:v1, visit2:v2,
+      created_by:_currentUser?.id||null
+    };
+    var { error } = await _sb.from('licenses').upsert(row);
+    if (error) console.warn('License save error:', error.message);
+    else console.info('✅ License saved:', lic.id);
+  } catch(e) { console.warn('dbSaveLicense error:', e.message); }
+}
+
+/* ── patched dbSaveFieldReport (field photos) ── */
+async function dbSaveFieldReport(r) {
+  if (!_supaReady || !_sb) return;
+  try {
+    var prefix    = 'field/' + r.id;
+    var photoUrls = await uploadPhotosArray(r.photos||[], 'field-photos', prefix);
+
+    var row = {
+      id:r.id, round:r.round||1,
+      date:r.date, company:r.company,
+      license_id:r.licenseId||null,
+      meter_sn:r.meterSN||null, meter_brand:r.meterBrand||null,
+      reading:r.reading||null, inspector:r.inspector||null,
+      status:r.status||'รอตรวจสอบ',
+      note:r.note||null, photos:photoUrls,
+      created_by:_currentUser?.id||null
+    };
+    var { error } = await _sb.from('field_reports').upsert(row);
+    if (error) console.warn('Field report save error:', error.message);
+    else console.info('✅ Field report saved:', r.id);
+  } catch(e) { console.warn('dbSaveFieldReport error:', e.message); }
+}
+
 async function uploadPhoto(bucket, file, path) {
   if (!_supaReady || !_sb) return null;
   try {
@@ -5176,6 +5284,44 @@ async function doLogout() {
 /* ================================================================
    INIT APP
 ================================================================ */
+
+/* ================================================================
+   LOCAL STORAGE SYNC — persist data when Supabase offline
+================================================================ */
+var _LS_KEY = 'wms_db_v1';
+
+function lsSave() {
+  try {
+    var data = {
+      meters:       (DB.meters||[]).map(function(m){
+        return Object.assign({}, m, {
+          image:  m.image&&m.image.startsWith('data:')  ? m.image  : m.image,
+          photos: (m.photos||[])
+        });
+      }),
+      licenses:     DB.licenses||[],
+      inspectors:   DB.inspectors||[],
+      fieldReports: DB.fieldReports||[],
+      ocm:          OCM_DB||[]
+    };
+    localStorage.setItem(_LS_KEY, JSON.stringify(data));
+  } catch(e) { /* quota exceeded — skip */ }
+}
+
+function lsLoad() {
+  try {
+    var raw = localStorage.getItem(_LS_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    if (data.meters      && data.meters.length)       DB.meters       = data.meters;
+    if (data.inspectors  && data.inspectors.length)   DB.inspectors   = data.inspectors;
+    if (data.fieldReports&& data.fieldReports.length) DB.fieldReports = data.fieldReports;
+    if (data.licenses    && data.licenses.length)     DB.licenses     = data.licenses;
+    if (data.ocm         && data.ocm.length)          window.OCM_DB   = data.ocm;
+    return true;
+  } catch(e) { return false; }
+}
+
 function initApp() {
   const u = USERS[ROLE];
   // sidebar
@@ -5216,7 +5362,12 @@ function initApp() {
   });
 
   // hide add btn for public/applicant on some pages
-  const defaultPage = ROLE==='applicant'?'myapp': ROLE==='public'?'public':'dashboard';
+  /* Load local data if Supabase not ready */
+  if (!_supaReady && typeof lsLoad==='function') {
+    var loaded = lsLoad();
+    if (loaded) console.info('✅ Loaded data from localStorage');
+  }
+  var defaultPage = ROLE==='applicant'?'myapp': ROLE==='public'?'public':'dashboard';
   showPage(defaultPage);
   buildBarChart();
   renderRecent();
@@ -5326,10 +5477,12 @@ function showPage(id) {
   if(id==='licenses') renderLicenses();
   if(id==='meters') { MTR_VIEW='card'; renderMeters(); }
   if(id==='inspectors') renderInspectors();
+  if(typeof lsSave==="function") lsSave();
   if(id==='reports') renderLogs();
   if(id==='myapp') renderMyApps();
   if(id==='openchannel') { if(typeof renderOCM==='function') renderOCM(); }
-  if(id==='fieldreport') { if(typeof initFieldReports==='function') initFieldReports(); if(typeof renderFieldReports==='function') renderFieldReports(); }
+  if(id==='fieldreport') { if(typeof initFieldReports==='function') initFieldReports(); if(typeof renderFieldReports==='function') renderFieldReports();
+  if(typeof lsSave==="function") lsSave(); }
   if(id==='calculator') { initEvapProvince();
     var t=document.querySelector('#calc-tab-row .calc-tab.active');
     if(t){ var mo=t.getAttribute('onclick').match(/switchCalc\('([^']+)'/); if(mo && typeof switchCalc==='function') switchCalc(mo[1],t); }
@@ -5610,7 +5763,7 @@ function saveNewMeterInline() {
 }
 
 function saveLicDrawer() {
-  var gv = function(id){ var e=document.getElementById(id); return e?e.value.trim():''; };
+  var gv = function(id){ var e=document.getElementById(id); var v=e?e.value:''; return (v===null||v===undefined)?'':String(v).trim(); };
   /* เพิ่มใหม่ถ้าไม่มี ID */
   if (!_licDrawerID) {
     var name = gv('ld-name');
@@ -5636,7 +5789,7 @@ function saveLicDrawer() {
   var idx = (DB.licenses||[]).findIndex(function(r){ return r.id===_licDrawerID; });
   if (idx < 0) return;
   var r = DB.licenses[idx];
-  var gv = function(id){ var e=document.getElementById(id); return e?e.value.trim():''; };
+  var gv = function(id){ var e=document.getElementById(id); var v=e?e.value:''; return (v===null||v===undefined)?'':String(v).trim(); };
 
   /* basic */
   r.name        = gv('ld-name')    || r.name;
@@ -5658,7 +5811,7 @@ function saveLicDrawer() {
     location:  gv('v1-location'),
     meterType: gv('v1-meter-type'),
     note:      gv('v1-note'),
-    photos:    _visitPhotos[1].slice()
+    photos:    _visitPhotos[1].filter(Boolean)
   };
 
   /* visit 2 */
@@ -5670,13 +5823,14 @@ function saveLicDrawer() {
     meterSN: meterSN,
     result:  gv('v2-result'),
     note:    gv('v2-note'),
-    photos:  _visitPhotos[2].slice()
+    photos:  _visitPhotos[2].filter(Boolean)
   };
 
   DB.licenses[idx] = r;
   closeLicDrawer();
   renderLicenses();
   showToast('✅ บันทึกข้อมูลเรียบร้อย');
+  if(typeof lsSave==="function") lsSave();
   DB.logs.unshift({date:now(),user:USERS[ROLE]?.name||'User',action:'แก้ไขใบอนุญาต',detail:r.id+' — '+r.name});
 }
 
@@ -5924,7 +6078,7 @@ function saveMtrDrawer() {
   var serial = document.getElementById('md-serial')?.value.trim()||'';
   if (!brand||!model) { showToast('⚠ กรุณากรอก ยี่ห้อ และ รุ่น'); return; }
   if (!serial) serial = 'SN-'+Date.now().toString(36).toUpperCase();
-  var gv = function(id){ var e=document.getElementById(id); return e?e.value.trim():''; };
+  var gv = function(id){ var e=document.getElementById(id); var v=e?e.value:''; return (v===null||v===undefined)?'':String(v).trim(); };
   var reading = parseFloat(gv('md-reading'));
   var extras = [_mtrPhotos[0],_mtrPhotos[1],_mtrPhotos[2],_mtrPhotos[3]].filter(Boolean);
 
@@ -5962,6 +6116,15 @@ function saveMtrDrawer() {
   }
   closeMtrDrawer();
   renderMeters();
+  /* Supabase
+  if(typeof lsSave==="function") lsSave();: save async after UI update */
+  (function() {
+    var savedId = _mtrDrawerID || (DB.meters[DB.meters.length-1] && DB.meters[DB.meters.length-1].id);
+    if (savedId && typeof dbSaveMeter==='function') {
+      var savedMeter = (DB.meters||[]).find(function(m){ return m.id===savedId; });
+      if (savedMeter) dbSaveMeter(savedMeter);
+    }
+  })();
   /* rebuild meter select in license drawer if open */
   var msel=document.getElementById('v2-meter-select');
   if(msel){
@@ -6634,8 +6797,18 @@ function saveOCMDrawer() {
     if(sm) while(sm.options.length>1) sm.remove(1);
     showToast('✅ เพิ่ม '+model+' เรียบร้อย');
   }
+  /* Supabase: save async */
+  (function() {
+    var id = _ocmDrawerID || entry.id;
+    if (typeof dbSaveOCM==='function') {
+      var saved = (OCM_DB||[]).find(function(x){ return x.id===id; });
+      if (saved) dbSaveOCM(saved);
+    }
+  })();
+  if(typeof lsSave==='function') lsSave();
   closeOCMDrawer(); renderOCM();
 }
+  if(typeof lsSave==="function") lsSave();
 
 function deleteOCMFromDrawer(){
   if(!_ocmDrawerID||!confirm('ยืนยันการลบ?')) return;
@@ -6886,7 +7059,7 @@ function saveFieldReport() {
         inspector:  document.getElementById('fr-inspector')?.value.trim()||'',
         status:     document.getElementById('fr-status')?.value||'สมบูรณ์',
         note:       document.getElementById('fr-note')?.value.trim()||'',
-        photos:     _frPhotos.slice()
+        photos:     _frPhotos.filter(Boolean)
       });
     }
     showToast('✅ แก้ไขรายงานเรียบร้อย');
@@ -6901,13 +7074,22 @@ function saveFieldReport() {
       inspector: document.getElementById('fr-inspector')?.value.trim()||'',
       status: document.getElementById('fr-status')?.value||'สมบูรณ์',
       note: document.getElementById('fr-note')?.value.trim()||'',
-      photos: _frPhotos.slice()
+      photos: _frPhotos.filter(Boolean)
     });
     showToast('✅ บันทึกรายงานเรียบร้อย');
   }
   closeModal('modal-field-report');
+  /* Supabase: save async */
+  (function() {
+    if (typeof dbSaveFieldReport==='function') {
+      var fr = (DB.fieldReports||[])[0];
+      if (_frEditId) fr = (DB.fieldReports||[]).find(function(r){ return r.id===_frEditId; });
+      if (fr) dbSaveFieldReport(fr);
+    }
+  })();
   closeFRModal();
   renderFieldReports();
+  if(typeof lsSave==="function") lsSave();
 }
 
 /* Photo upload */
