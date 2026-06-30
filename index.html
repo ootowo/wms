@@ -10467,7 +10467,7 @@ function calcEvap() {
 
   for(var i=0;i<12;i++){
     var netMm   = evapM[i] - rainM[i];            // มม.
-    var evapVol = netMm * 0.01 * area * coef;     // ลบ.ม. (coef = pan coeff)
+    var evapVol = netMm * 0.001 * area * coef;     // ลบ.ม. (coef = pan coeff)
     var leakVol = area * leakRate * EVAP_DAYS[i]; // ลบ.ม.
     var seep    = 0;                               // รั่วซึม = 0 ตามตาราง
     netEvapM.push(Math.round(netMm*10)/10);
