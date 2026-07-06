@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Meter — ระบบรับ/ส่งข้อมูลอัตราการไหล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --surface2:  #1c2128;
+  --border:    #30363d;
+  --border2:   #21262d;
+  --blue:      #1f6feb;
+  --blue-glow: #1f6feb33;
+  --green:     #3fb950;
+  --green-dim: #3fb95022;
+  --red:       #f85149;
+  --red-dim:   #f8514922;
+  --amber:     #e3b341;
+  --amber-dim: #e3b34122;
+  --text:      #e6edf3;
+  --muted:     #8b949e;
+  --muted2:    #484f58;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.h-brand { display: flex; align-items: center; gap: 10px; }
+.h-logo {
+  width: 28px; height: 28px;
+  background: var(--green);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 700; color: #000;
+}
+.h-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.h-sub   { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.h-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 var(--green)} 50%{opacity:.5;box-shadow:0 0 0 4px transparent} }
+
+/* ── WAVEFORM ── */
+.waveform-bar {
+  height: 52px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border2);
+  overflow: hidden;
+  position: relative;
+}
+.waveform-bar canvas { display: block; width: 100%; height: 52px; }
+.wave-label {
+  position: absolute; top: 8px; left: 16px;
+  font-family: var(--mono); font-size: 10px; color: var(--green); opacity: .7;
+  letter-spacing: .05em; text-transform: uppercase;
+}
+
+/* ── MAIN LAYOUT ── */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border2);
+}
+.card-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.card-icon {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.icon-send { background: var(--blue-glow); color: var(--blue); }
+.icon-recv { background: var(--green-dim); color: var(--green); }
+.badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  padding: 2px 8px; border-radius: 20px;
+}
+.badge-post { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue)44; }
+.badge-get  { background: var(--green-dim); color: var(--green); border: 1px solid var(--green)44; }
+.card-body { padding: 18px; }
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+label {
+  display: block;
+  font-size: 11px; font-weight: 500; color: var(--muted);
+  letter-spacing: .04em; text-transform: uppercase;
+  margin-bottom: 5px;
+}
+input[type=text], input[type=number], select, textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+textarea { resize: vertical; min-height: 80px; font-size: 12px; line-height: 1.6; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+select option { background: var(--surface2); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 18px; border-radius: 6px;
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  border: none; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--blue); color: #fff;
+  box-shadow: 0 1px 3px #0004;
+}
+.btn-primary:hover { background: #388bfd; }
+.btn-primary:active { transform: scale(.98); }
+.btn-secondary {
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--muted2); background: var(--border2); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #ff6b63; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-full { width: 100%; }
+.btn-row { display: flex; gap: 8px; margin-top: 16px; }
+
+/* ── CONFIG SECTION ── */
+.config-toggle {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--muted); cursor: pointer;
+  padding: 10px 18px; border-top: 1px solid var(--border2);
+  user-select: none;
+}
+.config-toggle:hover { color: var(--text); }
+.config-panel {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border2);
+  display: none;
+  background: var(--bg);
+}
+.config-panel.open { display: block; }
+.chevron { transition: transform .2s; display: inline-block; }
+.chevron.open { transform: rotate(90deg); }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 14px 0; color: var(--muted2); font-size: 11px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border2);
+}
+
+/* ── RESPONSE PANEL ── */
+.response-panel {
+  margin-top: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  overflow: hidden;
+  display: none;
+}
+.response-panel.visible { display: block; }
+.resp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border2);
+}
+.resp-status {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px;
+}
+.status-200 { background: var(--green-dim); color: var(--green); }
+.status-400 { background: var(--red-dim); color: var(--red); }
+.status-401 { background: var(--amber-dim); color: var(--amber); }
+.resp-time { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.resp-body {
+  padding: 12px; font-family: var(--mono); font-size: 12px;
+  color: var(--green); line-height: 1.7;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 200px; overflow-y: auto;
+}
+
+/* ── READ PANEL ── */
+.filter-row { display: flex; gap: 8px; align-items: flex-end; }
+.filter-row .field { flex: 1; margin-bottom: 0; }
+
+/* ── DATA TABLE ── */
+.table-wrap { overflow-x: auto; margin-top: 14px; }
+table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--mono); font-size: 12px;
+}
+th {
+  text-align: left; padding: 7px 10px;
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  letter-spacing: .04em; text-transform: uppercase;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border2);
+  color: var(--text);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.td-flow { color: var(--blue); font-weight: 500; }
+.td-vol  { color: var(--green); }
+.td-time { color: var(--muted); font-size: 11px; }
+.td-ok   { color: var(--green); }
+.td-warn { color: var(--amber); }
+
+/* ── LIVE READOUT ── */
+.live-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.live-card {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 10px 12px;
+}
+.live-val {
+  font-family: var(--mono); font-size: 22px; font-weight: 700;
+  line-height: 1; margin-bottom: 2px;
+  color: var(--green);
+}
+.live-unit { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.live-label { font-size: 10px; color: var(--muted2); margin-top: 4px; }
+
+/* ── BOTTOM LOG ── */
+.log-section {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+.log-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 1px solid var(--border2);
+}
+.log-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.log-count { background: var(--surface2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.log-actions { display: flex; gap: 6px; }
+.activity-feed { max-height: 200px; overflow-y: auto; }
+.log-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 18px; border-bottom: 1px solid var(--border2);
+  font-family: var(--mono); font-size: 12px;
+}
+.log-row:last-child { border-bottom: none; }
+.log-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-send { background: var(--blue); }
+.dot-recv { background: var(--green); }
+.dot-err  { background: var(--red); }
+.log-time { color: var(--muted2); min-width: 80px; font-size: 11px; }
+.log-msg { color: var(--muted); flex: 1; }
+.log-msg strong { color: var(--text); }
+.log-val { color: var(--green); }
+
+/* ── MISC ── */
+.empty-state {
+  text-align: center; padding: 32px 20px;
+  color: var(--muted); font-size: 13px;
+}
+.empty-state .icon { font-size: 28px; margin-bottom: 8px; opacity: .4; }
+.tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px; }
+.tag-blue { background: var(--blue-glow); color: var(--blue); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.spinner { display: none; width: 14px; height: 14px; border: 2px solid #fff4; border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading .spinner { display: inline-block; }
+.loading .btn-label { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-brand">
+    <div class="h-logo">FM</div>
+    <div>
+      <div class="h-title">Flow Meter System</div>
+      <div class="h-sub">ระบบรับ / ส่งข้อมูลอัตราการไหล — Supabase REST API</div>
+    </div>
+  </div>
+  <div class="h-status">
+    <div class="pulse"></div>
+    <span id="clock">--:--:--</span>
+  </div>
+</header>
+
+<div class="waveform-bar">
+  <span class="wave-label">LIVE SIGNAL</span>
+  <canvas id="waveCanvas"></canvas>
+</div>
+
+<main>
+
+  <!-- ══ LEFT: SEND ══ -->
+  <div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="card-icon icon-send">↑</div>
+          ส่งข้อมูล (Write)
+        </div>
+        <span class="badge badge-post">POST</span>
+      </div>
+      <div class="card-body">
+
+        <div class="live-grid">
+          <div class="live-card">
+            <div class="live-val" id="cur-flow">0.00</div>
+            <div class="live-unit">m³/hr</div>
+            <div class="live-label">Flow Rate</div>
+          </div>
+          <div class="live-card">
+            <div class="live-val" id="cur-vol" style="font-size:16px">0.0</div>
+            <div class="live-unit">m³</div>
+            <div class="live-label">Total Volume</div>
+          </div>
+          <div class="live-card">
+            <div class="live-val" id="send-count" style="color:var(--blue)">0</div>
+            <div class="live-unit">ครั้ง</div>
+            <div class="live-label">ส่งแล้ว</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Meter ID (UUID)</label>
+          <input type="text" id="meter-id" value="123e4567-e89b-12d3-a456-426614174000" spellcheck="false">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Flow Rate (m³/hr)</label>
+            <input type="number" id="flow-rate" value="18.25" step="0.01" min="0">
+          </div>
+          <div class="field">
+            <label>Total Volume (m³)</label>
+            <input type="number" id="total-vol" value="5840.12" step="0.01" min="0">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Recorded At (UTC)</label>
+          <input type="text" id="rec-time" spellcheck="false">
+        </div>
+
+        <div class="divider">ตัวเลือกเพิ่มเติม</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>ส่งอัตโนมัติทุก</label>
+            <select id="auto-interval">
+              <option value="">ปิด</option>
+              <option value="5000">5 วินาที (ทดสอบ)</option>
+              <option value="60000">1 นาที</option>
+              <option value="900000">15 นาที</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>สร้างค่าสุ่ม</label>
+            <button class="btn btn-secondary btn-full" onclick="randomize()">⟳ สุ่มค่าใหม่</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-send" onclick="sendData()" style="flex:1">
+            <div class="spinner"></div>
+            <span class="btn-label">↑ ส่งข้อมูล</span>
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleConfig('send')">⚙</button>
+        </div>
+
+        <!-- CONFIG -->
+        <div class="config-toggle" onclick="toggleConfig('send')">
+          <span class="chevron" id="cfg-send-chevron">▶</span>
+          ตั้งค่า Supabase Connection (ส่ง)
+        </div>
+        <div class="config-panel" id="cfg-send">
+          <div class="field">
+            <label>Supabase URL</label>
+            <input type="text" id="sb-url" value="https://dlromzmiggiwrmihtmme.supabase.co" spellcheck="false">
+          </div>
+          <div class="field">
+            <label>Supabase Anon Key</label>
+            <input type="text" id="sb-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscm9tem1pZ2dpd3JtaWh0bW1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTA5NDYsImV4cCI6MjA5MjAyNjk0Nn0.V84AJZVAJMnF7JPSJ9Pp-RZu-BtswPd0uOVC80xDKMI" spellcheck="false">
+          </div>
+          <div class="field">
+            <label>Table Name</label>
+            <input type="text" id="sb-table" value="flow_readings" spellcheck="false">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RESPONSE -->
+      <div style="padding: 0 18px 18px">
+        <div class="response-panel" id="send-resp">
+          <div class="resp-head">
+            <span class="resp-status" id="resp-code">200</span>
+            <span class="resp-time" id="resp-time">0ms</span>
+          </div>
+          <div class="resp-body" id="resp-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT: RECEIVE ══ -->
+  <div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="card-icon icon-recv">↓</div>
+          รับข้อมูล (Read)
+        </div>
+        <span class="badge badge-get">GET</span>
+      </div>
+      <div class="card-body">
+
+        <div class="filter-row">
+          <div class="field">
+            <label>Meter ID (กรอง)</label>
+            <input type="text" id="q-meter" placeholder="เว้นว่าง = ทุกเครื่อง" spellcheck="false">
+          </div>
+          <div class="field" style="max-width:90px">
+            <label>จำนวน</label>
+            <input type="number" id="q-limit" value="20" min="1" max="1000">
+          </div>
+          <div style="padding-bottom:0">
+            <button class="btn btn-secondary btn-sm" style="height:36px" onclick="fetchData()">⟳</button>
+          </div>
+        </div>
+
+        <div class="field-row" style="margin-top:12px">
+          <div class="field">
+            <label>เวลาเริ่ม (UTC)</label>
+            <input type="text" id="q-from" placeholder="2026-06-01T00:00:00Z">
+          </div>
+          <div class="field">
+            <label>เวลาสิ้นสุด (UTC)</label>
+            <input type="text" id="q-to" placeholder="2026-06-30T23:59:59Z">
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-full" id="btn-fetch" onclick="fetchData()" style="margin-top:8px">
+          <div class="spinner"></div>
+          <span class="btn-label">↓ ดึงข้อมูล</span>
+        </button>
+
+        <!-- CONFIG -->
+        <div class="config-toggle" onclick="toggleConfig('recv')" style="margin: 12px -18px -18px; padding: 10px 18px;">
+          <span class="chevron" id="cfg-recv-chevron">▶</span>
+          ตั้งค่า Supabase Connection (รับ)
+        </div>
+        <div class="config-panel" id="cfg-recv" style="margin: 0 -18px -18px">
+          <div class="field">
+            <label>ใช้การตั้งค่าเดียวกับ "ส่ง"</label>
+            <select id="use-same-cfg">
+              <option value="1">ใช้ (แนะนำ)</option>
+              <option value="0">กำหนดแยก</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap" id="data-table-wrap">
+        <div class="empty-state">
+          <div class="icon">📊</div>
+          กด "ดึงข้อมูล" เพื่อแสดงผลการวัด
+        </div>
+      </div>
+
+      <div style="padding:10px 18px; border-top:1px solid var(--border2); display:flex; justify-content:space-between; align-items:center">
+        <span style="font-size:11px; color:var(--muted); font-family:var(--mono)" id="row-count">— รายการ</span>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()" id="btn-export" style="display:none">⬇ Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM LOG ══ -->
+  <div class="log-section">
+    <div class="log-head">
+      <div class="log-title">
+        Activity Log
+        <span class="log-count" id="log-count">0</span>
+      </div>
+      <div class="log-actions">
+        <button class="btn btn-secondary btn-sm" onclick="clearLog()">ล้าง</button>
+      </div>
+    </div>
+    <div class="activity-feed" id="activity-feed">
+      <div class="empty-state" style="padding:20px">ยังไม่มีกิจกรรม</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ────────────────────────────────────────────────
+   STATE
+──────────────────────────────────────────────── */
+let logs = [];
+let tableData = [];
+let sendCount = 0;
+let autoTimer = null;
+let lastFlow = 18.25;
+let lastVol = 5840.12;
+
+/* ────────────────────────────────────────────────
+   CLOCK
+──────────────────────────────────────────────── */
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ────────────────────────────────────────────────
+   WAVEFORM
+──────────────────────────────────────────────── */
+const wCanvas = document.getElementById('waveCanvas');
+const wCtx = wCanvas.getContext('2d');
+let wavePoints = [];
+const MAX_PTS = 300;
+let wPhase = 0;
+
+function resizeWave() {
+  wCanvas.width = wCanvas.parentElement.clientWidth;
+  wCanvas.height = 52;
+}
+window.addEventListener('resize', resizeWave);
+resizeWave();
+
+function drawWave() {
+  const W = wCanvas.width, H = wCanvas.height;
+  wCtx.clearRect(0, 0, W, H);
+
+  wPhase += 0.04;
+  const newY = H/2 + Math.sin(wPhase) * 14 + Math.sin(wPhase * 2.3) * 5 + (Math.random()-0.5) * 2;
+  wavePoints.push(newY);
+  if (wavePoints.length > MAX_PTS) wavePoints.shift();
+
+  if (wavePoints.length < 2) { requestAnimationFrame(drawWave); return; }
+
+  const step = W / (MAX_PTS - 1);
+  const offset = MAX_PTS - wavePoints.length;
+
+  wCtx.beginPath();
+  wCtx.moveTo(offset * step, wavePoints[0]);
+  for (let i = 1; i < wavePoints.length; i++) {
+    wCtx.lineTo((offset + i) * step, wavePoints[i]);
+  }
+  wCtx.strokeStyle = '#3fb95066';
+  wCtx.lineWidth = 1;
+  wCtx.stroke();
+
+  wCtx.lineTo(W, H);
+  wCtx.lineTo(offset * step, H);
+  wCtx.fillStyle = '#3fb95011';
+  wCtx.fill();
+
+  requestAnimationFrame(drawWave);
+}
+drawWave();
+
+/* ────────────────────────────────────────────────
+   INIT DEFAULT TIME
+──────────────────────────────────────────────── */
+document.getElementById('rec-time').value = new Date().toISOString().slice(0,19) + 'Z';
+
+/* ────────────────────────────────────────────────
+   RANDOMIZE
+──────────────────────────────────────────────── */
+function randomize() {
+  lastFlow = +(lastFlow + (Math.random()-0.5)*3).toFixed(4);
+  if (lastFlow < 0) lastFlow = 0.5;
+  lastVol = +(lastVol + lastFlow * 0.25).toFixed(4);
+  document.getElementById('flow-rate').value = lastFlow;
+  document.getElementById('total-vol').value = lastVol;
+  document.getElementById('rec-time').value = new Date().toISOString().slice(0,19) + 'Z';
+  document.getElementById('cur-flow').textContent = lastFlow.toFixed(2);
+  document.getElementById('cur-vol').textContent = lastVol.toFixed(1);
+}
+
+/* ────────────────────────────────────────────────
+   CONFIG TOGGLE
+──────────────────────────────────────────────── */
+function toggleConfig(key) {
+  const panel   = document.getElementById('cfg-' + key);
+  const chevron = document.getElementById('cfg-' + key + '-chevron');
+  const open    = panel.classList.toggle('open');
+  chevron.classList.toggle('open', open);
+}
+
+/* ────────────────────────────────────────────────
+   LOGGING
+──────────────────────────────────────────────── */
+function addLog(type, msg, val) {
+  const time = new Date().toISOString().slice(11,19);
+  logs.unshift({ type, msg, val, time });
+  if (logs.length > 100) logs.pop();
+  renderLog();
+  document.getElementById('log-count').textContent = logs.length;
+}
+
+function renderLog() {
+  const feed = document.getElementById('activity-feed');
+  if (!logs.length) { feed.innerHTML = '<div class="empty-state" style="padding:20px">ยังไม่มีกิจกรรม</div>'; return; }
+  feed.innerHTML = logs.map(l => `
+    <div class="log-row">
+      <div class="log-dot dot-${l.type}"></div>
+      <div class="log-time">${l.time}</div>
+      <div class="log-msg">${l.msg}</div>
+      ${l.val ? `<div class="log-val">${l.val}</div>` : ''}
+    </div>`).join('');
+}
+
+function clearLog() {
+  logs = [];
+  renderLog();
+  document.getElementById('log-count').textContent = '0';
+}
+
+/* ────────────────────────────────────────────────
+   SEND DATA
+──────────────────────────────────────────────── */
+async function sendData() {
+  const btn = document.getElementById('btn-send');
+  btn.classList.add('loading');
+
+  const url  = document.getElementById('sb-url').value.trim().replace(/\/$/, '');
+  const key  = document.getElementById('sb-key').value.trim();
+  const tbl  = document.getElementById('sb-table').value.trim();
+  const mId  = document.getElementById('meter-id').value.trim();
+  const flow = parseFloat(document.getElementById('flow-rate').value);
+  const vol  = parseFloat(document.getElementById('total-vol').value);
+  const rAt  = document.getElementById('rec-time').value.trim();
+
+  const payload = { meter_id: mId, recorded_at: rAt, flow_rate: flow, total_volume: vol };
+
+  const respPanel = document.getElementById('send-resp');
+  respPanel.classList.add('visible');
+
+  const t0 = Date.now();
+  try {
+    const res = await fetch(`${url}/rest/v1/${tbl}`, {
+      method: 'POST',
+      headers: {
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+    const elapsed = Date.now() - t0;
+    const text = await res.text();
+    let pretty;
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch { pretty = text; }
+
+    const codeEl = document.getElementById('resp-code');
+    codeEl.textContent = res.status;
+    codeEl.className = 'resp-status ' + (res.ok ? 'status-200' : (res.status === 401 ? 'status-401' : 'status-400'));
+    document.getElementById('resp-time').textContent = elapsed + 'ms';
+    document.getElementById('resp-body').textContent = pretty || '(ไม่มีข้อมูลตอบกลับ)';
+
+    if (res.ok) {
+      sendCount++;
+      document.getElementById('send-count').textContent = sendCount;
+      document.getElementById('cur-flow').textContent = flow.toFixed(2);
+      document.getElementById('cur-vol').textContent = vol.toFixed(1);
+      addLog('send', `<strong>INSERT</strong> → ${tbl}`, `${flow} m³/hr`);
+      randomize();
+    } else {
+      addLog('err', `<strong>ERROR ${res.status}</strong> → ${tbl}`, res.statusText);
+    }
+  } catch (err) {
+    const elapsed = Date.now() - t0;
+    document.getElementById('resp-code').textContent = 'ERR';
+    document.getElementById('resp-code').className = 'resp-status status-400';
+    document.getElementById('resp-time').textContent = elapsed + 'ms';
+    document.getElementById('resp-body').textContent = err.message;
+    addLog('err', `<strong>NETWORK ERROR</strong>`, err.message.slice(0,50));
+  }
+
+  btn.classList.remove('loading');
+}
+
+/* ────────────────────────────────────────────────
+   AUTO SEND
+──────────────────────────────────────────────── */
+document.getElementById('auto-interval').addEventListener('change', function() {
+  clearInterval(autoTimer);
+  autoTimer = null;
+  if (this.value) {
+    const ms = parseInt(this.value);
+    autoTimer = setInterval(() => { randomize(); sendData(); }, ms);
+    addLog('send', `เริ่ม Auto-send ทุก ${ms/1000} วินาที`);
+  } else {
+    addLog('recv', 'หยุด Auto-send');
+  }
+});
+
+/* ────────────────────────────────────────────────
+   FETCH DATA
+──────────────────────────────────────────────── */
+async function fetchData() {
+  const btn = document.getElementById('btn-fetch');
+  btn.classList.add('loading');
+
+  const url   = document.getElementById('sb-url').value.trim().replace(/\/$/, '');
+  const key   = document.getElementById('sb-key').value.trim();
+  const tbl   = document.getElementById('sb-table').value.trim();
+  const mId   = document.getElementById('q-meter').value.trim();
+  const limit = parseInt(document.getElementById('q-limit').value) || 20;
+  const from  = document.getElementById('q-from').value.trim();
+  const to    = document.getElementById('q-to').value.trim();
+
+  const params = new URLSearchParams({
+    order: 'recorded_at.desc',
+    limit: limit,
+  });
+  if (mId) params.set('meter_id', 'eq.' + mId);
+  if (from) params.set('recorded_at', 'gte.' + from);
+  if (to)   params.append('recorded_at', 'lte.' + to);
+
+  const t0 = Date.now();
+  try {
+    const res = await fetch(`${url}/rest/v1/${tbl}?${params}`, {
+      headers: {
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Accept': 'application/json'
+      }
+    });
+    const elapsed = Date.now() - t0;
+    const data = await res.json();
+
+    if (res.ok && Array.isArray(data)) {
+      tableData = data;
+      renderTable(data);
+      addLog('recv', `<strong>SELECT</strong> ← ${tbl}`, `${data.length} rows · ${elapsed}ms`);
+    } else {
+      renderError(JSON.stringify(data, null, 2));
+      addLog('err', `<strong>QUERY ERROR ${res.status}</strong>`, '');
+    }
+  } catch (err) {
+    renderError(err.message);
+    addLog('err', `<strong>NETWORK ERROR</strong>`, err.message.slice(0,50));
+  }
+
+  btn.classList.remove('loading');
+}
+
+/* ────────────────────────────────────────────────
+   RENDER TABLE
+──────────────────────────────────────────────── */
+function renderTable(data) {
+  const wrap = document.getElementById('data-table-wrap');
+  const countEl = document.getElementById('row-count');
+  const exportBtn = document.getElementById('btn-export');
+
+  if (!data.length) {
+    wrap.innerHTML = '<div class="empty-state" style="padding:32px 20px"><div class="icon">🔍</div>ไม่พบข้อมูลตามเงื่อนไขที่กำหนด</div>';
+    countEl.textContent = '0 รายการ';
+    exportBtn.style.display = 'none';
+    return;
+  }
+
+  exportBtn.style.display = '';
+  countEl.textContent = data.length + ' รายการ';
+
+  wrap.innerHTML = `
+  <table>
+    <thead><tr>
+      <th>Recorded At</th>
+      <th>Meter ID</th>
+      <th>Flow Rate</th>
+      <th>Total Volume</th>
+      <th>สถานะ</th>
+    </tr></thead>
+    <tbody>
+      ${data.map(r => {
+        const flow = parseFloat(r.flow_rate) || 0;
+        const warn = flow > 30;
+        const dt = r.recorded_at ? r.recorded_at.replace('T',' ').slice(0,19) : '—';
+        const mId = r.meter_id ? r.meter_id.slice(0,8) + '…' : '—';
+        return `<tr>
+          <td class="td-time">${dt}</td>
+          <td class="td-time">${mId}</td>
+          <td class="td-flow">${flow.toFixed(4)}</td>
+          <td class="td-vol">${parseFloat(r.total_volume||0).toFixed(4)}</td>
+          <td class="${warn?'td-warn':'td-ok'}">${warn?'⚠ เกิน':'✓ ปกติ'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderError(msg) {
+  const wrap = document.getElementById('data-table-wrap');
+  wrap.innerHTML = `<div class="empty-state" style="padding:20px;text-align:left">
+    <span style="color:var(--red);font-family:var(--mono);font-size:12px;white-space:pre-wrap">${msg}</span>
+  </div>`;
+  document.getElementById('row-count').textContent = '— รายการ';
+}
+
+/* ────────────────────────────────────────────────
+   EXPORT CSV
+──────────────────────────────────────────────── */
+function exportCSV() {
+  if (!tableData.length) return;
+  const headers = ['recorded_at','meter_id','flow_rate','total_volume','created_at'];
+  const rows = tableData.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'flow_readings_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  addLog('recv', '<strong>Export CSV</strong>', tableData.length + ' rows');
+}
+
+/* ────────────────────────────────────────────────
+   KEYBOARD SHORTCUT
+──────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); sendData(); }
+});
+</script>
+</body>
+</html>
